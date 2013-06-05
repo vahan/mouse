@@ -16,32 +16,36 @@ public class Runner {
 		String host;
 		String port;
 		String dbName;
-		try {
+		//try {
 			System.out.println("Enter the input CSV file name");
-			inputFileName = br.readLine().trim();
+			inputFileName = "data.csv";// br.readLine().trim();
 			System.out.println("Enter the DB username");
-			username = br.readLine().trim();
+			username = "vahan"; //br.readLine().trim();
 			System.out.println("Enter the DB password");
-			password = br.readLine().trim();
+			password = "123"; //br.readLine().trim();
 			System.out.println("Enter the DB host name");
-			host = br.readLine().trim();
+			host = "localhost"; //br.readLine().trim();
 			System.out.println("Enter the DB port");
-			port = br.readLine().trim();
+			port = "5432"; //br.readLine().trim();
 			System.out.println("Enter the DB name");
-			dbName = br.readLine().trim();
-		} catch (IOException e) {
+			dbName = "mousedb"; //br.readLine().trim();
+		/*} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
-		}
+		}*/
 		
 		DataProcessor processor = new DataProcessor(inputFileName, username, password, host, port, dbName);
-		if (!processor.getPsqlManager().connect(host, port, dbName))
+		if (!processor.getPsqlManager().connect(host, port, dbName)) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getUrl());
-		if (processor.process())
-			System.out.println("The data was successfully read, processed and stored in DB");
-		else
+			return;
+		}
+		if (!processor.process()) {
 			System.out.println("An error accurred! Please check the above error messages");
+			return;
+		}
+		
+		System.out.println("The data was successfully read, processed and stored in DB");
 	}
 
 }

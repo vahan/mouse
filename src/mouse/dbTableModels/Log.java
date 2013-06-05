@@ -2,6 +2,7 @@ package mouse.dbTableModels;
 
 import java.util.Date;
 
+
 public class Log {
 
 	private final String fileName;
@@ -51,6 +52,7 @@ public class Log {
 	public float getSize() {
 		return size;
 	}
+
 	
 	
 	

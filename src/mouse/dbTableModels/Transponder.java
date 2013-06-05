@@ -4,6 +4,7 @@ import java.util.Date;
 
 import mouse.Gender;
 
+
 public class Transponder {
 	
 	private final String rfid;
@@ -98,7 +99,6 @@ public class Transponder {
 	public int getBaladeCount() {
 		return baladeCount;
 	}
-	
 	
 
 }

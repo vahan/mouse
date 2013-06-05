@@ -1,5 +1,6 @@
 package mouse.dbTableModels;
 
+
 public class DirectionResult {
 	
 	private final String timeStamp;
@@ -44,7 +45,7 @@ public class DirectionResult {
 	public StayResult getStayResult() {
 		return stay;
 	}
-	
+
 	
 	
 

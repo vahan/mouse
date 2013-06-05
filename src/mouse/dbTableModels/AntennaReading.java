@@ -44,7 +44,7 @@ public class AntennaReading {
 	public DirectionResult getDirectionResult() {
 		return directionResult;
 	}
-	
+
 	
 	
 

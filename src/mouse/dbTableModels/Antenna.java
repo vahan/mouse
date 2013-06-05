@@ -1,5 +1,6 @@
 package mouse.dbTableModels;
 
+
 public class Antenna {
 	
 	private final String name;
@@ -38,7 +39,7 @@ public class Antenna {
 	public Box getBox() {
 		return box;
 	}
-	
+
 	
 	
 	

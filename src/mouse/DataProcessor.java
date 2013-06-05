@@ -67,7 +67,7 @@ public class DataProcessor {
 	 * @return
 	 */
 	public boolean process() {
-		if (!psqlManager.createTables())
+		if (!psqlManager.initTables())
 			return false;
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;

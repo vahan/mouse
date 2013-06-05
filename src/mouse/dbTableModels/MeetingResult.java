@@ -2,6 +2,7 @@ package mouse.dbTableModels;
 
 import java.util.Date;
 
+
 public class MeetingResult {
 	
 	private final String rfidFrom;
@@ -51,7 +52,6 @@ public class MeetingResult {
 	public Box getBox() {
 		return box;
 	}
-	
 	
 
 }

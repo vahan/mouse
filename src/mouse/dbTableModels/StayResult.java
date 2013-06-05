@@ -1,5 +1,6 @@
 package mouse.dbTableModels;
 
+
 public class StayResult {
 	
 	private final String start;
@@ -43,7 +44,6 @@ public class StayResult {
 	public Box getBox() {
 		return box;
 	}
-	
 	
 	
 

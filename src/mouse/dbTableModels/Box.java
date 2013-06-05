@@ -2,6 +2,7 @@ package mouse.dbTableModels;
 
 import java.util.Date;
 
+
 public class Box {
 	
 	private final String name;
@@ -61,7 +62,7 @@ public class Box {
 	public Date getLastMeetin() {
 		return lastMeetin;
 	}
-	
+
 	
 	
 	

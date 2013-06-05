@@ -2,6 +2,7 @@ package mouse.dbTableModels;
 
 import java.util.Date;
 
+
 public class ScaleReading {
 	
 	private final Date timeStamp;
@@ -39,7 +40,6 @@ public class ScaleReading {
 	public Scale getScale() {
 		return scale;
 	}
-	
 	
 
 }
