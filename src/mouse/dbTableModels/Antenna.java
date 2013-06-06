@@ -1,23 +1,37 @@
 package mouse.dbTableModels;
 
+import java.util.ArrayList;
 
-public class Antenna {
+
+public class Antenna extends DbTableModel {
 	
 	private final String name;
 	private final String position;
 	private String lastReading;
 	private final Box box;
 	
+	private static ArrayList<Antenna> antennas = new ArrayList<Antenna>();
+	
 	public Antenna(String position, Box box) {
 		super();
-		this.name = generateName();
 		this.position = position;
 		this.box = box;
+		this.name = generateName();
+		
+		antennas.add(this);
+	}
+	
+	public static Antenna getAntenna(Box box, String position) {
+		for (Antenna antenna : antennas) {
+			if (antenna.getBox() == box && antenna.getPosition().equals(position))
+				return antenna;
+		}
+		return null;
 	}
 
 	private String generateName() {
-		// TODO Auto-generated method stub
-		return null;
+		String name = box.getName() + "-" + position; 
+		return name;
 	}
 
 	public String getName() {
@@ -39,7 +53,7 @@ public class Antenna {
 	public Box getBox() {
 		return box;
 	}
-
+	
 	
 	
 	

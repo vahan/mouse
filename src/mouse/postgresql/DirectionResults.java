@@ -1,10 +1,17 @@
 package mouse.postgresql;
 
+
 public class DirectionResults extends DbTable {
+	
+	public DirectionResults(String tableName) {
+		super(tableName);
+		// TODO Auto-generated constructor stub
+		
+	}
 
 	@Override
 	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS direction_results (" +
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
 				"direction text," +
 				"rfid text," +
@@ -14,12 +21,6 @@ public class DirectionResults extends DbTable {
 			");";
 
 		return query;
-	}
-
-	@Override
-	protected String insertQuery() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

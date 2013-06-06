@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
@@ -13,11 +12,20 @@ import mouse.dbTableModels.DirectionResult;
 import mouse.dbTableModels.MeetingResult;
 import mouse.dbTableModels.StayResult;
 import mouse.dbTableModels.Transponder;
+import mouse.postgresql.AntennaReadings;
+import mouse.postgresql.Boxes;
 import mouse.postgresql.PostgreSQLManager;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 public class DataProcessor {
+	
+	public static final int COLUMN_COUNT = 5;
+	public static final int DATE_TIME_STAMP_COLUMN = 1;
+	public static final int DEVICE_ID_COLUMN = 2;
+	public static final int ANTENNA_ID_COLUMN = 3;
+	public static final int RFID_COLUMN = 4;
+	
 	
 	private final String inputCSVFileName;
 	
@@ -35,7 +43,8 @@ public class DataProcessor {
 	public DataProcessor(String inputCSVFileName, String username, String password, Object host, Object port, String dbName) {
 		this.inputCSVFileName = inputCSVFileName;
 		
-		psqlManager = new PostgreSQLManager(username, password);
+		Column[] columns = columns(inputCSVFileName, true);
+		psqlManager = new PostgreSQLManager(username, password, columns);
 	}
 	
 	public String getInputCSVFileName() {
@@ -69,12 +78,58 @@ public class DataProcessor {
 	public boolean process() {
 		if (!psqlManager.initTables())
 			return false;
+		if (!psqlManager.storeStaticTables()) {
+			return false;
+		}
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;
 		
 		
 		return true;
 	}
+	
+	/**
+	 * Scans the input file and returns Columns of antennas, boxes and transponders
+	 * @param inputCSVFileName
+	 * @param unique
+	 * @return
+	 */
+	private Column[] columns(String inputCSVFileName, boolean unique) {
+		int[] staticColumnNumbers = new int[] {ANTENNA_ID_COLUMN, DEVICE_ID_COLUMN, RFID_COLUMN};
+		Column[] columns = new Column[COLUMN_COUNT];
+		for (int i = 0; i < COLUMN_COUNT; ++i) {
+			columns[i] = new Column();
+		}
+		
+		CSVReader reader;
+		try {
+			reader = new CSVReader(new FileReader(inputCSVFileName), ';', '\'', 1); //skip the first (header) line
+			
+			String [] nextLine;
+			int lineNumber = 0;
+			while ((nextLine = reader.readNext()) != null) {
+				for (int i : staticColumnNumbers) {
+					if (unique && columns[i].getEntries().contains(nextLine[i]))
+						continue;
+					columns[i].addEntry(nextLine[i]);
+				}
+				System.out.println(lineNumber++);
+			}
+			reader.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return columns;
+	}
+	
 	
 	/**
 	 * Reads the content of a given CSV file into antennaReadings array 
@@ -91,16 +146,21 @@ public class DataProcessor {
 			while ((nextLine = reader.readNext()) != null) {
 				String timeStamp = nextLine[1];
 				String boxName = nextLine[2];
-				Box box = new Box(boxName);
+				Box box = Box.getBoxByName(boxName);
 				String antennaPosition = nextLine[3];
-				Antenna antenna = new Antenna(antennaPosition, box);
+				Antenna antenna = Antenna.getAntenna(box, antennaPosition);
+				if (antenna == null) {
+					int a = 1;
+				}
 				String rfid = nextLine[4];
-				Transponder transponder = new Transponder(rfid);
-				AntennaReading antennaReading = 
-						new AntennaReading(timeStamp, transponder, antenna);
+				Transponder transponder = Transponder.getTransponder(rfid);
+				AntennaReading antennaReading = new AntennaReading(timeStamp, transponder, antenna);
 				antennaReadings.add(antennaReading);
 			}
 			reader.close();
+			
+			AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
+			antennaReadingsTable.setAntennaReadings(antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
 			
 			//TODO Insert the read data into the DB table
 			

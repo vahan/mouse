@@ -1,10 +1,17 @@
 package mouse.postgresql;
 
+
 public class MeetingResults extends DbTable {
+	
+	public MeetingResults(String tableName) {
+		super(tableName);
+		// TODO Auto-generated constructor stub
+		
+	}
 
 	@Override
 	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS meeting_results (" +
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
 				"rfid_from text," +
 				"rfid_to text," +
@@ -16,12 +23,6 @@ public class MeetingResults extends DbTable {
 			");";
 		
 		return query;
-	}
-
-	@Override
-	protected String insertQuery() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 

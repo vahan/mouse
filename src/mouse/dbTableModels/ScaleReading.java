@@ -3,7 +3,7 @@ package mouse.dbTableModels;
 import java.util.Date;
 
 
-public class ScaleReading {
+public class ScaleReading extends DbTableModel {
 	
 	private final Date timeStamp;
 	private final float weight;

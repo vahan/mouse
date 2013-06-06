@@ -2,7 +2,7 @@ package mouse.dbTableModels;
 
 import java.util.Date;
 
-public class Scale {
+public class Scale extends DbTableModel {
 	
 	private final String name;
 	private final String segment;

@@ -1,10 +1,17 @@
 package mouse.postgresql;
 
+import mouse.dbTableModels.StayResult;
+
 public class StayResults extends DbTable {
+	
+	public StayResults(String tableName) {
+		super(tableName);
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS stay_results (" +
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
 				"start timestamp," +
 				"stop timestamp," +
@@ -15,12 +22,6 @@ public class StayResults extends DbTable {
 			");";
 
 		return query;
-	}
-
-	@Override
-	protected String insertQuery() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 

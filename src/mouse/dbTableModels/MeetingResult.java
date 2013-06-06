@@ -3,7 +3,7 @@ package mouse.dbTableModels;
 import java.util.Date;
 
 
-public class MeetingResult {
+public class MeetingResult extends DbTableModel {
 	
 	private final String rfidFrom;
 	private final String rfidTo;

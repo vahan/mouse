@@ -3,7 +3,7 @@ package mouse.dbTableModels;
 import java.util.Date;
 
 
-public class Log {
+public class Log extends DbTableModel {
 
 	private final String fileName;
 	private final Date firstReading;

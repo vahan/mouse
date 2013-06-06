@@ -1,11 +1,12 @@
 package mouse.dbTableModels;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import mouse.Gender;
 
 
-public class Transponder {
+public class Transponder extends DbTableModel {
 	
 	private final String rfid;
 	private final Gender sex;
@@ -18,9 +19,22 @@ public class Transponder {
 	private int meetingsCount;
 	private int baladeCount;
 	
+	private static ArrayList<Transponder> transponders = new ArrayList<Transponder>();
+	
 	public Transponder(String rfid) {
+		super();
 		this.rfid = rfid;
 		this.sex = findSex();
+		
+		transponders.add(this);
+	}
+	
+	public static Transponder getTransponder(String rfid) {
+		for (Transponder transp : transponders) {
+			if (transp.getRfid().equals(rfid))
+				return transp;
+		}
+		return null;
 	}
 
 	public void setFirstReading(Date firstReading) {

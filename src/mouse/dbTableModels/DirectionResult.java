@@ -1,7 +1,7 @@
 package mouse.dbTableModels;
 
 
-public class DirectionResult {
+public class DirectionResult extends DbTableModel {
 	
 	private final String timeStamp;
 	private final String direction;

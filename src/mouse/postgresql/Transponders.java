@@ -1,10 +1,30 @@
 package mouse.postgresql;
 
-public class Transponders extends DbTable {
+import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableModels.Transponder;
+
+
+public class Transponders extends DbStaticTable {
+	
+	public Transponders(String tableName, String[] transponderNames) {
+		super(tableName, transponderNames, null);
+		
+		// TODO Auto-generated constructor stub
+		generateTables();
+	}
 
 	@Override
+	protected void generateTables() {
+		tableModels = new Transponder[entries.length];
+		for (int i = 0; i < entries.length; ++i) {
+			tableModels[i] = new Transponder(entries[i]);
+		}
+		
+	}
+	
+	@Override
 	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS transponders (" +
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
 				"rfid text," +
 				"sex text," +
@@ -22,10 +42,19 @@ public class Transponders extends DbTable {
 		return query;
 	}
 
+	
 	@Override
-	protected String insertQuery() {
-		// TODO Auto-generated method stub
-		return null;
+	public String insertQuery(DbTableModel model) {
+		Transponder tr = (Transponder) model;
+		String[] fields = new String[] {"rfid", 
+										"sex"
+										};
+		String[] values = new String[] {"'" + tr.getRfid() + "'", 
+										"'" + tr.getSex() + "'"
+										};
+		String query = insertQuery(fields, values);
+		
+		return query;
 	}
 	
 

@@ -1,7 +1,7 @@
 package mouse.dbTableModels;
 
 
-public class AntennaReading {
+public class AntennaReading extends DbTableModel {
 	
 	private final String timeStamp;
 	private Log log;

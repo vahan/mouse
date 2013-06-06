@@ -1,7 +1,7 @@
 package mouse.dbTableModels;
 
 
-public class StayResult {
+public class StayResult extends DbTableModel {
 	
 	private final String start;
 	private final String stop;
