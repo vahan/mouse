@@ -11,7 +11,6 @@ public class Boxes extends DbStaticTable {
 	public Boxes(String tableName, String[] boxNames) {
 		super(tableName, boxNames, null);
 		// TODO Auto-generated constructor stub
-		generateTables();
 	}
 
 	@Override

@@ -14,7 +14,6 @@ public class Antennas extends DbStaticTable {
 		super(tableName, antennaNames, boxNames);
 		// TODO Auto-generated constructor stub
 		
-		generateTables();
 	}
 
 	@Override
@@ -69,7 +68,7 @@ public class Antennas extends DbStaticTable {
 										};
 		String[] values = new String[] {"'" + antenna.getName() + "'", 
 										"'" + antenna.getPosition() + "'", 
-										"'" + antenna.getBox().getName() + "'"
+										"'" + antenna.getBox().getId() + "'"
 										};
 		String query = insertQuery(fields, values);
 		

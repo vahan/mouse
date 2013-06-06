@@ -35,7 +35,7 @@ public class Box extends DbTableModel {
 
 	private String findSegment() {
 		// TODO Auto-generated method stub
-		return null;
+		return "A";
 	}
 
 	public String getName() {

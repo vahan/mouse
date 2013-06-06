@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mouse.Column;
 import mouse.DataProcessor;
 import mouse.dbTableModels.DbTableModel;
@@ -14,14 +16,14 @@ import zetcode.Version;
 
 public class PostgreSQLManager {
 	
-	private Connection con = null;
+	private Connection conn = null;
 	private final String username;
 	private final String password;
 	
 	private String url;
 
 	private Logs logs = new Logs("logs");
-	private Scales scales;
+	private Scales scales = new Scales("scales");
 	private Boxes boxes;
 	private Antennas antennas;
 	private Transponders transponders;
@@ -53,7 +55,7 @@ public class PostgreSQLManager {
 		
 		//The order must be kept!
 		tables.add(logs);
-		//tables.add(scales); //TODO scales is not initialized!
+		tables.add(scales); //TODO scales is not initialized!
 		tables.add(boxes);
 		tables.add(antennas);
 		tables.add(transponders);
@@ -70,7 +72,7 @@ public class PostgreSQLManager {
 	}
 	
 	public Connection getCon() {
-		return con;
+		return conn;
 	}
 
 	public Logs getLogs() {
@@ -117,7 +119,7 @@ public class PostgreSQLManager {
 		url = generateUrl(host, port, dbName);
 		
 		try {
-			con = DriverManager.getConnection(url, this.username, this.password);
+			conn = DriverManager.getConnection(url, this.username, this.password);
 		} catch (SQLException e) {
 			System.out.println("Connection to DB " + dbName + " could not be established:");
 			e.printStackTrace();
@@ -132,23 +134,27 @@ public class PostgreSQLManager {
 	 * @return	true if succeeded without errors, false - otherwise
 	 */
 	public boolean initTables() {
-		if (con == null) {
+		if (conn == null) {
 			return false;
 		}
 		
-		boolean success = true;
+		ResultSet result = null;
 		
+		//First, drop all tables TODO remove this!
 		for (DbTable table : tables) {
-			String query = table.createTableQuery();
-			success = executeQuery(query);
-			if (!success)
+			String dropQuery = table.dropTableQuery();
+			executePreparedStatement(dropQuery);
+		}
+		//create the DB tables
+		for (DbTable table : tables) {
+			String createQuery = table.createTableQuery();
+			if (!executePreparedStatement(createQuery))
 				return false;
-			String id = getIdQuery(table.getTableName());
-			
 		}
 		
 		return true;
 	}
+	
 
 	public boolean storeStaticTables() {
 		if (!storeStaticTable(this.boxes))
@@ -160,18 +166,6 @@ public class PostgreSQLManager {
 		return true;
 	}
 	
-	
-	private boolean storeStaticTable(DbStaticTable staticTable) {
-		boolean success = true;
-		for (DbTableModel model : staticTable.getTableModels()) {
-			String insertQuery = staticTable.insertQuery(model);
-			success = executeQuery(insertQuery);
-			if (!success)
-				return success;
-		}
-		
-		return success;
-	}
 	
 	/**
 	 * 
@@ -185,9 +179,9 @@ public class PostgreSQLManager {
 		ArrayList<String> results = new ArrayList<String>();
 		
 		try {
-			con = DriverManager.getConnection(url, username, password);
-			st = con.createStatement();
-			rs = st.executeQuery("SELECT name FROM `" + tableName + "` WHERE " + condition);
+			conn = DriverManager.getConnection(url, username, password);
+			st = conn.createStatement();
+			rs = st.executeQuery("SELECT * FROM `" + tableName + "` WHERE " + condition);
 			
 			if (rs.next()) {
 				results.add(rs.getString(1));
@@ -203,8 +197,8 @@ public class PostgreSQLManager {
 				if (st != null) {
 					st.close();
 				}
-				if (con != null) {
-					con.close();
+				if (conn != null) {
+					conn.close();
 				}
 
 			} catch (SQLException ex) {
@@ -220,14 +214,51 @@ public class PostgreSQLManager {
 	 * @param query	The query to be executed
 	 * @return		The returned result after the query execution
 	 */
-	private boolean executeQuery(String query) {
-		con = null;
+	public String executeQuery(String query) {
+		conn = null;
+		Statement stmt = null;
+		String result = null;
+		
+		try {
+			conn = DriverManager.getConnection(url, username, password);
+			stmt = conn.createStatement();
+			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
+			ResultSet resultSet = stmt.getGeneratedKeys();
+			resultSet.next();
+			result = resultSet.getString(1); //TODO Hard typed 1
+		} catch (SQLException ex) {
+			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
+			lgr.log(Level.SEVERE, ex.getMessage(), ex);
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
+				lgr.log(Level.WARNING, ex.getMessage(), ex);
+				result = null;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Wrapper to execute the given postrgeSql query
+	 * @param query	The query to be executed
+	 * @return		The returned result after the query execution
+	 */
+	public boolean executePreparedStatement(String query) {
+		conn = null;
 		PreparedStatement pst = null;
 		boolean success = true;
 		
 		try {
-			con = DriverManager.getConnection(url, username, password);
-			pst = con.prepareStatement(query);
+			conn = DriverManager.getConnection(url, username, password);
+			pst = conn.prepareStatement(query);
 			pst.executeUpdate();
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
@@ -238,8 +269,8 @@ public class PostgreSQLManager {
 				if (pst != null) {
 					pst.close();
 				}
-				if (con != null) {
-					con.close();
+				if (conn != null) {
+					conn.close();
 				}
 			} catch (SQLException ex) {
 				Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
@@ -249,11 +280,18 @@ public class PostgreSQLManager {
 		}
 		return success;
 	}
+
 	
-	
-	private String getIdQuery(String tableName) {
-		String query = "SELECT id FROM `" + tableName + "`";
-		return query;
+	private boolean storeStaticTable(DbStaticTable staticTable) {
+		for (DbTableModel model : staticTable.getTableModels()) {
+			String insertQuery = staticTable.insertQuery(model);
+			String id = executeQuery(insertQuery);
+			if (StringUtils.isEmpty(id))
+				return false;
+			model.setId(id);
+		}
+		
+		return true;
 	}
 
 

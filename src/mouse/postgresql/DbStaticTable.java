@@ -14,12 +14,12 @@ public abstract class DbStaticTable extends DbTable {
 	 */
 	protected String[] data;
 	
-	protected DbStaticTable(String tableName, String[] tableNames, String[] dataNames) {
+	protected DbStaticTable(String tableName, String[] entries, String[] data) {
 		super(tableName);
 		// TODO Auto-generated constructor stub
 
-		this.entries = tableNames;
-		this.data = dataNames;
+		this.entries = entries;
+		this.data = data;
 		
 		generateTables();
 	}

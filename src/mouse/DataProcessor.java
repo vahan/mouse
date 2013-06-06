@@ -5,15 +5,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
 import mouse.dbTableModels.Box;
+import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.DirectionResult;
 import mouse.dbTableModels.MeetingResult;
 import mouse.dbTableModels.StayResult;
 import mouse.dbTableModels.Transponder;
 import mouse.postgresql.AntennaReadings;
-import mouse.postgresql.Boxes;
 import mouse.postgresql.PostgreSQLManager;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -149,10 +151,9 @@ public class DataProcessor {
 				Box box = Box.getBoxByName(boxName);
 				String antennaPosition = nextLine[3];
 				Antenna antenna = Antenna.getAntenna(box, antennaPosition);
-				if (antenna == null) {
-					int a = 1;
-				}
 				String rfid = nextLine[4];
+				if (StringUtils.isEmpty(rfid))
+					continue;
 				Transponder transponder = Transponder.getTransponder(rfid);
 				AntennaReading antennaReading = new AntennaReading(timeStamp, transponder, antenna);
 				antennaReadings.add(antennaReading);
@@ -160,9 +161,15 @@ public class DataProcessor {
 			reader.close();
 			
 			AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
-			antennaReadingsTable.setAntennaReadings(antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
+			antennaReadingsTable.setAntennaReadings(
+					antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
 			
 			//TODO Insert the read data into the DB table
+			for (DbTableModel model : antennaReadingsTable.getTableModels()) {
+				String insertQuery = antennaReadingsTable.insertQuery(model);
+				psqlManager.executePreparedStatement(insertQuery);
+			}
+			
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Transponder;
 
@@ -10,13 +12,14 @@ public class Transponders extends DbStaticTable {
 		super(tableName, transponderNames, null);
 		
 		// TODO Auto-generated constructor stub
-		generateTables();
 	}
 
 	@Override
 	protected void generateTables() {
 		tableModels = new Transponder[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
+			if (StringUtils.isEmpty(entries[i]))
+				entries[i] = "-";	//TODO handle empty 'rfid's
 			tableModels[i] = new Transponder(entries[i]);
 		}
 		

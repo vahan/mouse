@@ -24,7 +24,13 @@ public abstract class DbTable {
 		return tableModels;
 	}
 
+	public String dropTableQuery() {
+		String query = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
+		return query;
+	}
+	
 	protected abstract String createTableQuery();
+	
 
 	/**
 	 * Generates SQL query to insert the generated entries into corresponding tables
