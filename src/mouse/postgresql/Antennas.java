@@ -3,12 +3,10 @@ package mouse.postgresql;
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.Transponder;
 
 public class Antennas extends DbStaticTable {
 
 	public static final int ANTENNAS_PER_BOX = 2;
-	
 	
 	public Antennas(String tableName, String[] antennaNames, String[] boxNames) {
 		super(tableName, antennaNames, boxNames);
@@ -24,7 +22,6 @@ public class Antennas extends DbStaticTable {
 				tableModels[k++] = new Antenna(entries[i], Box.getBoxByName(data[j]));
 			}
 		}
-		
 	}
 	
 	/**

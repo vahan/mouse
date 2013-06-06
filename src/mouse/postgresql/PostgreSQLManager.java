@@ -141,16 +141,18 @@ public class PostgreSQLManager {
 		ResultSet result = null;
 		
 		//First, drop all tables TODO remove this!
-		for (DbTable table : tables) {
-			String dropQuery = table.dropTableQuery();
-			executePreparedStatement(dropQuery);
+		String[] dropQueries = new String[tables.size()];
+		for (int i = 0; i < tables.size(); ++i) {
+			dropQueries[i] = tables.get(i).dropTableQuery();
 		}
+		executePreparedStatements(dropQueries);
 		//create the DB tables
-		for (DbTable table : tables) {
-			String createQuery = table.createTableQuery();
-			if (!executePreparedStatement(createQuery))
-				return false;
+		String[] createQueries = new String[tables.size()];
+		for (int i = 0; i < tables.size(); ++i) {
+			createQueries[i] = tables.get(i).createTableQuery();
 		}
+		if (!executePreparedStatements(createQueries))
+			return false;
 		
 		return true;
 	}
@@ -211,21 +213,24 @@ public class PostgreSQLManager {
 	
 	/**
 	 * Wrapper to execute the given postrgeSql query
-	 * @param query	The query to be executed
+	 * @param queries	The query to be executed
 	 * @return		The returned result after the query execution
 	 */
-	public String executeQuery(String query) {
+	public String[] executeQueries(String[] queries) {
 		conn = null;
 		Statement stmt = null;
-		String result = null;
+		String[] results = new String[queries.length];
 		
 		try {
 			conn = DriverManager.getConnection(url, username, password);
 			stmt = conn.createStatement();
-			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
-			ResultSet resultSet = stmt.getGeneratedKeys();
-			resultSet.next();
-			result = resultSet.getString(1); //TODO Hard typed 1
+			for (int i = 0; i < queries.length; ++i) {
+				String query = queries[i];
+				stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
+				ResultSet resultSet = stmt.getGeneratedKeys();
+				resultSet.next();
+				results[i] = resultSet.getString(1); //TODO Hard typed 1
+			}
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
 			lgr.log(Level.SEVERE, ex.getMessage(), ex);
@@ -240,26 +245,29 @@ public class PostgreSQLManager {
 			} catch (SQLException ex) {
 				Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
 				lgr.log(Level.WARNING, ex.getMessage(), ex);
-				result = null;
+				results = null;
 			}
 		}
-		return result;
+		return results;
 	}
 
 	/**
 	 * Wrapper to execute the given postrgeSql query
-	 * @param query	The query to be executed
+	 * @param queries	The query to be executed
 	 * @return		The returned result after the query execution
 	 */
-	public boolean executePreparedStatement(String query) {
+	public boolean executePreparedStatements(String[] queries) {
 		conn = null;
 		PreparedStatement pst = null;
 		boolean success = true;
 		
 		try {
 			conn = DriverManager.getConnection(url, username, password);
-			pst = conn.prepareStatement(query);
-			pst.executeUpdate();
+			for (int i = 0; i < queries.length; ++i) {
+				String query = queries[i];
+				pst = conn.prepareStatement(query);
+				pst.executeUpdate();
+			}
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
 			lgr.log(Level.SEVERE, ex.getMessage(), ex);
@@ -283,12 +291,16 @@ public class PostgreSQLManager {
 
 	
 	private boolean storeStaticTable(DbStaticTable staticTable) {
-		for (DbTableModel model : staticTable.getTableModels()) {
-			String insertQuery = staticTable.insertQuery(model);
-			String id = executeQuery(insertQuery);
-			if (StringUtils.isEmpty(id))
+		String[] insertQueries = new String[staticTable.getTableModels().length];
+		for (int i = 0; i < staticTable.getTableModels().length; ++i) {
+			insertQueries[i] = staticTable.insertQuery(staticTable.getTableModels()[i]);
+		}
+
+		String[] ids = executeQueries(insertQueries);
+		for (int i = 0; i < ids.length; ++i) {
+			if (StringUtils.isEmpty(ids[i]))
 				return false;
-			model.setId(id);
+			staticTable.getTableModels()[i].setId(ids[i]);
 		}
 		
 		return true;
