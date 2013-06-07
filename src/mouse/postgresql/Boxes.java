@@ -65,22 +65,46 @@ public class Boxes extends DbStaticTable {
 		return query;
 	}
 
-	@Override
-	public String insertQuery(DbTableModel model) {
-		Box box = (Box) model;
+/*	@Override
+	public String insertQuery(DbTableModel[] models) {
 		String[] fields = new String[] {"name", 
 										"segment", 
 										"x_pos", 
 										"y_pos"
 										};
+		String[][] values = new String[models.length][fields.length];
+		for (int i = 0; i < models.length; ++i) {
+			Box box = (Box) models[i];
+			values[i] = new String[] {"'" + box.getName() + "'", 
+										"'" + box.getSegment() + "'", 
+										"'" + box.getXPos() + "'", 
+										"'" + box.getYPos() + "'"
+										};
+		}
+		String query = insertQuery(fields, values);
+		
+		return query;
+	}*/
+
+	@Override
+	protected String[] insertFields() {
+		String[] fields = new String[] {"name", 
+				"segment", 
+				"x_pos", 
+				"y_pos"
+				};
+		return fields;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		Box box = (Box) model;
 		String[] values = new String[] {"'" + box.getName() + "'", 
 										"'" + box.getSegment() + "'", 
 										"'" + box.getXPos() + "'", 
 										"'" + box.getYPos() + "'"
 										};
-		String query = insertQuery(fields, values);
-		
-		return query;
+		return values;
 	}
 	
 }

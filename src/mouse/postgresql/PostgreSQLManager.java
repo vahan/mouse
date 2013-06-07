@@ -213,23 +213,21 @@ public class PostgreSQLManager {
 	
 	/**
 	 * Wrapper to execute the given postrgeSql query
-	 * @param queries	The query to be executed
+	 * @param query	The query to be executed
 	 * @return		The returned result after the query execution
 	 */
-	public String[] executeQueries(String[] queries) {
+	public String[] executeQueries(String query) {
 		conn = null;
 		Statement stmt = null;
-		String[] results = new String[queries.length];
+		ArrayList<String> results = new ArrayList<String>();
 		
 		try {
 			conn = DriverManager.getConnection(url, username, password);
 			stmt = conn.createStatement();
-			for (int i = 0; i < queries.length; ++i) {
-				String query = queries[i];
-				stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
-				ResultSet resultSet = stmt.getGeneratedKeys();
-				resultSet.next();
-				results[i] = resultSet.getString(1); //TODO Hard typed 1
+			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
+			ResultSet resultSet = stmt.getGeneratedKeys();
+			while (resultSet.next()) {
+				results.add(resultSet.getString(1)); //TODO Hard typed 1, assuming only ID is returned
 			}
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
@@ -248,7 +246,7 @@ public class PostgreSQLManager {
 				results = null;
 			}
 		}
-		return results;
+		return results.toArray(new String[results.size()]);
 	}
 
 	/**
@@ -291,12 +289,9 @@ public class PostgreSQLManager {
 
 	
 	private boolean storeStaticTable(DbStaticTable staticTable) {
-		String[] insertQueries = new String[staticTable.getTableModels().length];
-		for (int i = 0; i < staticTable.getTableModels().length; ++i) {
-			insertQueries[i] = staticTable.insertQuery(staticTable.getTableModels()[i]);
-		}
-
-		String[] ids = executeQueries(insertQueries);
+		
+		String insertQuery = staticTable.insertQuery(staticTable.getTableModels());
+		String[] ids = executeQueries(insertQuery);
 		for (int i = 0; i < ids.length; ++i) {
 			if (StringUtils.isEmpty(ids[i]))
 				return false;

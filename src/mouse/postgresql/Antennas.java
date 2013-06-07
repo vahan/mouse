@@ -56,20 +56,36 @@ public class Antennas extends DbStaticTable {
 		return query;
 	}
 
+/*	@Override
+	public String insertQuery(DbTableModel[] models) {
+		String[] fields = insertFields();
+		String[][] values = new String[models.length][fields.length];
+		for (int i = 0; i < models.length; ++i) {
+			Antenna antenna = (Antenna) models[i];
+			values[i] = insertValues(antenna);
+		}
+		String query = insertQuery(fields, values);
+		
+		return query;
+	}
+*/
 	@Override
-	public String insertQuery(DbTableModel model) {
-		Antenna antenna = (Antenna) model;
+	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
-										"position", 
-										"box_id"
-										};
+				"position", 
+				"box_id"
+				};
+		return fields;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		Antenna antenna = (Antenna) model;
 		String[] values = new String[] {"'" + antenna.getName() + "'", 
 										"'" + antenna.getPosition() + "'", 
 										"'" + antenna.getBox().getId() + "'"
 										};
-		String query = insertQuery(fields, values);
-		
-		return query;
+		return values;
 	}
 	
 	

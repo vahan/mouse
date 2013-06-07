@@ -165,11 +165,8 @@ public class DataProcessor {
 					antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
 			
 			//TODO Use ONE query!
-			String[] insertQueries = new String[antennaReadingsTable.getTableModels().length];
-			for (int i = 0; i < antennaReadingsTable.getTableModels().length; ++i) {
-				insertQueries[i] = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels()[i]);
-			}
-			psqlManager.executePreparedStatements(insertQueries);
+			String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
+			psqlManager.executePreparedStatements(new String[] {insertQueries});
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import mouse.dbTableModels.DbTableModel;
+
 
 public class Logs extends DbTable {
 
@@ -21,6 +23,18 @@ public class Logs extends DbTable {
 			");";
 
 		return query;
+	}
+
+	@Override
+	protected String[] insertFields() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

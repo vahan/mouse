@@ -1,5 +1,6 @@
 package mouse.postgresql;
 
+import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.StayResult;
 
 public class StayResults extends DbTable {
@@ -22,6 +23,18 @@ public class StayResults extends DbTable {
 			");";
 
 		return query;
+	}
+
+	@Override
+	protected String[] insertFields() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

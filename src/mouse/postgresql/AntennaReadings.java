@@ -22,16 +22,80 @@ public class AntennaReadings extends DbTable {
 	public void setAntennaReadings(AntennaReading[] antennaReadings) {
 		this.tableModels = antennaReadings;
 	}
-	
-	public String insertQuery(DbTableModel model) {
-		AntennaReading antReading = (AntennaReading) model;
+	/*
+	public String insertQuery(DbTableModel[] models) {
 		String[] fields = new String[] {"timestamp", 
-										//"log_id", 
-										"transponder_id", 
-										"box_id", 
-										"antenna_id", 
-										//"direction_id"
-										};
+				//"log_id", 
+				"transponder_id", 
+				"box_id", 
+				"antenna_id", 
+				//"direction_id"
+				};
+		String[][] values = new String[models.length][fields.length];
+		
+		for (int i = 0; i < models.length; ++i) {
+			AntennaReading antReading = (AntennaReading) models[i];
+			String timeStampRead = antReading.getTimeStamp();
+			Date date;
+			try {
+				date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH).parse(timeStampRead);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+			String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(date);
+			Transponder transponder = antReading.getTransponder();
+			String transponderId = transponder.getId();
+			Antenna antenna = antReading.getAntena();
+			Box box = antenna.getBox();
+			String boxId = box.getId();
+			String antennaId = antenna.getId();
+			values[i] = new String[] {"'" + timeStamp + "'", 
+											//antReading.getLog().getId(), 
+											transponderId, 
+											boxId, 
+											antennaId, 
+											//antReading.getDirectionResult().getId()
+											};
+		}
+		String insertQuery = insertQuery(fields, values);
+		return insertQuery;
+	}*/
+
+	@Override
+	protected String createTableQuery() {
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
+							"id serial PRIMARY KEY," +
+							"timestamp timestamp," +
+							"log_id integer references logs(id)," +
+							"transponder_id integer references transponders(id)," +
+							"box_id integer references boxes(id)," +
+							"antenna_id integer references antennas(id)," +
+							"direction_id integer references direction_results(id)" +
+						");";
+		
+		return query;
+	}
+
+	@Override
+	protected String[] insertFields() {
+		String[] fields = new String[] {"timestamp", 
+				//"log_id", 
+				"transponder_id", 
+				"box_id", 
+				"antenna_id", 
+				//"direction_id"
+				};
+		return fields;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		String[] fields = insertFields();
+		String[] values = new String[fields.length];
+		
+		AntennaReading antReading = (AntennaReading) model;
 		String timeStampRead = antReading.getTimeStamp();
 		Date date;
 		try {
@@ -48,30 +112,15 @@ public class AntennaReadings extends DbTable {
 		Box box = antenna.getBox();
 		String boxId = box.getId();
 		String antennaId = antenna.getId();
-		String[] values = new String[] {"'" + timeStamp + "'", 
-										//antReading.getLog().getId(), 
-										transponderId, 
-										boxId, 
-										antennaId, 
-										//antReading.getDirectionResult().getId()
-										};
-		String insertQuery = insertQuery(fields, values);
-		return insertQuery;
-	}
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-							"id serial PRIMARY KEY," +
-							"timestamp timestamp," +
-							"log_id integer references logs(id)," +
-							"transponder_id integer references transponders(id)," +
-							"box_id integer references boxes(id)," +
-							"antenna_id integer references antennas(id)," +
-							"direction_id integer references direction_results(id)" +
-						");";
+		values = new String[] {"'" + timeStamp + "'", 
+									//antReading.getLog().getId(), 
+									transponderId, 
+									boxId, 
+									antennaId, 
+									//antReading.getDirectionResult().getId()
+									};
 		
-		return query;
+		return values;
 	}
 
 

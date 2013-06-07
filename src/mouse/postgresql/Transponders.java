@@ -45,19 +45,36 @@ public class Transponders extends DbStaticTable {
 		return query;
 	}
 
-	
+	/*
 	@Override
 	public String insertQuery(DbTableModel model) {
 		Transponder tr = (Transponder) model;
 		String[] fields = new String[] {"rfid", 
 										"sex"
 										};
-		String[] values = new String[] {"'" + tr.getRfid() + "'", 
+		String[][] values = new String[][] {{"'" + tr.getRfid() + "'", 
 										"'" + tr.getSex() + "'"
-										};
+										}};
 		String query = insertQuery(fields, values);
 		
 		return query;
+	}*/
+
+	@Override
+	protected String[] insertFields() {
+		String[] fields = new String[] {"rfid", 
+				"sex"
+				};
+		return fields;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		Transponder tr = (Transponder) model;
+		String[] values = new String[] {"'" + tr.getRfid() + "'", 
+										"'" + tr.getSex() + "'"
+										};
+		return values;
 	}
 	
 

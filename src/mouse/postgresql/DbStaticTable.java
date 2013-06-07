@@ -1,5 +1,6 @@
 package mouse.postgresql;
 
+import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.DbTableModel;
 
 
@@ -30,11 +31,6 @@ public abstract class DbStaticTable extends DbTable {
 	 */
 	protected abstract void generateTables();
 
-	/**
-	 * Generates SQL query to insert the generated entries into corresponding tables
-	 * @return
-	 */
-	public abstract String insertQuery(DbTableModel model);
 
 
 }

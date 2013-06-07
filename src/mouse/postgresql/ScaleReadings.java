@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import mouse.dbTableModels.DbTableModel;
+
 public class ScaleReadings extends DbTable {
 
 	public ScaleReadings(String tableName) {
@@ -19,6 +21,18 @@ public class ScaleReadings extends DbTable {
 			");";
 		
 		return query;
+	}
+
+	@Override
+	protected String[] insertFields() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

@@ -3,6 +3,7 @@ package mouse.postgresql;
 import java.util.ArrayList;
 import java.util.Date;
 
+import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Scale;
 
 
@@ -37,6 +38,18 @@ public class Scales extends DbTable {
 			");";
 		
 		return query;
+	}
+
+	@Override
+	protected String[] insertFields() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] insertValues(DbTableModel model) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 
