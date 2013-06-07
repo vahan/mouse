@@ -1,67 +1,19 @@
 package mouse.postgresql;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
+import mouse.TimeStamp;
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Transponder;
 
-public class AntennaReadings extends DbTable {
+public class AntennaReadings extends DbDynamicTable {
 	
 	public AntennaReadings(String tableName) {
 		super(tableName);
 		// TODO Auto-generated constructor stub
 		
 	}
-
-	public void setAntennaReadings(AntennaReading[] antennaReadings) {
-		this.tableModels = antennaReadings;
-	}
-	/*
-	public String insertQuery(DbTableModel[] models) {
-		String[] fields = new String[] {"timestamp", 
-				//"log_id", 
-				"transponder_id", 
-				"box_id", 
-				"antenna_id", 
-				//"direction_id"
-				};
-		String[][] values = new String[models.length][fields.length];
-		
-		for (int i = 0; i < models.length; ++i) {
-			AntennaReading antReading = (AntennaReading) models[i];
-			String timeStampRead = antReading.getTimeStamp();
-			Date date;
-			try {
-				date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH).parse(timeStampRead);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-			String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(date);
-			Transponder transponder = antReading.getTransponder();
-			String transponderId = transponder.getId();
-			Antenna antenna = antReading.getAntena();
-			Box box = antenna.getBox();
-			String boxId = box.getId();
-			String antennaId = antenna.getId();
-			values[i] = new String[] {"'" + timeStamp + "'", 
-											//antReading.getLog().getId(), 
-											transponderId, 
-											boxId, 
-											antennaId, 
-											//antReading.getDirectionResult().getId()
-											};
-		}
-		String insertQuery = insertQuery(fields, values);
-		return insertQuery;
-	}*/
 
 	@Override
 	protected String createTableQuery() {
@@ -96,7 +48,7 @@ public class AntennaReadings extends DbTable {
 		String[] values = new String[fields.length];
 		
 		AntennaReading antReading = (AntennaReading) model;
-		String timeStampRead = antReading.getTimeStamp();
+		TimeStamp timeStamp = antReading.getTimeStamp();/*
 		Date date;
 		try {
 			date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH).parse(timeStampRead);
@@ -106,7 +58,7 @@ public class AntennaReadings extends DbTable {
 			return null;
 		}
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(date);
-		Transponder transponder = antReading.getTransponder();
+		*/Transponder transponder = antReading.getTransponder();
 		String transponderId = transponder.getId();
 		Antenna antenna = antReading.getAntena();
 		Box box = antenna.getBox();

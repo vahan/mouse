@@ -3,7 +3,7 @@ package mouse.postgresql;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.StayResult;
 
-public class StayResults extends DbTable {
+public class StayResults extends DbDynamicTable {
 	
 	public StayResults(String tableName) {
 		super(tableName);
@@ -19,7 +19,9 @@ public class StayResults extends DbTable {
 				"duration real," +
 				"rfid text," +
 				"transponder_id integer references transponders(id)," +
-				"box_id integer references boxes(id)" +
+				"box_id integer references boxes(id)," +
+				"dir_in_id integer references direction_results(id)," + 
+				"dir_out_id integer references direction_results(id)" +
 			");";
 
 		return query;
@@ -27,14 +29,29 @@ public class StayResults extends DbTable {
 
 	@Override
 	protected String[] insertFields() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] fields = new String[] {"start",
+										"stop",
+										"duration",
+										"transponder_id",
+										"box_id",
+										"dir_in_id",
+										"dir_out_id"
+										};
+		return fields;
 	}
 
 	@Override
 	protected String[] insertValues(DbTableModel model) {
-		// TODO Auto-generated method stub
-		return null;
+		StayResult stayResult = (StayResult) model;
+		String[] values = new String[] {stayResult.getStart().toString(),
+										stayResult.getStop().toString(),
+										Float.toString(stayResult.getDuration()),
+										stayResult.getTransponder().getId(),
+										stayResult.getBox().getId(),
+										stayResult.getDirIn().getId(),
+										stayResult.getDirOut().getId()
+		};
+		return values;
 	}
 	
 

@@ -1,37 +1,30 @@
 package mouse.dbTableModels;
 
+import mouse.TimeStamp;
+
 
 public class DirectionResult extends DbTableModel {
 	
-	private final String timeStamp;
-	private final String direction;
-	private final String rfid;
+	private final TimeStamp timeStamp;
+	private final Direction direction;
 	private final Transponder transponder;
 	private final Box box;
-	private final StayResult stay;
 	
 	
-	public DirectionResult(String timestamp, String direction, String rfid,
-			Transponder transponder, String boxName, Box box, StayResult stay) {
+	public DirectionResult(TimeStamp timestamp, Direction direction, Transponder transponder, Box box) {
 		super();
 		this.timeStamp = timestamp;
 		this.direction = direction;
-		this.rfid = rfid;
 		this.transponder = transponder;
 		this.box = box;
-		this.stay = stay;
 	}
 
-	public String getTimeStamp() {
+	public TimeStamp getTimeStamp() {
 		return timeStamp;
 	}
 
-	public String getDirection() {
+	public Direction getDirection() {
 		return direction;
-	}
-
-	public String getRfid() {
-		return rfid;
 	}
 
 	public Transponder getTransponder() {
@@ -41,11 +34,6 @@ public class DirectionResult extends DbTableModel {
 	public Box getBox() {
 		return box;
 	}
-
-	public StayResult getStayResult() {
-		return stay;
-	}
-
 	
 	
 

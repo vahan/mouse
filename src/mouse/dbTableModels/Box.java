@@ -1,7 +1,8 @@
 package mouse.dbTableModels;
 
 import java.util.ArrayList;
-import java.util.Date;
+
+import mouse.TimeStamp;
 
 
 public class Box extends DbTableModel {
@@ -10,8 +11,8 @@ public class Box extends DbTableModel {
 	private final String segment;
 	private final float xPos;
 	private final float yPos;
-	private Date lastDirectionResult;
-	private Date lastMeetin;
+	private TimeStamp lastDirectionResult;
+	private TimeStamp lastMeetin;
 	
 	private static ArrayList<Box> boxes = new ArrayList<Box>();
 	
@@ -46,11 +47,11 @@ public class Box extends DbTableModel {
 		return segment;
 	}
 
-	public void setLastDirectionResult(Date lastDirectionResult) {
+	public void setLastDirectionResult(TimeStamp lastDirectionResult) {
 		this.lastDirectionResult = lastDirectionResult;
 	}
 
-	public void setLastMeetin(Date lastMeetin) {
+	public void setLastMeetin(TimeStamp lastMeetin) {
 		this.lastMeetin = lastMeetin;
 	}
 
@@ -62,11 +63,11 @@ public class Box extends DbTableModel {
 		return yPos;
 	}
 
-	public Date getLastDirectionResult() {
+	public TimeStamp getLastDirectionResult() {
 		return lastDirectionResult;
 	}
 
-	public Date getLastMeetin() {
+	public TimeStamp getLastMeetin() {
 		return lastMeetin;
 	}
 

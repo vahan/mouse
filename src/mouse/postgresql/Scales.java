@@ -1,8 +1,7 @@
 package mouse.postgresql;
 
-import java.util.ArrayList;
-import java.util.Date;
 
+import mouse.TimeStamp;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Scale;
 
@@ -23,7 +22,7 @@ public class Scales extends DbTable {
 		// TODO Auto-generated method stub
 		
 		tableModels = new Scale[1];
-		tableModels[0] = new Scale("scale1", "segment1", 0, 0, new Date());
+		tableModels[0] = new Scale("scale1", "segment1", 0, 0, new TimeStamp());
 		
 	}
 

@@ -1,9 +1,10 @@
 package mouse.postgresql;
 
 import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableModels.MeetingResult;
 
 
-public class MeetingResults extends DbTable {
+public class MeetingResults extends DbDynamicTable {
 	
 	public MeetingResults(String tableName) {
 		super(tableName);
@@ -29,14 +30,29 @@ public class MeetingResults extends DbTable {
 
 	@Override
 	protected String[] insertFields() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] fields = new String[] {"rfid_from",
+										"rfid_to",
+										"start",
+										"stop",
+										"duration",
+										"terminated_by",
+										"box_id"
+		};
+		return fields;
 	}
 
 	@Override
 	protected String[] insertValues(DbTableModel model) {
-		// TODO Auto-generated method stub
-		return null;
+		MeetingResult meetResult = (MeetingResult) model;
+		String[] values = new String[] {meetResult.getRfidFrom(),
+										meetResult.getRfidTo(),
+										meetResult.getStart().toString(),
+										meetResult.getStop().toString(),
+										Float.toString(meetResult.getDuration()),
+										Integer.toString(meetResult.getTerminatedBy()),
+										meetResult.getBox().getId()
+										};
+		return values;
 	}
 	
 

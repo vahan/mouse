@@ -1,8 +1,6 @@
 package mouse.postgresql;
 
 
-import javax.swing.DefaultButtonModel;
-
 import mouse.dbTableModels.DbTableModel;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +12,6 @@ public abstract class DbTable {
 	
 	protected DbTableModel[] tableModels;
 	
-	protected DBConnector connector;
-
 	protected DbTable(String tableName/*, DBConnector connector*/) {
 		this.tableName = tableName;
 		//this.connector = connector;
@@ -29,10 +25,6 @@ public abstract class DbTable {
 		return tableModels;
 	}
 	
-	public DBConnector getConnector() {
-		return connector;
-	}
-
 	public String dropTableQuery() {
 		String query = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
 		return query;

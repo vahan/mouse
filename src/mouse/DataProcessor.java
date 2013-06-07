@@ -3,19 +3,27 @@ package mouse;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
+import mouse.dbTableModels.AntennaRecord;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableModels.Direction;
 import mouse.dbTableModels.DirectionResult;
 import mouse.dbTableModels.MeetingResult;
+import mouse.dbTableModels.MouseInBox;
 import mouse.dbTableModels.StayResult;
 import mouse.dbTableModels.Transponder;
 import mouse.postgresql.AntennaReadings;
+import mouse.postgresql.DirectionResults;
 import mouse.postgresql.PostgreSQLManager;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -85,7 +93,12 @@ public class DataProcessor {
 		}
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;
-		
+		if (!generateDirectionResults())
+			return false;
+		if (!generateStayResults())
+			return false;
+		if (!generateMeetingResults())
+			return false;
 		
 		return true;
 	}
@@ -135,18 +148,26 @@ public class DataProcessor {
 	
 	/**
 	 * Reads the content of a given CSV file into antennaReadings array 
-	 * and inserts the data into the antenna_readings table
 	 * 
 	 * @param sourceFile
 	 */
 	private boolean readAntennaReadingsCSV(String sourceFile) {
+		System.out.println("Reading input file: " + sourceFile);
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(sourceFile), ';', '\'', 1); //skip the first (header) line
 			
 			String [] nextLine;
 			while ((nextLine = reader.readNext()) != null) {
-				String timeStamp = nextLine[1];
+				TimeStamp timeStamp;
+				try {
+					timeStamp = new TimeStamp(nextLine[1]);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					reader.close();
+					return false;
+				}
 				String boxName = nextLine[2];
 				Box box = Box.getBoxByName(boxName);
 				String antennaPosition = nextLine[3];
@@ -155,19 +176,21 @@ public class DataProcessor {
 				if (StringUtils.isEmpty(rfid))
 					continue;
 				Transponder transponder = Transponder.getTransponder(rfid);
+				
 				AntennaReading antennaReading = new AntennaReading(timeStamp, transponder, antenna);
 				antennaReadings.add(antennaReading);
 			}
 			reader.close();
 			
+			System.out.println("OK\nSaving antenna readings into DB");
+			
 			AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
-			antennaReadingsTable.setAntennaReadings(
+			antennaReadingsTable.setTableModels(
 					antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
 			
-			//TODO Use ONE query!
 			String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
 			psqlManager.executePreparedStatements(new String[] {insertQueries});
-			
+			System.out.println("OK");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,26 +206,75 @@ public class DataProcessor {
 	
 	/**
 	 * Generates entry rows from antennaReadings array to directionResults array 
-	 * and inserts the data into the direction_results table
 	 */
-	private void generateDirectionResults() {
+	private boolean generateDirectionResults() {
 		
+		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
+		
+		for (AntennaReading antennaReading : antennaReadings) {
+			Transponder mouse = antennaReading.getTransponder();
+			Antenna antenna = antennaReading.getAntena();
+			Box box = antenna.getBox();
+			TimeStamp timestamp = antennaReading.getTimeStamp();
+			MouseInBox mouseInBox = new MouseInBox(mouse, box, antenna, timestamp);
+			AntennaRecord antennaRecord = mouseInBoxSet.get(mouseInBox);
+			if (!mouseInBoxSet.containsKey(mouseInBox)) {
+				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
+			} else if (!antennaRecord.equals(antenna)) {
+				Antenna in;
+				Antenna out;
+				if (timestamp.before(antennaRecord.getRecordTime())) {
+					in = antenna;
+					out = antennaRecord.getAntenna();
+				} else {
+					in = antennaRecord.getAntenna();
+					out = antenna;
+				}
+				Direction direction = new Direction(in, out);
+				if (direction.toString() == null)
+					continue;
+				Transponder transponder = antennaReading.getTransponder();
+				DirectionResult dirResult = new DirectionResult(timestamp, direction, transponder, box);
+				directionResults.add(dirResult);
+			} else {
+				//If the mouse entered and never left the box before entering it again,
+				//or left and never entered before living again,
+				//count the time from the last recorded time 
+				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
+			}
+			
+		}
+
+		System.out.println("OK\nSaving direction results into DB");
+		
+		DirectionResults dirResultsTable = psqlManager.getDirectionResults();
+		dirResultsTable.setTableModels(
+				directionResults.toArray(new DirectionResult[directionResults.size()]));
+		
+		String insertQueries = dirResultsTable.insertQuery(dirResultsTable.getTableModels());
+		psqlManager.executePreparedStatements(new String[] {insertQueries});
+		System.out.println("OK");
+		
+		return true;
 	}
 	
 	/**
 	 * Generate entry rows from directionResults array to stayResults array
-	 * and inserts the data into the stay_results table
 	 */
-	private void generateStayResults() {
+	private boolean generateStayResults() {
 		
+		
+		return true;
 	}
 	
 	/**
 	 * Generates entry rows from stayResults array to meetingResults array
-	 * and inserts the data into the meeting_results table
 	 */
-	private void generateMeetingResults() {
+	private boolean generateMeetingResults() {
 		
+		
+		
+		return true;
 	}
 	
 

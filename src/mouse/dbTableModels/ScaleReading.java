@@ -1,17 +1,18 @@
 package mouse.dbTableModels;
 
-import java.util.Date;
+import mouse.TimeStamp;
+
 
 
 public class ScaleReading extends DbTableModel {
 	
-	private final Date timeStamp;
+	private final TimeStamp timeStamp;
 	private final float weight;
 	private final Log log;
 	private final Transponder transponder;
 	private final Scale scale;
 	
-	public ScaleReading(Date timeStamp, float weight, Log log,
+	public ScaleReading(TimeStamp timeStamp, float weight, Log log,
 			Transponder transponder, Scale scale) {
 		super();
 		this.timeStamp = timeStamp;
@@ -21,7 +22,7 @@ public class ScaleReading extends DbTableModel {
 		this.scale = scale;
 	}
 
-	public Date getTimeStamp() {
+	public TimeStamp getTimeStamp() {
 		return timeStamp;
 	}
 

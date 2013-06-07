@@ -1,20 +1,20 @@
 package mouse.dbTableModels;
 
-import java.util.Date;
+import mouse.TimeStamp;
 
 
 public class Log extends DbTableModel {
 
 	private final String fileName;
-	private final Date firstReading;
-	private final Date lastReading;
+	private final TimeStamp firstReading;
+	private final TimeStamp lastReading;
 	private final float duration;
-	private final Date importedAt;
+	private final TimeStamp importedAt;
 	private final int nbReadings;
 	private final float size;
 	
-	public Log(String fileName, Date firstReading, Date lastReading,
-			float duration, Date importedAt, int nbReadings, float size) {
+	public Log(String fileName, TimeStamp firstReading, TimeStamp lastReading,
+			float duration, TimeStamp importedAt, int nbReadings, float size) {
 		super();
 		this.fileName = fileName;
 		this.firstReading = firstReading;
@@ -29,11 +29,11 @@ public class Log extends DbTableModel {
 		return fileName;
 	}
 
-	public Date getFirstReading() {
+	public TimeStamp getFirstReading() {
 		return firstReading;
 	}
 
-	public Date getLastReading() {
+	public TimeStamp getLastReading() {
 		return lastReading;
 	}
 
@@ -41,7 +41,7 @@ public class Log extends DbTableModel {
 		return duration;
 	}
 
-	public Date getImportedAt() {
+	public TimeStamp getImportedAt() {
 		return importedAt;
 	}
 

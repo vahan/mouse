@@ -1,8 +1,5 @@
 package mouse.postgresql;
 
-import mouse.dbTableModels.Antenna;
-import mouse.dbTableModels.DbTableModel;
-
 
 public abstract class DbStaticTable extends DbTable {
 

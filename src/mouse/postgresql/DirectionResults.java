@@ -1,9 +1,10 @@
 package mouse.postgresql;
 
 import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableModels.DirectionResult;
 
 
-public class DirectionResults extends DbTable {
+public class DirectionResults extends DbDynamicTable {
 	
 	public DirectionResults(String tableName) {
 		super(tableName);
@@ -15,11 +16,10 @@ public class DirectionResults extends DbTable {
 	protected String createTableQuery() {
 		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
+				"timestamp timestamp," +
 				"direction text," +
-				"rfid text," +
 				"transponder_id integer references transponders(id)," +
-				"box_id integer references boxes(id)," +
-				"stay_id integer references stay_results(id)" +
+				"box_id integer references boxes(id)" +
 			");";
 
 		return query;
@@ -27,14 +27,24 @@ public class DirectionResults extends DbTable {
 
 	@Override
 	protected String[] insertFields() {
+		String[] fields = new String[] {"timestamp",
+										"direction",
+										"transponder_id",
+										"box_id",
+										};
 		// TODO Auto-generated method stub
-		return null;
+		return fields;
 	}
 
 	@Override
 	protected String[] insertValues(DbTableModel model) {
-		// TODO Auto-generated method stub
-		return null;
+		DirectionResult dirResult = (DirectionResult) model;
+		String[] values = new String[] {"'" + dirResult.getTimeStamp().toString() + "'",
+										"'" + dirResult.getDirection().toString() + "'",
+										dirResult.getTransponder().getId(),
+										dirResult.getBox().getId(),
+		};
+		return values;
 	}
 	
 }

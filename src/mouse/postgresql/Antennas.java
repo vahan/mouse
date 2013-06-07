@@ -23,24 +23,6 @@ public class Antennas extends DbStaticTable {
 			}
 		}
 	}
-	
-	/**
-	 * Initializes antennas
-	 */
-	@Deprecated
-	private void generateAntennas() {
-		// TODO Change to reading the names from the files. See Transponders
-		
-		tableModels = new Antenna[Boxes.BOX_COUNT * ANTENNAS_PER_BOX];
-		
-		for (int i = 0, k = 0; i < Boxes.BOX_COUNT; ++i) {
-			for (int j = 0; j < ANTENNAS_PER_BOX; ++j) {
-				System.out.println(k);
-				tableModels[k++] = new Antenna(Integer.toString(j + 1), Box.getBoxByName(Integer.toString(i + 1)));
-			}
-		}
-		
-	}
 
 
 	@Override

@@ -2,12 +2,14 @@ package mouse.dbTableModels;
 
 import java.util.ArrayList;
 
+import mouse.TimeStamp;
+
 
 public class Antenna extends DbTableModel {
 	
 	private final String name;
 	private final String position;
-	private String lastReading;
+	private TimeStamp lastReading;
 	private final Box box;
 	
 	private static ArrayList<Antenna> antennas = new ArrayList<Antenna>();
@@ -42,11 +44,11 @@ public class Antenna extends DbTableModel {
 		return position;
 	}
 
-	public String getLastReading() {
+	public TimeStamp getLastReading() {
 		return lastReading;
 	}
 
-	public void setLastReading(String lastReading) {
+	public void setLastReading(TimeStamp lastReading) {
 		this.lastReading = lastReading;
 	}
 

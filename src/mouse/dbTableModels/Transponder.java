@@ -1,19 +1,19 @@
 package mouse.dbTableModels;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import mouse.Gender;
+import mouse.TimeStamp;
 
 
 public class Transponder extends DbTableModel {
 	
 	private final String rfid;
 	private final Gender sex;
-	private Date firstReading;
-	private Date lastReading;
-	private Date firstScaleReading;
-	private Date lastScaleReadin;
+	private TimeStamp firstReading;
+	private TimeStamp lastReading;
+	private TimeStamp firstScaleReading;
+	private TimeStamp lastScaleReadin;
 	private Antenna lastAntenna;
 	private int stayCount;
 	private int meetingsCount;
@@ -37,19 +37,19 @@ public class Transponder extends DbTableModel {
 		return null;
 	}
 
-	public void setFirstReading(Date firstReading) {
+	public void setFirstReading(TimeStamp firstReading) {
 		this.firstReading = firstReading;
 	}
 
-	public void setLastReading(Date lastReading) {
+	public void setLastReading(TimeStamp lastReading) {
 		this.lastReading = lastReading;
 	}
 
-	public void setFirstScaleReading(Date firstScaleReading) {
+	public void setFirstScaleReading(TimeStamp firstScaleReading) {
 		this.firstScaleReading = firstScaleReading;
 	}
 
-	public void setLastScaleReadin(Date lastScaleReadin) {
+	public void setLastScaleReadin(TimeStamp lastScaleReadin) {
 		this.lastScaleReadin = lastScaleReadin;
 	}
 
@@ -82,19 +82,19 @@ public class Transponder extends DbTableModel {
 		return sex;
 	}
 
-	public Date getFirstReading() {
+	public TimeStamp getFirstReading() {
 		return firstReading;
 	}
 
-	public Date getLastReading() {
+	public TimeStamp getLastReading() {
 		return lastReading;
 	}
 
-	public Date getFirstScaleReading() {
+	public TimeStamp getFirstScaleReading() {
 		return firstScaleReading;
 	}
 
-	public Date getLastScaleReadin() {
+	public TimeStamp getLastScaleReadin() {
 		return lastScaleReadin;
 	}
 

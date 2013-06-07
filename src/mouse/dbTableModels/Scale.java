@@ -1,6 +1,7 @@
 package mouse.dbTableModels;
 
-import java.util.Date;
+import mouse.TimeStamp;
+
 
 public class Scale extends DbTableModel {
 	
@@ -8,10 +9,10 @@ public class Scale extends DbTableModel {
 	private final String segment;
 	private final float xPoint;
 	private final float yPoint;
-	private final Date lastReading;
+	private final TimeStamp lastReading;
 	
 	public Scale(String name, String segment, float xPoint, float yPoint,
-			Date lastReading) {
+			TimeStamp lastReading) {
 		super();
 		this.name = name;
 		this.segment = segment;
@@ -36,7 +37,7 @@ public class Scale extends DbTableModel {
 		return yPoint;
 	}
 
-	public Date getLastReading() {
+	public TimeStamp getLastReading() {
 		return lastReading;
 	}
 	

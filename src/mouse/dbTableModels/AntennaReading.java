@@ -1,15 +1,18 @@
 package mouse.dbTableModels;
 
 
+import mouse.TimeStamp;
+
+
 public class AntennaReading extends DbTableModel {
 	
-	private final String timeStamp;
+	private final TimeStamp timeStamp;
 	private Log log;
 	private final Transponder transponder;
 	private final Antenna antena;
 	private DirectionResult directionResult;
 	
-	public AntennaReading(String timeStamp, Transponder transponder,
+	public AntennaReading(TimeStamp timeStamp, Transponder transponder,
 			Antenna antena) {
 		super();
 		this.timeStamp = timeStamp;
@@ -21,7 +24,7 @@ public class AntennaReading extends DbTableModel {
 		this.directionResult = directionResult;
 	}
 
-	public String getTimeStamp() {
+	public TimeStamp getTimeStamp() {
 		return timeStamp;
 	}
 

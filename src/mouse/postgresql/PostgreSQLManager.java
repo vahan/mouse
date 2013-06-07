@@ -9,9 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import mouse.Column;
 import mouse.DataProcessor;
-import mouse.dbTableModels.DbTableModel;
-
-import zetcode.Version;
 
 
 public class PostgreSQLManager {
@@ -60,8 +57,8 @@ public class PostgreSQLManager {
 		tables.add(antennas);
 		tables.add(transponders);
 		tables.add(scaleReadings);
-		tables.add(stayResults);
 		tables.add(directionResults);
+		tables.add(stayResults);
 		tables.add(antennaReadings);
 		tables.add(meetingResults);
 		
@@ -137,8 +134,6 @@ public class PostgreSQLManager {
 		if (conn == null) {
 			return false;
 		}
-		
-		ResultSet result = null;
 		
 		//First, drop all tables TODO remove this!
 		String[] dropQueries = new String[tables.size()];
@@ -289,7 +284,6 @@ public class PostgreSQLManager {
 
 	
 	private boolean storeStaticTable(DbStaticTable staticTable) {
-		
 		String insertQuery = staticTable.insertQuery(staticTable.getTableModels());
 		String[] ids = executeQueries(insertQuery);
 		for (int i = 0; i < ids.length; ++i) {
