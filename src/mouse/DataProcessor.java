@@ -279,7 +279,7 @@ public class DataProcessor {
 			DirectionResult firstDir = mouseInBoxSet.get(mouseInBox);
 			DirectionResult secondDir = dirRes;
 			if (firstDir == null) {
-				mouseInBoxSet.put(mouseInBox, secondDir);
+				mouseInBoxSet.put(mouseInBox, dirRes);
 				continue;
 			} else {
 				if (firstDir.getDirection().getType() == Directions.In && 
@@ -288,9 +288,9 @@ public class DataProcessor {
 					TimeStamp stop = secondDir.getTimeStamp();
 					StayResult stayResult = new StayResult(start, stop, mouse, box, firstDir, secondDir);
 					stayResults.add(stayResult);
+					mouseInBoxSet.remove(firstDir);
 				}
 				
-				mouseInBoxSet.remove(firstDir);
 			}
 		}
 
