@@ -24,7 +24,7 @@ public class PostgreSQLManager {
 	private Boxes boxes;
 	private Antennas antennas;
 	private Transponders transponders;
-	private ScaleReadings scaleReadings = new ScaleReadings("scaleReadings");
+	private ScaleReadings scaleReadings = new ScaleReadings("scale_readings");
 	
 	private AntennaReadings antennaReadings = new AntennaReadings("antenna_readings");
 	private DirectionResults directionResults = new DirectionResults("direction_results");

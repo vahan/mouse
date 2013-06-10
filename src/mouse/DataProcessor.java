@@ -18,6 +18,7 @@ import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Direction;
 import mouse.dbTableModels.DirectionResult;
+import mouse.dbTableModels.Directions;
 import mouse.dbTableModels.MeetingResult;
 import mouse.dbTableModels.MouseInBox;
 import mouse.dbTableModels.StayResult;
@@ -25,6 +26,7 @@ import mouse.dbTableModels.Transponder;
 import mouse.postgresql.AntennaReadings;
 import mouse.postgresql.DirectionResults;
 import mouse.postgresql.PostgreSQLManager;
+import mouse.postgresql.StayResults;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -189,7 +191,10 @@ public class DataProcessor {
 					antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
 			
 			String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
-			psqlManager.executePreparedStatements(new String[] {insertQueries});
+			String[] ids = psqlManager.executeQueries(insertQueries);
+			for (int i = 0; i < antennaReadings.size(); ++i) {
+				antennaReadings.get(i).setId(ids[i]);
+			}
 			System.out.println("OK");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -208,7 +213,6 @@ public class DataProcessor {
 	 * Generates entry rows from antennaReadings array to directionResults array 
 	 */
 	private boolean generateDirectionResults() {
-		
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
 		
 		for (AntennaReading antennaReading : antennaReadings) {
@@ -242,7 +246,6 @@ public class DataProcessor {
 				//count the time from the last recorded time 
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			}
-			
 		}
 
 		System.out.println("OK\nSaving direction results into DB");
@@ -252,7 +255,10 @@ public class DataProcessor {
 				directionResults.toArray(new DirectionResult[directionResults.size()]));
 		
 		String insertQueries = dirResultsTable.insertQuery(dirResultsTable.getTableModels());
-		psqlManager.executePreparedStatements(new String[] {insertQueries});
+		String[] ids = psqlManager.executeQueries(insertQueries);
+		for (int i = 0; i < directionResults.size(); ++i) {
+			directionResults.get(i).setId(ids[i]);
+		}
 		System.out.println("OK");
 		
 		return true;
@@ -262,7 +268,43 @@ public class DataProcessor {
 	 * Generate entry rows from directionResults array to stayResults array
 	 */
 	private boolean generateStayResults() {
+		HashMap<MouseInBox, DirectionResult> mouseInBoxSet = new HashMap<MouseInBox, DirectionResult>();
 		
+		for (DirectionResult dirRes : directionResults) {
+			Transponder mouse = dirRes.getTransponder();
+			Box box = dirRes.getBox();
+			TimeStamp timeStamp = dirRes.getTimeStamp();
+			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //TODO: perhaps a new type is needed instead of putting null for Antenna
+			DirectionResult firstDir = mouseInBoxSet.get(mouseInBox);
+			DirectionResult secondDir = dirRes;
+			if (firstDir == null) {
+				mouseInBoxSet.put(mouseInBox, secondDir);
+				continue;
+			} else {
+				if (firstDir.getDirection().getType() == Directions.In && 
+						secondDir.getDirection().getType() == Directions.Out) {
+					TimeStamp start = firstDir.getTimeStamp();
+					TimeStamp stop = secondDir.getTimeStamp();
+					StayResult stayResult = new StayResult(start, stop, mouse, box, firstDir, secondDir);
+					stayResults.add(stayResult);
+				}
+				
+				mouseInBoxSet.remove(firstDir);
+			}
+		}
+
+		System.out.println("OK\nSaving stay results into DB");
+		
+		StayResults stayResultsTable = psqlManager.getStayResults();
+		stayResultsTable.setTableModels(
+				stayResults.toArray(new StayResult[stayResults.size()]));
+		
+		String insertQueries = stayResultsTable.insertQuery(stayResultsTable.getTableModels());
+		String[] ids = psqlManager.executeQueries(insertQueries);
+		for (int i = 0; i < stayResults.size(); ++i) {
+			stayResults.get(i).setId(ids[i]);
+		}
+		System.out.println("OK");
 		
 		return true;
 	}

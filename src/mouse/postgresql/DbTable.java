@@ -59,7 +59,7 @@ public abstract class DbTable {
 			valuesStr[i] = StringUtils.join(values[i], ", ");
 		}
 
-		String query = "INSERT INTO " + tableName + "(" + fieldsStr + ") VALUES ("
+		String query = "INSERT INTO " + tableName + " (" + fieldsStr + ") VALUES ("
 						+ StringUtils.join(valuesStr, "), (") + ")";
 		return query;
 	}

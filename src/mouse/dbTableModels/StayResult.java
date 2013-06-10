@@ -13,13 +13,12 @@ public class StayResult extends DbTableModel {
 	private final DirectionResult dirIn;
 	private final DirectionResult dirOut;
 	
-	public StayResult(TimeStamp start, TimeStamp stop, float duration, String rfid,
-			Transponder transponder, String boxName, Box box, 
-			DirectionResult dirIn, DirectionResult dirOut) {
+	public StayResult(TimeStamp start, TimeStamp stop, Transponder transponder, 
+						Box box, DirectionResult dirIn, DirectionResult dirOut) {
 		super();
 		this.start = start;
 		this.stop = stop;
-		this.duration = duration;
+		this.duration = TimeStamp.duration(start, stop);
 		this.transponder = transponder;
 		this.box = box;
 		this.dirIn = dirIn;

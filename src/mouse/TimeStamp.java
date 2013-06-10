@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+
 public class TimeStamp extends Date {
 
 	/**
@@ -21,6 +24,11 @@ public class TimeStamp extends Date {
 		super((new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH)).parse(str).getTime());
 	}
 	
+	public static float duration(TimeStamp start, TimeStamp stop) {
+		Duration duration = new Duration(start.getTime(), stop.getTime());
+		return duration.getMillis();
+		
+	}
 	
 	@Override
 	public String toString() {

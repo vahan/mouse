@@ -17,7 +17,6 @@ public class StayResults extends DbDynamicTable {
 				"start timestamp," +
 				"stop timestamp," +
 				"duration real," +
-				"rfid text," +
 				"transponder_id integer references transponders(id)," +
 				"box_id integer references boxes(id)," +
 				"dir_in_id integer references direction_results(id)," + 
@@ -43,8 +42,8 @@ public class StayResults extends DbDynamicTable {
 	@Override
 	protected String[] insertValues(DbTableModel model) {
 		StayResult stayResult = (StayResult) model;
-		String[] values = new String[] {stayResult.getStart().toString(),
-										stayResult.getStop().toString(),
+		String[] values = new String[] {"'" + stayResult.getStart().toString() + "'",
+										"'" + stayResult.getStop().toString() + "'",
 										Float.toString(stayResult.getDuration()),
 										stayResult.getTransponder().getId(),
 										stayResult.getBox().getId(),
