@@ -16,8 +16,8 @@ public class MeetingResults extends DbDynamicTable {
 	protected String createTableQuery() {
 		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"id serial PRIMARY KEY," +
-				"rfid_from text," +
-				"rfid_to text," +
+				"trans_from_id integer references transponders(id)," +
+				"trans_to_id integer references transponders(id)," +
 				"start timestamp," +
 				"stop timestamp," +
 				"duration real," +
@@ -30,8 +30,8 @@ public class MeetingResults extends DbDynamicTable {
 
 	@Override
 	protected String[] insertFields() {
-		String[] fields = new String[] {"rfid_from",
-										"rfid_to",
+		String[] fields = new String[] {"trans_from_id",
+										"trans_to_id",
 										"start",
 										"stop",
 										"duration",
@@ -44,10 +44,10 @@ public class MeetingResults extends DbDynamicTable {
 	@Override
 	protected String[] insertValues(DbTableModel model) {
 		MeetingResult meetResult = (MeetingResult) model;
-		String[] values = new String[] {meetResult.getRfidFrom(),
-										meetResult.getRfidTo(),
-										meetResult.getStart().toString(),
-										meetResult.getStop().toString(),
+		String[] values = new String[] {meetResult.getTransponderFrom().getId(),
+										meetResult.getTransponderTo().getId(),
+										"'" + meetResult.getStart().toString() + "'",
+										"'" + meetResult.getStop().toString() + "'",
 										Float.toString(meetResult.getDuration()),
 										Integer.toString(meetResult.getTerminatedBy()),
 										meetResult.getBox().getId()

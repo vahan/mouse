@@ -3,28 +3,29 @@ package mouse;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Interval;
 
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
 import mouse.dbTableModels.AntennaRecord;
 import mouse.dbTableModels.Box;
-import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Direction;
 import mouse.dbTableModels.DirectionResult;
 import mouse.dbTableModels.Directions;
 import mouse.dbTableModels.MeetingResult;
-import mouse.dbTableModels.MouseInBox;
 import mouse.dbTableModels.StayResult;
 import mouse.dbTableModels.Transponder;
 import mouse.postgresql.AntennaReadings;
 import mouse.postgresql.DirectionResults;
+import mouse.postgresql.MeetingResults;
 import mouse.postgresql.PostgreSQLManager;
 import mouse.postgresql.StayResults;
 
@@ -313,8 +314,70 @@ public class DataProcessor {
 	 * Generates entry rows from stayResults array to meetingResults array
 	 */
 	private boolean generateMeetingResults() {
+		HashMap<Box, ArrayList<MouseInterval>> boxSet = new HashMap<Box, ArrayList<MouseInterval>>();
 		
+		for (StayResult stayResult : stayResults) {
+			Box box = stayResult.getBox();
+			ArrayList<MouseInterval> mouseIntervals = boxSet.get(box);
+			if (mouseIntervals == null) {
+				mouseIntervals = new ArrayList<MouseInterval>();
+			}
+			Transponder mouse = stayResult.getTransponder();
+			TimeStamp start = stayResult.getStart();
+			TimeStamp stop = stayResult.getStop();
+			MouseInterval mouseInterval = new MouseInterval(mouse, start, stop);
+			mouseIntervals.add(mouseInterval);
+			boxSet.put(box, mouseIntervals);
+		}
 		
+		Iterator<Entry<Box, ArrayList<MouseInterval>>> it = boxSet.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<Box, ArrayList<MouseInterval>> pair = 
+					(Map.Entry<Box, ArrayList<MouseInterval>>) it.next();
+			
+			Box box = pair.getKey();
+			ArrayList<MouseInterval> mouseIntervals = pair.getValue();
+			for (MouseInterval mouseInterval : mouseIntervals) {
+				Transponder transponderFrom = mouseInterval.getMouse();
+				for (MouseInterval innerMouseInterval : mouseIntervals) {
+					if (innerMouseInterval.getMouse() == mouseInterval.getMouse())
+						continue;
+					Transponder transponderTo = mouseInterval.getMouse();
+					TimeStamp start = mouseInterval.getStart().after(innerMouseInterval.getStart())
+							? mouseInterval.getStart()
+							: innerMouseInterval.getStart();
+					TimeStamp stop = mouseInterval.getStop().before(innerMouseInterval.getStop())
+							? mouseInterval.getStop()
+							: innerMouseInterval.getStop();
+					if (stop.before(start))
+						continue;
+					Transponder terminatedBy = mouseInterval.getStop().before(innerMouseInterval.getStop())
+							? transponderFrom
+							: transponderTo;
+					transponderTo = innerMouseInterval.getMouse();
+					float duration = (new Interval(start.getTime(), stop.getTime())).getEndMillis();
+					MeetingResult meetingResult = new MeetingResult(transponderFrom, transponderTo, start, 
+									stop, duration, terminatedBy == transponderFrom ? 0 : 1, box);
+					meetingResults.add(meetingResult);
+				}
+				
+			}
+			
+			it.remove();
+		}
+
+		System.out.println("OK\nSaving meeting results into DB");
+		
+		MeetingResults meetingResultsTable = psqlManager.getMeetingResults();
+		meetingResultsTable.setTableModels(
+				meetingResults.toArray(new MeetingResult[meetingResults.size()]));
+		
+		String insertQueries = meetingResultsTable.insertQuery(meetingResultsTable.getTableModels());
+		String[] ids = psqlManager.executeQueries(insertQueries);
+		for (int i = 0; i < meetingResults.size(); ++i) {
+			meetingResults.get(i).setId(ids[i]);
+		}
+		System.out.println("OK");
 		
 		return true;
 	}

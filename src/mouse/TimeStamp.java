@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 public class TimeStamp extends Date {
 
