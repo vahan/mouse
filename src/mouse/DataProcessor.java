@@ -367,7 +367,7 @@ public class DataProcessor {
 				for (MouseInterval innerMouseInterval : mouseIntervals) {
 					if (innerMouseInterval.getMouse() == mouseInterval.getMouse())
 						continue;
-					Transponder transponderTo = mouseInterval.getMouse();
+					Transponder transponderTo = innerMouseInterval.getMouse();
 					TimeStamp start = mouseInterval.getStart().after(innerMouseInterval.getStart())
 							? mouseInterval.getStart()
 							: innerMouseInterval.getStart();
@@ -379,7 +379,6 @@ public class DataProcessor {
 					Transponder terminatedBy = mouseInterval.getStop().before(innerMouseInterval.getStop())
 							? transponderFrom
 							: transponderTo;
-					transponderTo = innerMouseInterval.getMouse();
 					float duration = (new Interval(start.getTime(), stop.getTime())).getEndMillis();
 					MeetingResult meetingResult = new MeetingResult(transponderFrom, transponderTo, start, 
 									stop, duration, terminatedBy == transponderFrom ? 0 : 1, box);

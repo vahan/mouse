@@ -76,7 +76,7 @@ public class Direction {
 		if (inPos == outPos) {
 			type = Directions.Undefined;
 		} else {
-			type = inPos < outPos ? Directions.In : Directions.Out;
+			type = inPos > outPos ? Directions.In : Directions.Out;
 		}
 	}
 	
