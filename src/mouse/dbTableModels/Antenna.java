@@ -56,8 +56,5 @@ public class Antenna extends DbTableModel {
 		return box;
 	}
 	
-	
-	
-	
 
 }

@@ -114,5 +114,6 @@ public class Transponder extends DbTableModel {
 		return baladeCount;
 	}
 	
+	
 
 }

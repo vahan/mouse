@@ -38,6 +38,11 @@ public abstract class DbTableModel {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + " [id=" + id + "]";
+	}
 	
 	
 

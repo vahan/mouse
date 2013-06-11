@@ -41,6 +41,13 @@ public class ScaleReading extends DbTableModel {
 	public Scale getScale() {
 		return scale;
 	}
+
+	@Override
+	public String toString() {
+		return "ScaleReading [timeStamp=" + timeStamp + ", weight=" + weight
+				+ ", transponder=" + transponder + ", scale=" + scale + "]";
+	}
+	
 	
 
 }

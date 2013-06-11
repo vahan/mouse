@@ -52,6 +52,13 @@ public class StayResult extends DbTableModel {
 	public DirectionResult getDirOut() {
 		return dirOut;
 	}
+
+	@Override
+	public String toString() {
+		return "StayResult [start=" + start + ", stop=" + stop
+				+ ", transponder=" + transponder + ", box=" + box + ", dirIn="
+				+ dirIn + ", dirOut=" + dirOut + "]";
+	}
 	
 	
 

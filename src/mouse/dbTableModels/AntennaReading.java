@@ -48,6 +48,13 @@ public class AntennaReading extends DbTableModel {
 		return directionResult;
 	}
 
+	@Override
+	public String toString() {
+		return "AntennaReading [timeStamp=" + timeStamp + ", log=" + log
+				+ ", transponder=" + transponder + ", antena=" + antena
+				+ ", directionResult=" + directionResult + "]";
+	}
+
 	
 	
 

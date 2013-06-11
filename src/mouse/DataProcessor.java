@@ -5,10 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Interval;
@@ -19,6 +22,7 @@ import mouse.dbTableModels.AntennaRecord;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.Direction;
 import mouse.dbTableModels.DirectionResult;
+import mouse.dbTableModels.AntennaReadingTimeStampComparator;
 import mouse.dbTableModels.Directions;
 import mouse.dbTableModels.MeetingResult;
 import mouse.dbTableModels.StayResult;
@@ -30,6 +34,7 @@ import mouse.postgresql.PostgreSQLManager;
 import mouse.postgresql.StayResults;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.bean.MappingStrategy;
 
 public class DataProcessor {
 	
@@ -124,14 +129,12 @@ public class DataProcessor {
 			reader = new CSVReader(new FileReader(inputCSVFileName), ';', '\'', 1); //skip the first (header) line
 			
 			String [] nextLine;
-			int lineNumber = 0;
 			while ((nextLine = reader.readNext()) != null) {
 				for (int i : staticColumnNumbers) {
 					if (unique && columns[i].getEntries().contains(nextLine[i]))
 						continue;
 					columns[i].addEntry(nextLine[i]);
 				}
-				System.out.println(lineNumber++);
 			}
 			reader.close();
 			
@@ -216,7 +219,11 @@ public class DataProcessor {
 	private boolean generateDirectionResults() {
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
 		
-		for (AntennaReading antennaReading : antennaReadings) {
+		ArrayList<AntennaReading> antennaReadingsCopy = new ArrayList<AntennaReading>(antennaReadings);
+		
+		Iterator<AntennaReading> it = antennaReadingsCopy.iterator();
+		while (it.hasNext()) {
+			AntennaReading antennaReading = it.next();
 			Transponder mouse = antennaReading.getTransponder();
 			Antenna antenna = antennaReading.getAntena();
 			Box box = antenna.getBox();
@@ -247,6 +254,7 @@ public class DataProcessor {
 				//count the time from the last recorded time 
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			}
+			it.remove();
 		}
 
 		System.out.println("OK\nSaving direction results into DB");
@@ -271,24 +279,41 @@ public class DataProcessor {
 	private boolean generateStayResults() {
 		HashMap<MouseInBox, DirectionResult> mouseInBoxSet = new HashMap<MouseInBox, DirectionResult>();
 		
-		for (DirectionResult dirRes : directionResults) {
+		ArrayList<DirectionResult> directionResultsCopy = new ArrayList<DirectionResult>(directionResults);
+		
+		Iterator<DirectionResult> it = directionResultsCopy.iterator();
+		while (it.hasNext()) {
+			DirectionResult dirRes = it.next();
 			Transponder mouse = dirRes.getTransponder();
 			Box box = dirRes.getBox();
 			TimeStamp timeStamp = dirRes.getTimeStamp();
 			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //TODO: perhaps a new type is needed instead of putting null for Antenna
-			DirectionResult firstDir = mouseInBoxSet.get(mouseInBox);
-			DirectionResult secondDir = dirRes;
-			if (firstDir == null) {
+			DirectionResult secondDir = mouseInBoxSet.get(mouseInBox);
+			DirectionResult firstDir = dirRes;
+			if (secondDir == null) {
 				mouseInBoxSet.put(mouseInBox, dirRes);
+				it.remove();
 				continue;
 			} else {
+				//The first event musts be before the second
+				if (firstDir.getTimeStamp().after(secondDir.getTimeStamp())) {
+					//System.out.println("swapping");
+					DirectionResult temp = firstDir;
+					firstDir = secondDir;
+					secondDir = temp;
+				}
 				if (firstDir.getDirection().getType() == Directions.In && 
 						secondDir.getDirection().getType() == Directions.Out) {
 					TimeStamp start = firstDir.getTimeStamp();
 					TimeStamp stop = secondDir.getTimeStamp();
 					StayResult stayResult = new StayResult(start, stop, mouse, box, firstDir, secondDir);
 					stayResults.add(stayResult);
-					mouseInBoxSet.remove(firstDir);
+					if (mouseInBoxSet.remove(mouseInBox) == null) {
+						System.out.println("fuck you, too!");
+					} else {
+						System.out.println("good boy!");
+					}
+					it.remove();
 				}
 				
 			}

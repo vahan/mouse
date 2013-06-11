@@ -52,6 +52,15 @@ public class MeetingResult extends DbTableModel {
 	public Box getBox() {
 		return box;
 	}
+
+	@Override
+	public String toString() {
+		return "MeetingResult [transponderFrom=" + transponderFrom
+				+ ", transponderTo=" + transponderTo + ", start=" + start
+				+ ", stop=" + stop + ", terminatedBy=" + terminatedBy
+				+ ", box=" + box + "]";
+	}
+	
 	
 
 }

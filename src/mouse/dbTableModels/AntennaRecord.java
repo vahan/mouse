@@ -25,6 +25,12 @@ public class AntennaRecord {
 	public Antenna getAntenna() {
 		return antenna;
 	}
+
+	@Override
+	public String toString() {
+		return "AntennaRecord [antenna=" + antenna + ", recordTime="
+				+ recordTime + "]";
+	}
 	
 	
 	

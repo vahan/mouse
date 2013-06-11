@@ -34,6 +34,13 @@ public class DirectionResult extends DbTableModel {
 	public Box getBox() {
 		return box;
 	}
+
+	@Override
+	public String toString() {
+		return "DirectionResult [timeStamp=" + timeStamp + ", direction="
+				+ direction + ", transponder=" + transponder + ", box=" + box
+				+ "]";
+	}
 	
 	
 
