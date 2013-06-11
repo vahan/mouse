@@ -367,6 +367,8 @@ public class DataProcessor {
 				for (MouseInterval innerMouseInterval : mouseIntervals) {
 					if (innerMouseInterval.getMouse() == mouseInterval.getMouse())
 						continue;
+					if (innerMouseInterval.getStart().before(mouseInterval.getStart()))
+						continue; //Avoid duplicate entries
 					Transponder transponderTo = innerMouseInterval.getMouse();
 					TimeStamp start = mouseInterval.getStart().after(innerMouseInterval.getStart())
 							? mouseInterval.getStart()
