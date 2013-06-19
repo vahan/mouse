@@ -1,6 +1,8 @@
 package mouse;
 
-
+/**
+ * Represents mouse-start-stop connections. Used to simplify data proccessing
+ */
 import mouse.dbTableModels.Transponder;
 
 public class MouseInterval {

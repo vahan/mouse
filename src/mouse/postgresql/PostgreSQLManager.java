@@ -10,29 +10,41 @@ import org.apache.commons.lang3.StringUtils;
 import mouse.Column;
 import mouse.DataProcessor;
 
-
+/**
+ * This class provides functionality to deal with the postgresql database
+ * @author vahan
+ *
+ */
 public class PostgreSQLManager {
-	
+	//Connection data
 	private Connection conn = null;
 	private final String username;
 	private final String password;
-	
 	private String url;
 
+	//The static tables
 	private Logs logs = new Logs("logs");
 	private Scales scales = new Scales("scales");
 	private Boxes boxes;
 	private Antennas antennas;
 	private Transponders transponders;
 	private ScaleReadings scaleReadings = new ScaleReadings("scale_readings");
-	
+	//The dynamic tables
 	private AntennaReadings antennaReadings = new AntennaReadings("antenna_readings");
 	private DirectionResults directionResults = new DirectionResults("direction_results");
 	private StayResults stayResults = new StayResults("stay_results");
 	private MeetingResults meetingResults = new MeetingResults("meeting_results");
-	
+	/**
+	 * List of all tables in the database
+	 */
 	private ArrayList<DbTable> tables = new ArrayList<DbTable>();
 	
+	/**
+	 * Constructor
+	 * @param username
+	 * @param password
+	 * @param columns
+	 */
 	public PostgreSQLManager(String username, String password, Column[] columns) {
 		this.username = username;
 		this.password = password;
@@ -50,7 +62,7 @@ public class PostgreSQLManager {
 												columns[DataProcessor.DEVICE_ID_COLUMN].toArray());
 		this.transponders = new Transponders("transponders", columns[DataProcessor.RFID_COLUMN].toArray());
 		
-		//The order must be kept!
+		//The order must be kept, because of the dependencies among the tables!
 		tables.add(logs);
 		tables.add(scales); //TODO scales is not initialized!
 		tables.add(boxes);
@@ -170,7 +182,7 @@ public class PostgreSQLManager {
 	 * @param condition
 	 * @return
 	 */
-	public String[] searchInTable(String tableName, String condition) {
+	/*public String[] searchInTable(String tableName, String condition) {
 		Statement st = null;
 		ResultSet rs = null;
 		ArrayList<String> results = new ArrayList<String>();
@@ -204,7 +216,7 @@ public class PostgreSQLManager {
 			}
 		}
 		return results.toArray(new String[results.size()]);
-	}
+	}*/
 	
 	/**
 	 * Wrapper to execute the given postrgeSql query
@@ -295,7 +307,14 @@ public class PostgreSQLManager {
 		return true;
 	}
 
-
+	/**
+	 * Generate the appropriate url from the given host name, port and db name.
+	 * Note that host and port can be empty
+	 * @param host
+	 * @param port
+	 * @param dbName
+	 * @return
+	 */
 	private String generateUrl(String host, String port, String dbName) {
 		String url = "jdbc:postgresql:";
 		if (!host.isEmpty()) {

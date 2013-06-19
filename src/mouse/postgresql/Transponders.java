@@ -6,6 +6,11 @@ import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Transponder;
 
 
+/**
+ * Models the transponders table
+ * @author vahan
+ *
+ */
 public class Transponders extends DbStaticTable {
 	
 	public Transponders(String tableName, String[] transponderNames) {

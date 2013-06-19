@@ -4,7 +4,11 @@ import java.util.ArrayList;
 
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the antennas table's
+ * @author vahan
+ *
+ */
 public class Antenna extends DbTableModel {
 	
 	private final String name;

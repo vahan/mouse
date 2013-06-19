@@ -4,10 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * Contains the void main() method to run the program
+ * @author vahan
+ *
+ */
 public class Runner {
 	
 	public static void main(String[] args) {
 		
+		//Read the configuration data from the console
+		//TODO: change the config reading from a file (XML?)
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String inputFileName;
 		String username;

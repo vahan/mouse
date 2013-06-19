@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import mouse.TimeStamp;
 
 
+/**
+ * Models a row for the boxes table's 
+ * @author vahan
+ *
+ */
 public class Box extends DbTableModel {
 	
 	private final String name;

@@ -4,6 +4,11 @@ import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
 
+/**
+ * Models the antennas table
+ * @author vahan
+ *
+ */
 public class Antennas extends DbStaticTable {
 
 	public static final int ANTENNAS_PER_BOX = 2;

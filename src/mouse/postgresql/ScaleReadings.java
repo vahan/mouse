@@ -2,6 +2,12 @@ package mouse.postgresql;
 
 import mouse.dbTableModels.DbTableModel;
 
+
+/**
+ * Models the scale_readings table
+ * @author vahan
+ *
+ */
 public class ScaleReadings extends DbTable {
 
 	public ScaleReadings(String tableName) {

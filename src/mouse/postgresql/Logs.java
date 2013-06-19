@@ -3,6 +3,11 @@ package mouse.postgresql;
 import mouse.dbTableModels.DbTableModel;
 
 
+/**
+ * Models the logs table
+ * @author vahan
+ *
+ */
 public class Logs extends DbTable {
 
 	public Logs(String tableName) {

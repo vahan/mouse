@@ -4,6 +4,11 @@ package mouse.dbTableModels;
 import mouse.TimeStamp;
 
 
+/**
+ * Models a row for the antenna_readings table
+ * @author vahan
+ *
+ */
 public class AntennaReading extends DbTableModel {
 	
 	private final TimeStamp timeStamp;

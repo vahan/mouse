@@ -1,6 +1,11 @@
 package mouse.postgresql;
 
 
+/**
+ * Models the boxes table
+ * @author vahan
+ *
+ */
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
 

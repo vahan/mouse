@@ -4,6 +4,11 @@ import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.MeetingResult;
 
 
+/**
+ * Models the meeting_results table
+ * @author vahan
+ *
+ */
 public class MeetingResults extends DbDynamicTable {
 	
 	public MeetingResults(String tableName) {

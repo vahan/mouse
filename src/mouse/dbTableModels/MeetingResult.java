@@ -2,7 +2,11 @@ package mouse.dbTableModels;
 
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for meeting_results table
+ * @author vahan
+ *
+ */
 public class MeetingResult extends DbTableModel {
 	
 	private final Transponder transponderFrom;

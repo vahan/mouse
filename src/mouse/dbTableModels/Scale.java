@@ -2,7 +2,11 @@ package mouse.dbTableModels;
 
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the scales table's model
+ * @author vahan
+ *
+ */
 public class Scale extends DbTableModel {
 	
 	private final String name;

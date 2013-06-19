@@ -7,6 +7,11 @@ import mouse.dbTableModels.Box;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Transponder;
 
+/**
+ * Models the antenna_readings table
+ * @author vahan
+ *
+ */
 public class AntennaReadings extends DbDynamicTable {
 	
 	public AntennaReadings(String tableName) {

@@ -1,6 +1,10 @@
 package mouse.postgresql;
 
-
+/**
+ * Abstract base class to model those tables that are filled before process the input data
+ * @author vahan
+ *
+ */
 public abstract class DbStaticTable extends DbTable {
 
 	/**

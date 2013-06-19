@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import mouse.Gender;
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the transponders table
+ * @author vahan
+ *
+ */
 public class Transponder extends DbTableModel {
 	
 	private final String rfid;

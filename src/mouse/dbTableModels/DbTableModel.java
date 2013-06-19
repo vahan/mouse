@@ -1,6 +1,10 @@
 package mouse.dbTableModels;
 
-
+/**
+ * An abstract base class for all table row model classes.
+ * @author vahan
+ *
+ */
 public abstract class DbTableModel {
 	
 	protected String id;
@@ -9,11 +13,18 @@ public abstract class DbTableModel {
 		return id;
 	}
 
+	/**
+	 * The ID must be set after the according enty is inserted into the db table
+	 * @param id
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
 	
 
+	/**
+	 * Use only the id for the hashcode
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -22,6 +33,9 @@ public abstract class DbTableModel {
 		return result;
 	}
 
+	/**
+	 * Use only the id for comparing objects for equality
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

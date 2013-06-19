@@ -4,7 +4,11 @@ import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.Box;
 import mouse.dbTableModels.Transponder;
 
-
+/**
+ * Represents mouse-box connections to simplify data processing
+ * @author vahan
+ *
+ */
 public class MouseInBox {
 
 	private final Transponder mouse;
@@ -43,6 +47,9 @@ public class MouseInBox {
 		this.antenna = antenna;
 	}
 
+	/**
+	 * Use only box and mouse members for hashcode generation
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -52,6 +59,9 @@ public class MouseInBox {
 		return result;
 	}
 
+	/**
+	 * Use only box and mouse members for comparing object equality
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

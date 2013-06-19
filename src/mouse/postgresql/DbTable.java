@@ -5,16 +5,23 @@ import mouse.dbTableModels.DbTableModel;
 
 import org.apache.commons.lang3.StringUtils;
 
-
+/**
+ * Abstract base class for modeling the db tables
+ * @author vahan
+ *
+ */
 public abstract class DbTable {
-	
+	/**
+	 * Name of the table
+	 */
 	protected final String tableName;
-	
+	/**
+	 * Array of the rows to be stored
+	 */
 	protected DbTableModel[] tableModels;
 	
-	protected DbTable(String tableName/*, DBConnector connector*/) {
+	protected DbTable(String tableName) {
 		this.tableName = tableName;
-		//this.connector = connector;
 	}
 	
 	public String getTableName() {
@@ -63,10 +70,24 @@ public abstract class DbTable {
 						+ StringUtils.join(valuesStr, "), (") + ")";
 		return query;
 	}
+	
+	/**
+	 * Give a specific query to create the exact table
+	 * @return	A 'CREATE TABLE' query
+	 */
 	protected abstract String createTableQuery();
 	
+	/**
+	 * Gives an array of the column name's to be used for inserting
+	 * @return	array of the column name's to be used for inserting
+	 */
 	protected abstract String[] insertFields();
 	
+	/**
+	 * Gives an array of the values to be used for inserting
+	 * @param model	The model to use for getting the appropriate values
+	 * @return		array of the values to be used for inserting
+	 */
 	protected abstract String[] insertValues(DbTableModel model);
 	
 

@@ -6,6 +6,11 @@ import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.Scale;
 
 
+/**
+ * Models the scales table
+ * @author vahan
+ *
+ */
 public class Scales extends DbTable {
 	
 	public Scales(String tableName) {

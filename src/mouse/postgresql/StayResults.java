@@ -3,6 +3,11 @@ package mouse.postgresql;
 import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.StayResult;
 
+/**
+ * Models the stay_results table
+ * @author vahan
+ *
+ */
 public class StayResults extends DbDynamicTable {
 	
 	public StayResults(String tableName) {

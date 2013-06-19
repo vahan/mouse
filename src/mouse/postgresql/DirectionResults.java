@@ -4,6 +4,11 @@ import mouse.dbTableModels.DbTableModel;
 import mouse.dbTableModels.DirectionResult;
 
 
+/**
+ * Models the direction_results table
+ * @author vahan
+ *
+ */
 public class DirectionResults extends DbDynamicTable {
 	
 	public DirectionResults(String tableName) {

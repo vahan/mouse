@@ -1,8 +1,13 @@
 package mouse.dbTableModels;
 
+import mouse.Direction;
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the direction_results table
+ * @author vahan
+ *
+ */
 public class DirectionResult extends DbTableModel {
 	
 	private final TimeStamp timeStamp;

@@ -3,7 +3,11 @@ package mouse.dbTableModels;
 import mouse.TimeStamp;
 
 
-
+/**
+ * Models a row for the scale_readings table
+ * @author vahan
+ *
+ */
 public class ScaleReading extends DbTableModel {
 	
 	private final TimeStamp timeStamp;

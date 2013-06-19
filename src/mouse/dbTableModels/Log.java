@@ -2,7 +2,11 @@ package mouse.dbTableModels;
 
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the logs table
+ * @author vahan
+ *
+ */
 public class Log extends DbTableModel {
 
 	private final String fileName;

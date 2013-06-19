@@ -5,25 +5,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Interval;
 
 import mouse.dbTableModels.Antenna;
 import mouse.dbTableModels.AntennaReading;
-import mouse.dbTableModels.AntennaRecord;
 import mouse.dbTableModels.Box;
-import mouse.dbTableModels.Direction;
 import mouse.dbTableModels.DirectionResult;
-import mouse.dbTableModels.AntennaReadingTimeStampComparator;
-import mouse.dbTableModels.Directions;
 import mouse.dbTableModels.MeetingResult;
 import mouse.dbTableModels.StayResult;
 import mouse.dbTableModels.Transponder;
@@ -34,27 +27,58 @@ import mouse.postgresql.PostgreSQLManager;
 import mouse.postgresql.StayResults;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.bean.MappingStrategy;
 
+/**
+ * Contains methods to read, process and store the data into appropriate db tables
+ * @author vahan
+ *
+ */
 public class DataProcessor {
-	
+	//TODO: The following constants can be changed to be read from the input file and/or from an configuration file 
+	/**
+	 * Constant representing the number of columns expected to be in the input CSV file
+	 */
 	public static final int COLUMN_COUNT = 5;
+	/**
+	 * The column where the timestamp column is expected
+	 */
 	public static final int DATE_TIME_STAMP_COLUMN = 1;
+	/**
+	 * The column where the device (box) column is expected
+	 */
 	public static final int DEVICE_ID_COLUMN = 2;
+	/**
+	 * The column where the antenna column is expected
+	 */
 	public static final int ANTENNA_ID_COLUMN = 3;
+	/**
+	 * The column where the rfid (mouse unique id) column is expected
+	 */
 	public static final int RFID_COLUMN = 4;
 	
-	
+	/**
+	 * The full name (can contain path as well) of the input .csv file
+	 */
 	private final String inputCSVFileName;
-	
+	/**
+	 * An array containing the data read from the input file
+	 */
 	private final ArrayList<AntennaReading> antennaReadings = new ArrayList<AntennaReading>();
-	
+	/**
+	 * An array containing data transformed into "direction results" from "antenna readings"
+	 */
 	private final ArrayList<DirectionResult> directionResults = new ArrayList<DirectionResult>();
-	
+	/**
+	 * An array containing data transformed into "stay results" from "direction results"
+	 */
 	private final ArrayList<StayResult> stayResults = new ArrayList<StayResult>();
-	
+	/**
+	 * An array containing data transformed into "meeting results" from "stay results"
+	 */
 	private final ArrayList<MeetingResult> meetingResults = new ArrayList<MeetingResult>();
-	
+	/**
+	 * Provides functionality to work with postgresql data bases.
+	 */
 	private final PostgreSQLManager psqlManager;
 	
 	
@@ -90,7 +114,7 @@ public class DataProcessor {
 	}
 
 	/**
-	 * Processes the input data and writes into the according tables
+	 * Process the input data and write it into the according tables
 	 * @return
 	 */
 	public boolean process() {
@@ -112,25 +136,30 @@ public class DataProcessor {
 	}
 	
 	/**
-	 * Scans the input file and returns Columns of antennas, boxes and transponders
-	 * @param inputCSVFileName
-	 * @param unique
-	 * @return
+	 * Scans the input file and returns Columns of antennas, boxes and transponders. 
+	 * Needed for creating the static `antennas`, `boxes` and `transponders` tables.
+	 * Must be called before the actual data processing starts
+	 * @param inputCSVFileName	The name of the input file
+	 * @param unique			Determines if the generated columns contain only unique entries
+	 * @return					Columns of antennas, boxes and transponders; null if reading errors occur
 	 */
 	private Column[] columns(String inputCSVFileName, boolean unique) {
+		//Array of the column numbers
 		int[] staticColumnNumbers = new int[] {ANTENNA_ID_COLUMN, DEVICE_ID_COLUMN, RFID_COLUMN};
+		//Initializations
 		Column[] columns = new Column[COLUMN_COUNT];
 		for (int i = 0; i < COLUMN_COUNT; ++i) {
 			columns[i] = new Column();
 		}
-		
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(inputCSVFileName), ';', '\'', 1); //skip the first (header) line
 			
 			String [] nextLine;
+			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
 				for (int i : staticColumnNumbers) {
+					//skip duplicate entries if only unique entries is required
 					if (unique && columns[i].getEntries().contains(nextLine[i]))
 						continue;
 					columns[i].addEntry(nextLine[i]);
@@ -155,15 +184,18 @@ public class DataProcessor {
 	/**
 	 * Reads the content of a given CSV file into antennaReadings array 
 	 * 
-	 * @param sourceFile
+	 * @param sourceFile	The name of the input file
+	 * @return				true if successful, false - otherwise
 	 */
 	private boolean readAntennaReadingsCSV(String sourceFile) {
+		//TODO: change the info output from the default out to a controllable one
 		System.out.println("Reading input file: " + sourceFile);
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(sourceFile), ';', '\'', 1); //skip the first (header) line
 			
 			String [] nextLine;
+			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
 				TimeStamp timeStamp;
 				try {
@@ -188,14 +220,16 @@ public class DataProcessor {
 			}
 			reader.close();
 			
-			System.out.println("OK\nSaving antenna readings into DB");
-			
+			System.out.println("Saving antenna readings into DB");
+			//Set the read data into the according db table object of psqlManager
 			AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
 			antennaReadingsTable.setTableModels(
 					antennaReadings.toArray(new AntennaReading[antennaReadings.size()]));
-			
+			//Generate the INSERT query that inserts the data into the according db table
 			String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
+			//Execute the query and return the generated serial IDs
 			String[] ids = psqlManager.executeQueries(insertQueries);
+			//Set the IDs to the appropriate objects
 			for (int i = 0; i < antennaReadings.size(); ++i) {
 				antennaReadings.get(i).setId(ids[i]);
 			}
@@ -214,13 +248,16 @@ public class DataProcessor {
 	}
 	
 	/**
-	 * Generates entry rows from antennaReadings array to directionResults array 
+	 * Generates entry rows from antennaReadings array to directionResults array
+	 * 
+	 * @return	true if the successful; false - otherwise
 	 */
 	private boolean generateDirectionResults() {
+		//A HashMap data structure to efficiently handle mouse-box - antenna-recordtime connections.
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
-		
+		//A copy of the antenna readings array. Needed to not modify the original one.
 		ArrayList<AntennaReading> antennaReadingsCopy = new ArrayList<AntennaReading>(antennaReadings);
-		
+		//Iterate through the antenna readings and transform the data into direction results form
 		Iterator<AntennaReading> it = antennaReadingsCopy.iterator();
 		while (it.hasNext()) {
 			AntennaReading antennaReading = it.next();
@@ -230,9 +267,11 @@ public class DataProcessor {
 			TimeStamp timestamp = antennaReading.getTimeStamp();
 			MouseInBox mouseInBox = new MouseInBox(mouse, box, antenna, timestamp);
 			AntennaRecord antennaRecord = mouseInBoxSet.get(mouseInBox);
+			//If the mouse-box pair is not already in the array, then add it
 			if (!mouseInBoxSet.containsKey(mouseInBox)) {
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
-			} else if (!antennaRecord.equals(antenna)) {
+			} else if (!antennaRecord.getAntenna().equals(antenna)) {
+				//Otherwise nothing 'illegal' happened add the direction result to the array
 				Antenna in;
 				Antenna out;
 				if (timestamp.before(antennaRecord.getRecordTime())) {
@@ -257,14 +296,16 @@ public class DataProcessor {
 			it.remove();
 		}
 
-		System.out.println("OK\nSaving direction results into DB");
-		
+		System.out.println("Saving direction results into DB");
+		//Set the read data into the according db table object of psqlManager
 		DirectionResults dirResultsTable = psqlManager.getDirectionResults();
 		dirResultsTable.setTableModels(
 				directionResults.toArray(new DirectionResult[directionResults.size()]));
-		
+		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = dirResultsTable.insertQuery(dirResultsTable.getTableModels());
+		//Execute the query and return the generated serial IDs
 		String[] ids = psqlManager.executeQueries(insertQueries);
+		//Set the IDs to the appropriate objects
 		for (int i = 0; i < directionResults.size(); ++i) {
 			directionResults.get(i).setId(ids[i]);
 		}
@@ -275,12 +316,15 @@ public class DataProcessor {
 	
 	/**
 	 * Generate entry rows from directionResults array to stayResults array
+	 * 
+	 * @return	true if successful; false - otherwise
 	 */
 	private boolean generateStayResults() {
+		//A HashMap data structure to efficiently handle mouse-box connections.
 		HashMap<MouseInBox, DirectionResult> mouseInBoxSet = new HashMap<MouseInBox, DirectionResult>();
-		
+		//A copy of the direction results array. Needed to not modify the original one.
 		ArrayList<DirectionResult> directionResultsCopy = new ArrayList<DirectionResult>(directionResults);
-		
+		//Iterate through the direction results and transform the data into stay results form
 		Iterator<DirectionResult> it = directionResultsCopy.iterator();
 		while (it.hasNext()) {
 			DirectionResult dirRes = it.next();
@@ -290,43 +334,48 @@ public class DataProcessor {
 			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //TODO: perhaps a new type is needed instead of putting null for Antenna
 			DirectionResult secondDir = mouseInBoxSet.get(mouseInBox);
 			DirectionResult firstDir = dirRes;
+			//if the mouse-box pair appears for the first time, add it to the mouseInBoxSet array
 			if (secondDir == null) {
 				mouseInBoxSet.put(mouseInBox, dirRes);
 				it.remove();
 				continue;
 			} else {
-				//The first event musts be before the second
+				//The first event must be before the second
 				if (firstDir.getTimeStamp().after(secondDir.getTimeStamp())) {
 					//System.out.println("swapping");
 					DirectionResult temp = firstDir;
 					firstDir = secondDir;
 					secondDir = temp;
 				}
+				//In must be before out
 				if (firstDir.getDirection().getType() == Directions.In && 
 						secondDir.getDirection().getType() == Directions.Out) {
 					TimeStamp start = firstDir.getTimeStamp();
 					TimeStamp stop = secondDir.getTimeStamp();
+					//Create and store the stayResult data entry
 					StayResult stayResult = new StayResult(start, stop, mouse, box, firstDir, secondDir);
 					stayResults.add(stayResult);
 					if (mouseInBoxSet.remove(mouseInBox) == null) {
-						System.out.println("fuck you, too!");
+						System.out.println("The mouseInBox could not be removed from the set after being added to the stayResults array! That's odd");
 					} else {
-						System.out.println("good boy!");
+						//System.out.println("good boy!");
 					}
 					it.remove();
 				}
 				
 			}
 		}
-
-		System.out.println("OK\nSaving stay results into DB");
 		
+		System.out.println("Saving stay results into DB");
+		//Set the read data into the according db table object of psqlManager
 		StayResults stayResultsTable = psqlManager.getStayResults();
 		stayResultsTable.setTableModels(
 				stayResults.toArray(new StayResult[stayResults.size()]));
-		
+		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = stayResultsTable.insertQuery(stayResultsTable.getTableModels());
+		//Execute the query and return the generated serial IDs
 		String[] ids = psqlManager.executeQueries(insertQueries);
+		//Set the IDs to the appropriate objects
 		for (int i = 0; i < stayResults.size(); ++i) {
 			stayResults.get(i).setId(ids[i]);
 		}
@@ -337,13 +386,18 @@ public class DataProcessor {
 	
 	/**
 	 * Generates entry rows from stayResults array to meetingResults array
+	 * 
+	 * @return	true if successful; false - otherwise
 	 */
 	private boolean generateMeetingResults() {
+		//First, associate with each box an array of mouse-in-out objects
+		//A HashMap data structure to efficiently handle box-mouse-start-stop connections.
 		HashMap<Box, ArrayList<MouseInterval>> boxSet = new HashMap<Box, ArrayList<MouseInterval>>();
-		
+		//iterate through all stayResults
 		for (StayResult stayResult : stayResults) {
 			Box box = stayResult.getBox();
 			ArrayList<MouseInterval> mouseIntervals = boxSet.get(box);
+			//If the boxSet doesn't contain the mouse-start-stop pair, add it
 			if (mouseIntervals == null) {
 				mouseIntervals = new ArrayList<MouseInterval>();
 			}
@@ -354,13 +408,14 @@ public class DataProcessor {
 			mouseIntervals.add(mouseInterval);
 			boxSet.put(box, mouseIntervals);
 		}
-		
+		//Then iterate for each box and check which mice and when met there
 		Iterator<Entry<Box, ArrayList<MouseInterval>>> it = boxSet.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<Box, ArrayList<MouseInterval>> pair = 
 					(Map.Entry<Box, ArrayList<MouseInterval>>) it.next();
 			
 			Box box = pair.getKey();
+			//For each box iterate through the list of mouse-start-stop objects checking if there are overlapping timestamps
 			ArrayList<MouseInterval> mouseIntervals = pair.getValue();
 			for (MouseInterval mouseInterval : mouseIntervals) {
 				Transponder transponderFrom = mouseInterval.getMouse();
@@ -376,6 +431,7 @@ public class DataProcessor {
 					TimeStamp stop = mouseInterval.getStop().before(innerMouseInterval.getStop())
 							? mouseInterval.getStop()
 							: innerMouseInterval.getStop();
+					//Starting time must be before the stopping time to avoid duplicate entries
 					if (stop.before(start))
 						continue;
 					Transponder terminatedBy = mouseInterval.getStop().before(innerMouseInterval.getStop())
@@ -392,14 +448,16 @@ public class DataProcessor {
 			it.remove();
 		}
 
-		System.out.println("OK\nSaving meeting results into DB");
-		
+		System.out.println("Saving meeting results into DB");
+		//Set the read data into the according db table object of psqlManager
 		MeetingResults meetingResultsTable = psqlManager.getMeetingResults();
 		meetingResultsTable.setTableModels(
 				meetingResults.toArray(new MeetingResult[meetingResults.size()]));
-		
+		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = meetingResultsTable.insertQuery(meetingResultsTable.getTableModels());
+		//Execute the query and return the generated serial IDs
 		String[] ids = psqlManager.executeQueries(insertQueries);
+		//Set the IDs to the appropriate objects
 		for (int i = 0; i < meetingResults.size(); ++i) {
 			meetingResults.get(i).setId(ids[i]);
 		}

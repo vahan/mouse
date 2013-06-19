@@ -2,7 +2,11 @@ package mouse.dbTableModels;
 
 import mouse.TimeStamp;
 
-
+/**
+ * Models a row for the stay_results table
+ * @author vahan
+ *
+ */
 public class StayResult extends DbTableModel {
 	
 	private final TimeStamp start;
