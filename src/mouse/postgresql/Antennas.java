@@ -1,8 +1,8 @@
 package mouse.postgresql;
 
-import mouse.dbTableModels.Antenna;
-import mouse.dbTableModels.Box;
-import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableRows.AntennaRow;
+import mouse.dbTableRows.BoxRow;
+import mouse.dbTableRows.DbTableRow;
 
 /**
  * Models the antennas table
@@ -18,18 +18,19 @@ public class Antennas extends DbStaticTable {
 		// TODO Auto-generated constructor stub
 		
 	}
-
+	
+	
 	@Override
 	protected void generateTables() {
-		tableModels = new Antenna[data.length * entries.length];
+		tableModels = new AntennaRow[data.length * entries.length];
 		for (int j = 0, k = 0; j < data.length; ++j) {
 			for (int i = 0; i < entries.length; ++i) {
-				tableModels[k++] = new Antenna(entries[i], Box.getBoxByName(data[j]));
+				tableModels[k++] = new AntennaRow(entries[i], BoxRow.getBoxByName(data[j]));
 			}
 		}
 	}
-
-
+	
+	
 	@Override
 	protected String createTableQuery() {
 		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
@@ -43,19 +44,6 @@ public class Antennas extends DbStaticTable {
 		return query;
 	}
 
-/*	@Override
-	public String insertQuery(DbTableModel[] models) {
-		String[] fields = insertFields();
-		String[][] values = new String[models.length][fields.length];
-		for (int i = 0; i < models.length; ++i) {
-			Antenna antenna = (Antenna) models[i];
-			values[i] = insertValues(antenna);
-		}
-		String query = insertQuery(fields, values);
-		
-		return query;
-	}
-*/
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
@@ -66,8 +54,8 @@ public class Antennas extends DbStaticTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		Antenna antenna = (Antenna) model;
+	protected String[] insertValues(DbTableRow model) {
+		AntennaRow antenna = (AntennaRow) model;
 		String[] values = new String[] {"'" + antenna.getName() + "'", 
 										"'" + antenna.getPosition() + "'", 
 										"'" + antenna.getBox().getId() + "'"

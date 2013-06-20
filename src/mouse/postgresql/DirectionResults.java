@@ -1,7 +1,11 @@
 package mouse.postgresql;
 
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.DirectionResult;
+import java.util.HashMap;
+
+import mouse.TimeStamp;
+import mouse.dbTableRows.BoxRow;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.DirectionResultRow;
 
 
 /**
@@ -17,6 +21,40 @@ public class DirectionResults extends DbDynamicTable {
 		
 	}
 
+	
+	/**
+	 * Gives the last reading of a given antenna
+	 * 
+	 * @param antenna	
+	 * @return
+	 */
+	public HashMap<BoxRow, TimeStamp> lastReadings() {
+		HashMap<BoxRow, TimeStamp> lastReadings = new HashMap<BoxRow, TimeStamp>();
+		for (DbTableRow model : tableModels) {
+			DirectionResultRow directionResult = (DirectionResultRow) model;
+			BoxRow box = directionResult.getBox();
+			TimeStamp timeStamp = directionResult.getTimeStamp();
+			if (lastReadings.containsKey(box)) {
+				TimeStamp lastReading = lastReadings.get(box);
+				if (timeStamp.after(lastReading)) {
+					lastReadings.put(box, timeStamp);
+				}
+			} else {
+				lastReadings.put(box, timeStamp);
+			}
+		}
+		return lastReadings;
+	}
+	
+	
+	public void putLastReadings() {
+		HashMap<BoxRow, TimeStamp> lastReadings = lastReadings();
+		for (BoxRow box : lastReadings.keySet()) {
+			box.setLastDirectionResult(lastReadings.get(box));
+		}
+	}
+	
+	
 	@Override
 	protected String createTableQuery() {
 		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
@@ -42,8 +80,8 @@ public class DirectionResults extends DbDynamicTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		DirectionResult dirResult = (DirectionResult) model;
+	protected String[] insertValues(DbTableRow model) {
+		DirectionResultRow dirResult = (DirectionResultRow) model;
 		String[] values = new String[] {"'" + dirResult.getTimeStamp().toString() + "'",
 										"'" + dirResult.getDirection().toString() + "'",
 										dirResult.getTransponder().getId(),

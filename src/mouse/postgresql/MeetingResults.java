@@ -1,7 +1,7 @@
 package mouse.postgresql;
 
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.MeetingResult;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.MeetingResultRow;
 
 
 /**
@@ -47,8 +47,8 @@ public class MeetingResults extends DbDynamicTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		MeetingResult meetResult = (MeetingResult) model;
+	protected String[] insertValues(DbTableRow model) {
+		MeetingResultRow meetResult = (MeetingResultRow) model;
 		String[] values = new String[] {meetResult.getTransponderFrom().getId(),
 										meetResult.getTransponderTo().getId(),
 										"'" + meetResult.getStart().toString() + "'",

@@ -1,7 +1,7 @@
 package mouse.postgresql;
 
 
-import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableRows.DbTableRow;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,7 +18,7 @@ public abstract class DbTable {
 	/**
 	 * Array of the rows to be stored
 	 */
-	protected DbTableModel[] tableModels;
+	protected DbTableRow[] tableModels;
 	
 	protected DbTable(String tableName) {
 		this.tableName = tableName;
@@ -28,7 +28,7 @@ public abstract class DbTable {
 		return tableName;
 	}
 	
-	public DbTableModel[] getTableModels() {
+	public DbTableRow[] getTableModels() {
 		return tableModels;
 	}
 	
@@ -42,7 +42,7 @@ public abstract class DbTable {
 	 * Generates SQL query to insert the generated entries into corresponding tables
 	 * @return
 	 */
-	public String insertQuery(DbTableModel[] models) {
+	public String insertQuery(DbTableRow[] models) {
 		String[] fields = insertFields();
 		String[][] values = new String[models.length][fields.length];
 		for (int i = 0; i < models.length; ++i) {
@@ -71,6 +71,27 @@ public abstract class DbTable {
 		return query;
 	}
 	
+	
+	protected String updateQuery(String[] fields, String[][] values) {
+		String query = "UPDATE " + tableName + " SET ";
+		
+		for (int i = 0; i < fields.length; ++i) {
+			query += fields[i] + " = CASE id";
+			for (int j = 0; j < tableModels.length; ++j) {
+				query += " WHEN " + tableModels[j].getId() + " THEN " + values[j][i];
+			}
+			query += " END";
+			query += i == fields.length - 1 ? " " : ", ";
+		}
+		String[] allIds = new String[tableModels.length];
+		for (int j = 0; j < tableModels.length; ++j) {
+			allIds[j] = tableModels[j].getId();
+		}
+		query += "WHERE id IN (" + StringUtils.join(allIds, ", ") + " )";
+		
+		return query;
+	}
+	
 	/**
 	 * Give a specific query to create the exact table
 	 * @return	A 'CREATE TABLE' query
@@ -88,7 +109,7 @@ public abstract class DbTable {
 	 * @param model	The model to use for getting the appropriate values
 	 * @return		array of the values to be used for inserting
 	 */
-	protected abstract String[] insertValues(DbTableModel model);
+	protected abstract String[] insertValues(DbTableRow model);
 	
 
 

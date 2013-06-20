@@ -2,8 +2,8 @@ package mouse.postgresql;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.Transponder;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.TransponderRow;
 
 
 /**
@@ -21,11 +21,11 @@ public class Transponders extends DbStaticTable {
 
 	@Override
 	protected void generateTables() {
-		tableModels = new Transponder[entries.length];
+		tableModels = new TransponderRow[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
 			if (StringUtils.isEmpty(entries[i]))
 				entries[i] = "-";	//TODO handle empty 'rfid's
-			tableModels[i] = new Transponder(entries[i]);
+			tableModels[i] = new TransponderRow(entries[i]);
 		}
 		
 	}
@@ -59,8 +59,8 @@ public class Transponders extends DbStaticTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		Transponder tr = (Transponder) model;
+	protected String[] insertValues(DbTableRow model) {
+		TransponderRow tr = (TransponderRow) model;
 		String[] values = new String[] {"'" + tr.getRfid() + "'", 
 										"'" + tr.getSex() + "'"
 										};

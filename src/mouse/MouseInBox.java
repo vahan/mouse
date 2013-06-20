@@ -1,8 +1,8 @@
 package mouse;
 
-import mouse.dbTableModels.Antenna;
-import mouse.dbTableModels.Box;
-import mouse.dbTableModels.Transponder;
+import mouse.dbTableRows.AntennaRow;
+import mouse.dbTableRows.BoxRow;
+import mouse.dbTableRows.TransponderRow;
 
 /**
  * Represents mouse-box connections to simplify data processing
@@ -11,15 +11,15 @@ import mouse.dbTableModels.Transponder;
  */
 public class MouseInBox {
 
-	private final Transponder mouse;
+	private final TransponderRow mouse;
 	
-	private final Box box;
+	private final BoxRow box;
 	
-	private Antenna antenna;
+	private AntennaRow antenna;
 	
 	private final TimeStamp timeStamp;
 
-	public MouseInBox(Transponder mouse, Box box, Antenna antenna, TimeStamp timeStamp) {
+	public MouseInBox(TransponderRow mouse, BoxRow box, AntennaRow antenna, TimeStamp timeStamp) {
 		super();
 		this.mouse = mouse;
 		this.box = box;
@@ -27,11 +27,11 @@ public class MouseInBox {
 		this.timeStamp = timeStamp;
 	}
 
-	public Transponder getMouse() {
+	public TransponderRow getMouse() {
 		return mouse;
 	}
 
-	public Box getBox() {
+	public BoxRow getBox() {
 		return box;
 	}
 	
@@ -39,11 +39,11 @@ public class MouseInBox {
 		return timeStamp;
 	}
 	
-	public Antenna getAntenna() {
+	public AntennaRow getAntenna() {
 		return antenna;
 	}
 
-	public void setAntenna(Antenna antenna) {
+	public void setAntenna(AntennaRow antenna) {
 		this.antenna = antenna;
 	}
 

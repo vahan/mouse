@@ -1,6 +1,6 @@
 package mouse;
 
-import mouse.dbTableModels.Antenna;
+import mouse.dbTableRows.AntennaRow;
 
 
 /**
@@ -10,13 +10,13 @@ import mouse.dbTableModels.Antenna;
  */
 public class Direction {
 	
-	private final Antenna in;
+	private final AntennaRow in;
 	
-	private final Antenna out;
+	private final AntennaRow out;
 	
 	private Directions type;
 
-	public Direction(Antenna in, Antenna out) {
+	public Direction(AntennaRow in, AntennaRow out) {
 		super();
 		
 		this.in = in;
@@ -25,11 +25,11 @@ public class Direction {
 		init();
 	}
 
-	public Antenna getIn() {
+	public AntennaRow getIn() {
 		return in;
 	}
 
-	public Antenna getOut() {
+	public AntennaRow getOut() {
 		return out;
 	}
 	

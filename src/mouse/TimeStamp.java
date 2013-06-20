@@ -21,6 +21,10 @@ public class TimeStamp extends Date {
 		super();
 	}
 	
+	public TimeStamp(long date) {
+		super(date);
+	}
+	
 	public TimeStamp(String str) throws ParseException {
 		super((new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH)).parse(str).getTime());
 	}

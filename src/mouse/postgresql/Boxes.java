@@ -6,8 +6,8 @@ package mouse.postgresql;
  * @author vahan
  *
  */
-import mouse.dbTableModels.Box;
-import mouse.dbTableModels.DbTableModel;
+import mouse.dbTableRows.BoxRow;
+import mouse.dbTableRows.DbTableRow;
 
 public class Boxes extends DbStaticTable {
 	
@@ -20,9 +20,9 @@ public class Boxes extends DbStaticTable {
 
 	@Override
 	protected void generateTables() {
-		tableModels = new Box[entries.length];
+		tableModels = new BoxRow[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
-			tableModels[i] = new Box(entries[i], 0, 0); //TODO Give proper xPos and yPos
+			tableModels[i] = new BoxRow(entries[i], 0, 0); //TODO Give proper xPos and yPos
 		}
 		
 	}
@@ -32,13 +32,12 @@ public class Boxes extends DbStaticTable {
 	 * @param boxName	The name of the searched box
 	 * @return	a Box object, with the searched name
 	 */
-	public static Box getBoxByName(String boxName) {
+	public static BoxRow getBoxByName(String boxName) {
 		//TODO Implement this!
 		
 		
 		return null;
 	}
-	
 
 	@Override
 	protected String createTableQuery() {
@@ -66,8 +65,8 @@ public class Boxes extends DbStaticTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		Box box = (Box) model;
+	protected String[] insertValues(DbTableRow model) {
+		BoxRow box = (BoxRow) model;
 		String[] values = new String[] {"'" + box.getName() + "'", 
 										"'" + box.getSegment() + "'", 
 										"'" + box.getXPos() + "'", 

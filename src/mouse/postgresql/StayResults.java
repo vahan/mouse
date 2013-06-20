@@ -1,7 +1,7 @@
 package mouse.postgresql;
 
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.StayResult;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.StayResultRow;
 
 /**
  * Models the stay_results table
@@ -45,8 +45,8 @@ public class StayResults extends DbDynamicTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
-		StayResult stayResult = (StayResult) model;
+	protected String[] insertValues(DbTableRow model) {
+		StayResultRow stayResult = (StayResultRow) model;
 		String[] values = new String[] {"'" + stayResult.getStart().toString() + "'",
 										"'" + stayResult.getStop().toString() + "'",
 										Float.toString(stayResult.getDuration()),

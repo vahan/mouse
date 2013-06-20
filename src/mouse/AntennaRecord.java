@@ -1,6 +1,6 @@
 package mouse;
 
-import mouse.dbTableModels.Antenna;
+import mouse.dbTableRows.AntennaRow;
 
 /**
  * Represents antenna-recordtime connection
@@ -9,11 +9,11 @@ import mouse.dbTableModels.Antenna;
  */
 public class AntennaRecord {
 	
-	private final Antenna antenna;
+	private final AntennaRow antenna;
 	
 	private TimeStamp recordTime;
 
-	public AntennaRecord(Antenna antenna, TimeStamp recordTime) {
+	public AntennaRecord(AntennaRow antenna, TimeStamp recordTime) {
 		super();
 		this.antenna = antenna;
 		this.recordTime = recordTime;
@@ -27,7 +27,7 @@ public class AntennaRecord {
 		this.recordTime = recordTime;
 	}
 
-	public Antenna getAntenna() {
+	public AntennaRow getAntenna() {
 		return antenna;
 	}
 

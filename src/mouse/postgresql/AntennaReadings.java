@@ -1,11 +1,11 @@
 package mouse.postgresql;
 
 import mouse.TimeStamp;
-import mouse.dbTableModels.Antenna;
-import mouse.dbTableModels.AntennaReading;
-import mouse.dbTableModels.Box;
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.Transponder;
+import mouse.dbTableRows.AntennaRow;
+import mouse.dbTableRows.AntennaReadingRow;
+import mouse.dbTableRows.BoxRow;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.TransponderRow;
 
 /**
  * Models the antenna_readings table
@@ -19,6 +19,7 @@ public class AntennaReadings extends DbDynamicTable {
 		// TODO Auto-generated constructor stub
 		
 	}
+	
 
 	@Override
 	protected String createTableQuery() {
@@ -48,11 +49,11 @@ public class AntennaReadings extends DbDynamicTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
+	protected String[] insertValues(DbTableRow model) {
 		String[] fields = insertFields();
 		String[] values = new String[fields.length];
 		
-		AntennaReading antReading = (AntennaReading) model;
+		AntennaReadingRow antReading = (AntennaReadingRow) model;
 		TimeStamp timeStamp = antReading.getTimeStamp();/*
 		Date date;
 		try {
@@ -63,10 +64,10 @@ public class AntennaReadings extends DbDynamicTable {
 			return null;
 		}
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(date);
-		*/Transponder transponder = antReading.getTransponder();
+		*/TransponderRow transponder = antReading.getTransponder();
 		String transponderId = transponder.getId();
-		Antenna antenna = antReading.getAntena();
-		Box box = antenna.getBox();
+		AntennaRow antenna = antReading.getAntenna();
+		BoxRow box = antenna.getBox();
 		String boxId = box.getId();
 		String antennaId = antenna.getId();
 		values = new String[] {"'" + timeStamp + "'", 

@@ -3,24 +3,24 @@ package mouse;
 /**
  * Represents mouse-start-stop connections. Used to simplify data proccessing
  */
-import mouse.dbTableModels.Transponder;
+import mouse.dbTableRows.TransponderRow;
 
 public class MouseInterval {
 
-	private final Transponder mouse;
+	private final TransponderRow mouse;
 	
 	private final TimeStamp start;
 	
 	private final TimeStamp stop;
 
-	public MouseInterval(Transponder mouse, TimeStamp start, TimeStamp stop) {
+	public MouseInterval(TransponderRow mouse, TimeStamp start, TimeStamp stop) {
 		super();
 		this.mouse = mouse;
 		this.start = start;
 		this.stop = stop;
 	}
 
-	public Transponder getMouse() {
+	public TransponderRow getMouse() {
 		return mouse;
 	}
 

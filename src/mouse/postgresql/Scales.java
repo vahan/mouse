@@ -2,8 +2,8 @@ package mouse.postgresql;
 
 
 import mouse.TimeStamp;
-import mouse.dbTableModels.DbTableModel;
-import mouse.dbTableModels.Scale;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.ScaleRow;
 
 
 /**
@@ -26,8 +26,8 @@ public class Scales extends DbTable {
 	private void generateScales() {
 		// TODO Auto-generated method stub
 		
-		tableModels = new Scale[1];
-		tableModels[0] = new Scale("scale1", "segment1", 0, 0, new TimeStamp());
+		tableModels = new ScaleRow[1];
+		tableModels[0] = new ScaleRow("scale1", "segment1", 0, 0, new TimeStamp());
 		
 	}
 
@@ -51,7 +51,7 @@ public class Scales extends DbTable {
 	}
 
 	@Override
-	protected String[] insertValues(DbTableModel model) {
+	protected String[] insertValues(DbTableRow model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
