@@ -17,7 +17,7 @@ public class TransponderRow extends DbStaticTableRow {
 	private TimeStamp firstReading;
 	private TimeStamp lastReading;
 	private TimeStamp firstScaleReading;
-	private TimeStamp lastScaleReadin;
+	private TimeStamp lastScaleReading;
 	private AntennaRow lastAntenna;
 	private int stayCount;
 	private int meetingsCount;
@@ -57,8 +57,8 @@ public class TransponderRow extends DbStaticTableRow {
 		this.firstScaleReading = firstScaleReading;
 	}
 
-	public void setLastScaleReadin(TimeStamp lastScaleReadin) {
-		this.lastScaleReadin = lastScaleReadin;
+	public void setLastScaleReading(TimeStamp lastScaleReadin) {
+		this.lastScaleReading = lastScaleReadin;
 	}
 
 	public void setLastAntenna(AntennaRow lastAntenna) {
@@ -102,8 +102,8 @@ public class TransponderRow extends DbStaticTableRow {
 		return firstScaleReading;
 	}
 
-	public TimeStamp getLastScaleReadin() {
-		return lastScaleReadin;
+	public TimeStamp getLastScaleReading() {
+		return lastScaleReading;
 	}
 
 	public AntennaRow getLastAntenna() {
@@ -125,7 +125,7 @@ public class TransponderRow extends DbStaticTableRow {
 	@Override
 	public TimeStamp[] getLastResults() {
 		// TODO Auto-generated method stub
-		return new TimeStamp[] {lastReading};
+		return new TimeStamp[] {lastReading, lastScaleReading};
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		// TODO Auto-generated method stub
-		return antenna;
+		return staticTableRowIndex == 0 ? antenna : transponder;
 	}
 
 	

@@ -35,12 +35,12 @@ public abstract class DbDynamicTable extends DbTable {
 	 * @param dbStaticTableRow	
 	 * @return
 	 */
-	private HashMap<DbStaticTableRow, TimeStamp> lastReadings(int timeStampIndex) {
+	private HashMap<DbStaticTableRow, TimeStamp> lastReadings(int lastResultIndex, int staticTableRowIndex) {
 		HashMap<DbStaticTableRow, TimeStamp> lastReadings = new HashMap<DbStaticTableRow, TimeStamp>();
 		for (DbTableRow model : tableModels) {
 			DbDynamicTableRow dynamicTableRow = (DbDynamicTableRow) model;
-			TimeStamp timeStamp = dynamicTableRow.timeStamp(timeStampIndex);
-			DbStaticTableRow dbStaticTableRow = dynamicTableRow.staticTableRow(timeStampIndex);
+			TimeStamp timeStamp = dynamicTableRow.timeStamp(lastResultIndex);
+			DbStaticTableRow dbStaticTableRow = dynamicTableRow.staticTableRow(staticTableRowIndex);
 			if (lastReadings.containsKey(dbStaticTableRow)) {
 				TimeStamp lastReading = lastReadings.get(dbStaticTableRow);
 				if (timeStamp.after(lastReading)) {
@@ -54,8 +54,8 @@ public abstract class DbDynamicTable extends DbTable {
 	}
 	
 	
-	public void putLastReadings(int lastResultIndex) {
-		HashMap<DbStaticTableRow, TimeStamp> lastReadings = lastReadings(lastResultIndex);
+	public void putLastReadings(int lastResultIndex, int staticTableRowIndex) {
+		HashMap<DbStaticTableRow, TimeStamp> lastReadings = lastReadings(lastResultIndex, staticTableRowIndex);
 		for (DbStaticTableRow row : lastReadings.keySet()) {
 			row.setLastResult(lastReadings.get(row), lastResultIndex);
 		}

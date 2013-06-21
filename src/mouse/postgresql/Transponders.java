@@ -37,7 +37,7 @@ public class Transponders extends DbStaticTable {
 				"rfid text," +
 				"sex text," +
 				"first_reading timestamp," +
-				"last_readin timestamp," +
+				"last_reading timestamp," +
 				"first_scale_reading timestamp," +
 				"last_scale_reading timestamp," +
 				"last_antenna text," +

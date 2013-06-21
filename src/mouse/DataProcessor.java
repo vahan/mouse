@@ -128,17 +128,19 @@ public class DataProcessor {
 		}
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;
-		if (!storeLastResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0))
+		if (!storeLastResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0))
+			return false;
+		if (!storeLastResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"last_reading"}, 0, 1))
 			return false;
 		if (!generateDirectionResults())
 			return false;
-		if (!storeLastResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0))
+		if (!storeLastResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2))
 			return false;
 		if (!generateStayResults())
 			return false;
 		if (!generateMeetingResults())
 			return false;
-		if (!storeLastResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 1))
+		if (!storeLastResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2))
 			return false;
 		
 		return true;
@@ -215,9 +217,10 @@ public class DataProcessor {
 	 * 
 	 * @return
 	 */
-	private boolean storeLastResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, int lastResultIndex) {
+	private boolean storeLastResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
+			int lastResultIndex, int staticTableRowIndex) {
 		System.out.println("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
-		dynamicTable.putLastReadings(lastResultIndex);
+		dynamicTable.putLastReadings(lastResultIndex, staticTableRowIndex);
 		
 		DbStaticTableRow[] staticTableRows = staticTable.getTableModels();
 		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, lastResultIndex);
