@@ -19,6 +19,20 @@ public class Transponders extends DbStaticTable {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
+	public String updateCountsQuery() {
+		String[] fields = new String[] {"stay_count", "meeting_count", "balade_count"};
+		String[][] values = new String[tableModels.length][fields.length];
+		
+		for (int i = 0; i < tableModels.length; ++i) {
+			TransponderRow tr = (TransponderRow) tableModels[i];
+			values[i][0] = Integer.toString(tr.getStayCount());
+			values[i][1] = Integer.toString(tr.getMeetingsCount());
+			values[i][2] = Integer.toString(tr.getBaladeCount());
+		}
+		
+		return updateQuery(fields, values);
+	}
 
 	@Override
 	protected void generateTables() {
@@ -45,7 +59,7 @@ public class Transponders extends DbStaticTable {
 				"last_box_id integer references boxes(id)," +
 				"stay_count integer," +
 				"meeting_count integer," +
-				"balaade_count integer" +
+				"balade_count integer" +
 			");";
 		
 		return query;

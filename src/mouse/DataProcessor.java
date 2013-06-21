@@ -144,6 +144,8 @@ public class DataProcessor {
 			return false;
 		if (!storeExtremeResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2, true, new String[] {"timestamp"}))
 			return false;
+		if (!addTransponderCounts())
+			return false;
 		
 		return true;
 	}
@@ -347,6 +349,7 @@ public class DataProcessor {
 					TimeStamp stop = secondDir.getTimeStamp();
 					//Create and store the stayResult data entry
 					StayResultRow stayResult = new StayResultRow(start, stop, mouse, box, firstDir, secondDir);
+					mouse.addStay();
 					stayResults.add(stayResult);
 					if (mouseInBoxSet.remove(mouseInBox) == null) {
 						System.out.println("The mouseInBox could not be removed from the set after being added to the stayResults array! That's odd");
@@ -432,6 +435,12 @@ public class DataProcessor {
 							: transponderTo;
 					MeetingResultRow meetingResult = new MeetingResultRow(transponderFrom, transponderTo, start, 
 									stop, terminatedBy == transponderFrom ? 0 : 1, box);
+					transponderFrom.addMeeting();
+					transponderTo.addMeeting();
+					if (!transponderFrom.getSex().equals(transponderTo.getSex())) { //Unless they are gay (or maybe bi?)
+						transponderFrom.addBalade();
+						transponderTo.addBalade();
+					}
 					meetingResults.add(meetingResult);
 				}
 				
@@ -456,6 +465,19 @@ public class DataProcessor {
 		System.out.println("OK");
 		
 		return true;
+	}
+	
+	
+	private boolean addTransponderCounts() {
+		System.out.println("Updating transponder count columns");
+		String[] ids = psqlManager.executeQueries(psqlManager.getTransponders().updateCountsQuery());
+		if (ids.length > 0) {
+			System.out.println("OK. " + ids.length + " rows were updated");
+			return true;
+		} else {
+			System.out.println("FAILED");
+			return false;
+		}
 	}
 	
 	

@@ -65,18 +65,6 @@ public class TransponderRow extends DbStaticTableRow {
 		this.lastAntenna = lastAntenna;
 	}
 
-	public void setStayCount(int stayCount) {
-		this.stayCount = stayCount;
-	}
-
-	public void setMeetingsCount(int meetingsCount) {
-		this.meetingsCount = meetingsCount;
-	}
-
-	public void setBaladeCount(int baladeCount) {
-		this.baladeCount = baladeCount;
-	}
-
 	private Gender findSex() {
 		// TODO Auto-generated method stub
 		return Gender.ItsComplicated;
@@ -136,6 +124,18 @@ public class TransponderRow extends DbStaticTableRow {
 		} else {
 			firstReading = result;
 		}
+	}
+
+	public void addStay() {
+		stayCount++;
+	}
+	
+	public void addMeeting() {
+		meetingsCount++;
+	}
+	
+	public void addBalade() {
+		baladeCount++;
 	}
 	
 	
