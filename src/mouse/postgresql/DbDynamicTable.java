@@ -2,10 +2,13 @@ package mouse.postgresql;
 
 import java.util.HashMap;
 
+import mouse.ExtremeReading;
 import mouse.TimeStamp;
+import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbDynamicTableRow;
 import mouse.dbTableRows.DbStaticTableRow;
 import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.TransponderRow;
 
 /**
  * Abstract base class modeling those db tables, that are to be filled after processing the input data
@@ -28,37 +31,48 @@ public abstract class DbDynamicTable extends DbTable {
 		this.tableModels = tableModels;
 	}
 	
-
+	
 	/**
 	 * 
 	 * 
 	 * @param dbStaticTableRow	
 	 * @return
 	 */
-	private HashMap<DbStaticTableRow, TimeStamp> lastReadings(int lastResultIndex, int staticTableRowIndex) {
-		HashMap<DbStaticTableRow, TimeStamp> lastReadings = new HashMap<DbStaticTableRow, TimeStamp>();
+	private HashMap<DbStaticTableRow, ExtremeReading> extremeReadings(int lastResultIndex, int staticTableRowIndex,
+			boolean last) {
+		HashMap<DbStaticTableRow, ExtremeReading> extremeReadings = new HashMap<DbStaticTableRow, ExtremeReading>();
 		for (DbTableRow model : tableModels) {
 			DbDynamicTableRow dynamicTableRow = (DbDynamicTableRow) model;
 			TimeStamp timeStamp = dynamicTableRow.timeStamp(lastResultIndex);
+			TransponderRow transponder = dynamicTableRow.getTransponder();
+			DbStaticTableRow source = dynamicTableRow.getSource();
 			DbStaticTableRow dbStaticTableRow = dynamicTableRow.staticTableRow(staticTableRowIndex);
-			if (lastReadings.containsKey(dbStaticTableRow)) {
-				TimeStamp lastReading = lastReadings.get(dbStaticTableRow);
-				if (timeStamp.after(lastReading)) {
-					lastReadings.put(dbStaticTableRow, timeStamp);
+			if (extremeReadings.containsKey(dbStaticTableRow)) {
+				TimeStamp lastReading = extremeReadings.get(dbStaticTableRow).getTimeStamp();
+				if (last && timeStamp.after(lastReading)
+						|| !last && timeStamp.before(lastReading)) {
+					extremeReadings.put(dbStaticTableRow, new ExtremeReading(timeStamp, transponder, source));
 				}
 			} else {
-				lastReadings.put(dbStaticTableRow, timeStamp);
+				extremeReadings.put(dbStaticTableRow, new ExtremeReading(timeStamp, transponder, source));
 			}
 		}
-		return lastReadings;
+		return extremeReadings;
 	}
 	
 	
-	public void putLastReadings(int lastResultIndex, int staticTableRowIndex) {
-		HashMap<DbStaticTableRow, TimeStamp> lastReadings = lastReadings(lastResultIndex, staticTableRowIndex);
+	public void putExtremeReadings(int extremeResultIndex, int staticTableRowIndex, boolean last) {
+		HashMap<DbStaticTableRow, ExtremeReading> lastReadings = extremeReadings(
+				extremeResultIndex, staticTableRowIndex, last);
 		for (DbStaticTableRow row : lastReadings.keySet()) {
-			row.setLastResult(lastReadings.get(row), lastResultIndex);
+			row.setLastResult(lastReadings.get(row).getTimeStamp(), extremeResultIndex);
+			if (row instanceof TransponderRow) {
+				DbStaticTableRow source = lastReadings.get(row).getSource();
+				if (!(source instanceof AntennaRow))
+					continue;
+				lastReadings.get(row).getTransponder().setLastAntenna((AntennaRow) source);
+			}
 		}
 	}
-
+	
 }

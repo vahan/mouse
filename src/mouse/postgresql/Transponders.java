@@ -18,6 +18,7 @@ public class Transponders extends DbStaticTable {
 		
 		// TODO Auto-generated constructor stub
 	}
+	
 
 	@Override
 	protected void generateTables() {
@@ -40,8 +41,8 @@ public class Transponders extends DbStaticTable {
 				"last_reading timestamp," +
 				"first_scale_reading timestamp," +
 				"last_scale_reading timestamp," +
-				"last_antenna text," +
-				"last_box text," +
+				"last_antenna_id integer references antennas(id)," +
+				"last_box_id integer references boxes(id)," +
 				"stay_count integer," +
 				"meeting_count integer," +
 				"balaade_count integer" +

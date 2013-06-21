@@ -128,19 +128,21 @@ public class DataProcessor {
 		}
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;
-		if (!storeLastResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0))
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0, true, new String[] {"timestamp"}))
 			return false;
-		if (!storeLastResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"last_reading"}, 0, 1))
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"last_reading", "last_antenna_id"}, 0, 1, true, new String[] {"timestamp", "integer"}))
+			return false;
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"first_reading"}, 0, 1, false, new String[] {"timestamp"}))
 			return false;
 		if (!generateDirectionResults())
 			return false;
-		if (!storeLastResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2))
+		if (!storeExtremeResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2, true, new String[] {"timestamp"}))
 			return false;
 		if (!generateStayResults())
 			return false;
 		if (!generateMeetingResults())
 			return false;
-		if (!storeLastResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2))
+		if (!storeExtremeResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2, true, new String[] {"timestamp"}))
 			return false;
 		
 		return true;
@@ -217,14 +219,16 @@ public class DataProcessor {
 	 * 
 	 * @return
 	 */
-	private boolean storeLastResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
-			int lastResultIndex, int staticTableRowIndex) {
+	private boolean storeExtremeResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
+			int extremeResultIndex, int staticTableRowIndex, boolean last, String[] types) {
 		System.out.println("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
-		dynamicTable.putLastReadings(lastResultIndex, staticTableRowIndex);
+		
+		dynamicTable.putExtremeReadings(extremeResultIndex, staticTableRowIndex, last);
 		
 		DbStaticTableRow[] staticTableRows = staticTable.getTableModels();
-		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, lastResultIndex);
+		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, extremeResultIndex, types);
 		String[] ids = psqlManager.executeQueries(updateLastReadingsQuery);
+		
 		if (ids.length > 0) { //TODO: Check if ALL the rows were updated
 			System.out.println("OK. " + ids.length + " rows were modified");
 			return true;
@@ -250,7 +254,7 @@ public class DataProcessor {
 		while (it.hasNext()) {
 			AntennaReadingRow antennaReading = it.next();
 			TransponderRow mouse = antennaReading.getTransponder();
-			AntennaRow antenna = antennaReading.getAntenna();
+			AntennaRow antenna = (AntennaRow) antennaReading.getSource();
 			BoxRow box = antenna.getBox();
 			TimeStamp timestamp = antennaReading.getTimeStamp();
 			MouseInBox mouseInBox = new MouseInBox(mouse, box, antenna, timestamp);
@@ -318,7 +322,7 @@ public class DataProcessor {
 		while (it.hasNext()) {
 			DirectionResultRow dirRes = it.next();
 			TransponderRow mouse = dirRes.getTransponder();
-			BoxRow box = dirRes.getBox();
+			BoxRow box = (BoxRow) dirRes.getSource();
 			TimeStamp timeStamp = dirRes.getTimeStamp();
 			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //TODO: perhaps a new type is needed instead of putting null for Antenna
 			DirectionResultRow secondDir = mouseInBoxSet.get(mouseInBox);
@@ -384,7 +388,7 @@ public class DataProcessor {
 		HashMap<BoxRow, ArrayList<MouseInterval>> boxSet = new HashMap<BoxRow, ArrayList<MouseInterval>>();
 		//iterate through all stayResults
 		for (StayResultRow stayResult : stayResults) {
-			BoxRow box = stayResult.getBox();
+			BoxRow box = (BoxRow) stayResult.getSource();
 			ArrayList<MouseInterval> mouseIntervals = boxSet.get(box);
 			//If the boxSet doesn't contain the mouse-start-stop pair, add it
 			if (mouseIntervals == null) {

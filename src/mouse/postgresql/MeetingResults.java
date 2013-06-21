@@ -49,13 +49,13 @@ public class MeetingResults extends DbDynamicTable {
 	@Override
 	protected String[] insertValues(DbTableRow model) {
 		MeetingResultRow meetResult = (MeetingResultRow) model;
-		String[] values = new String[] {meetResult.getTransponderFrom().getId(),
+		String[] values = new String[] {meetResult.getTransponder().getId(),
 										meetResult.getTransponderTo().getId(),
 										"'" + meetResult.getStart().toString() + "'",
 										"'" + meetResult.getStop().toString() + "'",
 										Float.toString(meetResult.getDuration()),
 										Integer.toString(meetResult.getTerminatedBy()),
-										meetResult.getBox().getId()
+										meetResult.getSource().getId()
 										};
 		return values;
 	}

@@ -9,28 +9,20 @@ import mouse.TimeStamp;
  */
 public class MeetingResultRow extends DbDynamicTableRow {
 	
-	private final TransponderRow transponderFrom;
 	private final TransponderRow transponderTo;
 	private final TimeStamp start;
 	private final TimeStamp stop;
 	private final float duration;
 	private final int terminatedBy;
-	private final BoxRow box;
 	
 	public MeetingResultRow(TransponderRow transponderFrom, TransponderRow transponderTo, 
 			TimeStamp start, TimeStamp stop, int terminatedBy, BoxRow box) {
-		super();
-		this.transponderFrom = transponderFrom;
+		super(transponderFrom, box);
 		this.transponderTo = transponderTo;
 		this.start = start;
 		this.stop = stop;
 		this.duration = TimeStamp.duration(start, stop);
 		this.terminatedBy = terminatedBy;
-		this.box = box;
-	}
-
-	public TransponderRow getTransponderFrom() {
-		return transponderFrom;
 	}
 
 	public TransponderRow getTransponderTo() {
@@ -53,16 +45,12 @@ public class MeetingResultRow extends DbDynamicTableRow {
 		return terminatedBy;
 	}
 
-	public BoxRow getBox() {
-		return box;
-	}
-
 	@Override
 	public String toString() {
-		return "MeetingResult [transponderFrom=" + transponderFrom
+		return "MeetingResult [transponderFrom=" + transponder
 				+ ", transponderTo=" + transponderTo + ", start=" + start
 				+ ", stop=" + stop + ", terminatedBy=" + terminatedBy
-				+ ", box=" + box + "]";
+				+ ", box=" + source + "]";
 	}
 
 	@Override
@@ -75,9 +63,9 @@ public class MeetingResultRow extends DbDynamicTableRow {
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		// TODO Auto-generated method stub
 		switch (staticTableRowIndex) {
-			case 0:		return transponderFrom;
+			case 0:		return transponder;
 			case 1:		return transponderTo;
-			case 2:		return box;
+			case 2:		return source;
 			default:	return null;
 		}
 	}

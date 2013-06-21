@@ -32,7 +32,7 @@ public class DirectionResults extends DbDynamicTable {
 		HashMap<BoxRow, TimeStamp> lastReadings = new HashMap<BoxRow, TimeStamp>();
 		for (DbTableRow model : tableModels) {
 			DirectionResultRow directionResult = (DirectionResultRow) model;
-			BoxRow box = directionResult.getBox();
+			BoxRow box = (BoxRow) directionResult.getSource();
 			TimeStamp timeStamp = directionResult.getTimeStamp();
 			if (lastReadings.containsKey(box)) {
 				TimeStamp lastReading = lastReadings.get(box);
@@ -85,7 +85,7 @@ public class DirectionResults extends DbDynamicTable {
 		String[] values = new String[] {"'" + dirResult.getTimeStamp().toString() + "'",
 										"'" + dirResult.getDirection().toString() + "'",
 										dirResult.getTransponder().getId(),
-										dirResult.getBox().getId(),
+										dirResult.getSource().getId(),
 		};
 		return values;
 	}

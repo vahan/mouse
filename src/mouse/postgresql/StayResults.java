@@ -51,7 +51,7 @@ public class StayResults extends DbDynamicTable {
 										"'" + stayResult.getStop().toString() + "'",
 										Float.toString(stayResult.getDuration()),
 										stayResult.getTransponder().getId(),
-										stayResult.getBox().getId(),
+										stayResult.getSource().getId(),
 										stayResult.getDirIn().getId(),
 										stayResult.getDirOut().getId()
 		};

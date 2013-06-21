@@ -1,7 +1,9 @@
 package mouse.postgresql;
 
 import mouse.TimeStamp;
+import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbStaticTableRow;
+import mouse.dbTableRows.TransponderRow;
 
 /**
  * Abstract base class to model those tables that are filled before process the input data
@@ -47,19 +49,26 @@ public abstract class DbStaticTable extends DbTable {
 	 * 
 	 * @return
 	 */
-	public String updateLastReadingsQuery(String[] fields, DbStaticTableRow[] lastResult, int lastResultIndex) {
+	public String updateLastReadingsQuery(String[] fields, DbStaticTableRow[] lastResult, int lastResultIndex, String[] types) {
 		String[][] values = new String[tableModels.length][fields.length];
 		for (int i = 0; i < tableModels.length; ++i) {
 			for (int j = 0; j < fields.length; ++j) {
-				TimeStamp lastReading = lastResult[i].getLastResults()[lastResultIndex];
-				if (lastReading == null) {
-					lastReading = new TimeStamp(0); //TODO: This is madness!! It's still a mystery why some lastReadings are null
+				if (types[j] == "timestamp") {
+					TimeStamp lastReading = lastResult[i].getLastResults()[lastResultIndex];
+					if (lastReading == null) {
+						lastReading = new TimeStamp(0); //TODO: This is madness!! It's still a mystery why some lastReadings are null
+					}
+					values[i][j] = "'" + lastReading + "'::" + types[j];
+				} else if (types[j] == "integer") {
+					AntennaRow lastAntenna = ((TransponderRow) lastResult[i]).getLastAntenna();
+					values[i][j] = lastAntenna.getId();
 				}
-				values[i][j] = "'" + lastReading + "'::timestamp";
 			}
 		}
 		
 		return updateQuery(fields, values);
 	}
+	
+	
 
 }

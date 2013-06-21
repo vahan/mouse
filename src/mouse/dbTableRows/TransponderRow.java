@@ -121,7 +121,7 @@ public class TransponderRow extends DbStaticTableRow {
 	public int getBaladeCount() {
 		return baladeCount;
 	}
-
+	
 	@Override
 	public TimeStamp[] getLastResults() {
 		// TODO Auto-generated method stub
@@ -131,7 +131,11 @@ public class TransponderRow extends DbStaticTableRow {
 	@Override
 	public void setLastResult(TimeStamp result, int lastResultIndex) {
 		// TODO Auto-generated method stub
-		lastReading = result;
+		if (lastResultIndex == 0) {
+			lastReading = result;
+		} else {
+			firstReading = result;
+		}
 	}
 	
 	

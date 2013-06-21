@@ -12,16 +12,12 @@ public class DirectionResultRow extends DbDynamicTableRow {
 	
 	private final TimeStamp timeStamp;
 	private final Direction direction;
-	private final TransponderRow transponder;
-	private final BoxRow box;
 	
 	
 	public DirectionResultRow(TimeStamp timestamp, Direction direction, TransponderRow transponder, BoxRow box) {
-		super();
+		super(transponder, box);
 		this.timeStamp = timestamp;
 		this.direction = direction;
-		this.transponder = transponder;
-		this.box = box;
 	}
 
 	public TimeStamp getTimeStamp() {
@@ -31,19 +27,11 @@ public class DirectionResultRow extends DbDynamicTableRow {
 	public Direction getDirection() {
 		return direction;
 	}
-
-	public TransponderRow getTransponder() {
-		return transponder;
-	}
-
-	public BoxRow getBox() {
-		return box;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "DirectionResult [timeStamp=" + timeStamp + ", direction="
-				+ direction + ", transponder=" + transponder + ", box=" + box
+				+ direction + ", transponder=" + transponder + ", box=" + source
 				+ "]";
 	}
 
@@ -56,7 +44,7 @@ public class DirectionResultRow extends DbDynamicTableRow {
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		// TODO Auto-generated method stub
-		return box;
+		return source;
 	}
 	
 	

@@ -12,19 +12,15 @@ public class StayResultRow extends DbDynamicTableRow {
 	private final TimeStamp start;
 	private final TimeStamp stop;
 	private final float duration;
-	private final TransponderRow transponder;
-	private final BoxRow box;
 	private final DirectionResultRow dirIn;
 	private final DirectionResultRow dirOut;
 	
 	public StayResultRow(TimeStamp start, TimeStamp stop, TransponderRow transponder, 
 						BoxRow box, DirectionResultRow dirIn, DirectionResultRow dirOut) {
-		super();
+		super(transponder, box);
 		this.start = start;
 		this.stop = stop;
 		this.duration = TimeStamp.duration(start, stop);
-		this.transponder = transponder;
-		this.box = box;
 		this.dirIn = dirIn;
 		this.dirOut = dirOut;
 	}
@@ -41,14 +37,6 @@ public class StayResultRow extends DbDynamicTableRow {
 		return duration;
 	}
 
-	public TransponderRow getTransponder() {
-		return transponder;
-	}
-
-	public BoxRow getBox() {
-		return box;
-	}
-
 	public DirectionResultRow getDirIn() {
 		return dirIn;
 	}
@@ -60,7 +48,7 @@ public class StayResultRow extends DbDynamicTableRow {
 	@Override
 	public String toString() {
 		return "StayResult [start=" + start + ", stop=" + stop
-				+ ", transponder=" + transponder + ", box=" + box + ", dirIn="
+				+ ", transponder=" + transponder + ", box=" + source + ", dirIn="
 				+ dirIn + ", dirOut=" + dirOut + "]";
 	}
 
@@ -73,7 +61,7 @@ public class StayResultRow extends DbDynamicTableRow {
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		// TODO Auto-generated method stub
-		return staticTableRowIndex == 0 ? transponder : box;
+		return staticTableRowIndex == 0 ? transponder : source;
 	}
 	
 	

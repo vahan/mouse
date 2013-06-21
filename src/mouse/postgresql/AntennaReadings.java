@@ -66,7 +66,7 @@ public class AntennaReadings extends DbDynamicTable {
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(date);
 		*/TransponderRow transponder = antReading.getTransponder();
 		String transponderId = transponder.getId();
-		AntennaRow antenna = antReading.getAntenna();
+		AntennaRow antenna = (AntennaRow) antReading.getSource();
 		BoxRow box = antenna.getBox();
 		String boxId = box.getId();
 		String antennaId = antenna.getId();
