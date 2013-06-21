@@ -1,5 +1,6 @@
 package mouse;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import mouse.dbTableRows.AntennaReadingRow;
 import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbStaticTableRow;
 import mouse.dbTableRows.DirectionResultRow;
+import mouse.dbTableRows.LogRow;
 import mouse.dbTableRows.MeetingResultRow;
 import mouse.dbTableRows.StayResultRow;
 import mouse.dbTableRows.TransponderRow;
@@ -25,6 +27,7 @@ import mouse.postgresql.AntennaReadings;
 import mouse.postgresql.DbDynamicTable;
 import mouse.postgresql.DbStaticTable;
 import mouse.postgresql.DirectionResults;
+import mouse.postgresql.Logs;
 import mouse.postgresql.MeetingResults;
 import mouse.postgresql.PostgreSQLManager;
 import mouse.postgresql.StayResults;
@@ -85,6 +88,9 @@ public class DataProcessor {
 	private final PostgreSQLManager psqlManager;
 	
 	
+	private LogRow log;
+	
+	
 	public DataProcessor(String inputCSVFileName, String username, String password, Object host, Object port, String dbName) {
 		this.inputCSVFileName = inputCSVFileName;
 		
@@ -126,7 +132,12 @@ public class DataProcessor {
 		if (!psqlManager.storeStaticTables()) {
 			return false;
 		}
+		log = new LogRow(inputCSVFileName);
 		if (!readAntennaReadingsCSV(inputCSVFileName))
+			return false;
+		if (!storeLog(inputCSVFileName))
+			return false;
+		if (!storeAntennaReadings())
 			return false;
 		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0, true, new String[] {"timestamp"}))
 			return false;
@@ -163,6 +174,10 @@ public class DataProcessor {
 		try {
 			reader = new CSVReader(new FileReader(sourceFile), ';', '\'', 1); //skip the first (header) line
 			
+			TimeStamp firstReading = null;
+			TimeStamp lastReading = null;
+			int nbReadings = 0;
+			
 			String [] nextLine;
 			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
@@ -175,6 +190,11 @@ public class DataProcessor {
 					reader.close();
 					return false;
 				}
+				if (firstReading == null || timeStamp.before(firstReading))
+					firstReading = timeStamp;
+				if (lastReading == null || timeStamp.after(lastReading))
+					lastReading = timeStamp;
+				
 				String boxName = nextLine[2];
 				BoxRow box = BoxRow.getBoxByName(boxName);
 				String antennaPosition = nextLine[3];
@@ -185,25 +205,18 @@ public class DataProcessor {
 					continue;
 				TransponderRow transponder = TransponderRow.getTransponder(rfid);
 				
-				AntennaReadingRow antennaReading = new AntennaReadingRow(timeStamp, transponder, antenna);
+				AntennaReadingRow antennaReading = new AntennaReadingRow(timeStamp, transponder, antenna, log);
 				antennaReadings.add(antennaReading);
+				
+				nbReadings++;
 			}
 			reader.close();
 			
-			System.out.println("Saving antenna readings into DB");
-			//Set the read data into the according db table object of psqlManager
-			AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
-			antennaReadingsTable.setTableModels(
-					antennaReadings.toArray(new AntennaReadingRow[antennaReadings.size()]));
-			//Generate the INSERT query that inserts the data into the according db table
-			String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
-			//Execute the query and return the generated serial IDs
-			String[] ids = psqlManager.executeQueries(insertQueries);
-			//Set the IDs to the appropriate objects
-			for (int i = 0; i < antennaReadings.size(); ++i) {
-				antennaReadings.get(i).setId(ids[i]);
-			}
-			System.out.println("OK");
+			log.setFirstReading(firstReading);
+			log.setLastReading(lastReading);
+			log.setNbReadings(nbReadings);
+			log.setDuration();
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -216,6 +229,55 @@ public class DataProcessor {
 		
 		return true;
 	}
+	
+	
+	private boolean storeAntennaReadings() {
+		System.out.println("Saving antenna readings into DB");
+		
+		//Set the read data into the according db table object of psqlManager
+		AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
+		antennaReadingsTable.setTableModels(
+				antennaReadings.toArray(new AntennaReadingRow[antennaReadings.size()]));
+		//Generate the INSERT query that inserts the data into the according db table
+		String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
+		//Execute the query and return the generated serial IDs
+		String[] ids = psqlManager.executeQueries(insertQueries);
+		if (ids.length <= 0) {
+			System.out.println("FAILED");
+			return false;
+		}
+			
+		//Set the IDs to the appropriate objects
+		for (int i = 0; i < antennaReadings.size(); ++i) {
+			antennaReadings.get(i).setId(ids[i]);
+		}
+		
+		System.out.println("OK");
+		return true;
+	}
+	
+	
+	private boolean storeLog(String sourceFile) {
+		System.out.println("Inserting into Log table");
+
+		Logs logsTable = psqlManager.getLogs();
+		logsTable.getTableModels()[0] = log;
+		//Generate the INSERT query that inserts the data into the according db table
+		String insertQueries = logsTable.insertQuery(logsTable.getTableModels());
+		//Execute the query and return the generated serial IDs
+		String[] ids = psqlManager.executeQueries(insertQueries);
+		//Set the IDs to the appropriate objects
+		if (ids.length != 1) {
+			System.out.println("FAILED");
+			return false;
+		}
+		log.setId(ids[0]);
+		System.out.println("OK");
+		
+		return true;
+	}
+	
+	
 	
 	/**
 	 * 

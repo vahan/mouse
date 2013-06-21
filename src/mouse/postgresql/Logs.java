@@ -1,6 +1,7 @@
 package mouse.postgresql;
 
 import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.LogRow;
 
 
 /**
@@ -13,6 +14,7 @@ public class Logs extends DbTable {
 	public Logs(String tableName) {
 		super(tableName);
 		// TODO Auto-generated constructor stub
+		tableModels = new LogRow[1];
 	}
 
 	@Override
@@ -32,14 +34,33 @@ public class Logs extends DbTable {
 
 	@Override
 	protected String[] insertFields() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] fields = new String[] {
+				"first_reading",
+				"last_reading",
+				"duration",
+				"imported_at",
+				"nb_readings",
+				"size"
+		};
+		return fields;
 	}
 
 	@Override
 	protected String[] insertValues(DbTableRow model) {
-		// TODO Auto-generated method stub
-		return null;
+		LogRow log = (LogRow) model;
+		if (log == null)
+			return null;
+		
+		String[] values = new String[] {
+				"'" + log.getFirstReading() + "'",
+				"'" + log.getLastReading() + "'",
+				Float.toString(log.getDuration()),
+				"'" + log.getImportedAt() + "'",
+				Integer.toString(log.getNbReadings()),
+				Long.toString(log.getSize())
+		};
+		
+		return values;
 	}
 	
 }

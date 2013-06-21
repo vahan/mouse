@@ -1,5 +1,7 @@
 package mouse.dbTableRows;
 
+import java.io.File;
+
 import mouse.TimeStamp;
 
 /**
@@ -10,23 +12,18 @@ import mouse.TimeStamp;
 public class LogRow extends DbTableRow {
 
 	private final String fileName;
-	private final TimeStamp firstReading;
-	private final TimeStamp lastReading;
-	private final float duration;
+	private TimeStamp firstReading;
+	private TimeStamp lastReading;
+	private float duration;
 	private final TimeStamp importedAt;
-	private final int nbReadings;
-	private final float size;
+	private int nbReadings;
+	private final long size;
 	
-	public LogRow(String fileName, TimeStamp firstReading, TimeStamp lastReading,
-			float duration, TimeStamp importedAt, int nbReadings, float size) {
+	public LogRow(String fileName) {
 		super();
 		this.fileName = fileName;
-		this.firstReading = firstReading;
-		this.lastReading = lastReading;
-		this.duration = duration;
-		this.importedAt = importedAt;
-		this.nbReadings = nbReadings;
-		this.size = size;
+		this.importedAt = new TimeStamp();
+		this.size = (new File(fileName)).length();
 	}
 
 	public String getFileName() {
@@ -53,11 +50,25 @@ public class LogRow extends DbTableRow {
 		return nbReadings;
 	}
 
-	public float getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	
+	public void setFirstReading(TimeStamp firstReading) {
+		this.firstReading = firstReading;
+	}
+
+	public void setLastReading(TimeStamp lastReading) {
+		this.lastReading = lastReading;
+	}
+
+	public void setNbReadings(int nbReadings) {
+		this.nbReadings = nbReadings;
+	}
+
+	public void setDuration() {
+		this.duration = TimeStamp.duration(firstReading, lastReading);
+	}
 	
 	
 	

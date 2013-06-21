@@ -12,13 +12,14 @@ import mouse.TimeStamp;
 public class AntennaReadingRow extends DbDynamicTableRow {
 	
 	private final TimeStamp timeStamp;
-	private LogRow log;
+	private final LogRow log;
 	private DirectionResultRow directionResult;
 	
 	public AntennaReadingRow(TimeStamp timeStamp, TransponderRow transponder,
-			AntennaRow antena) {
+			AntennaRow antena, LogRow log) {
 		super(transponder, antena);
 		this.timeStamp = timeStamp;
+		this.log = log;
 	}
 
 	public void setDirectionResult(DirectionResultRow directionResult) {
@@ -31,10 +32,6 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 
 	public LogRow getLog() {
 		return log;
-	}
-
-	public void setLog(LogRow log) {
-		this.log = log;
 	}
 
 	public DirectionResultRow getDirectionResult() {
