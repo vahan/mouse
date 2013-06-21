@@ -29,8 +29,7 @@ public class AntennaReadings extends DbDynamicTable {
 							"log_id integer references logs(id)," +
 							"transponder_id integer references transponders(id)," +
 							"box_id integer references boxes(id)," +
-							"antenna_id integer references antennas(id)," +
-							"direction_id integer references direction_results(id)" +
+							"antenna_id integer references antennas(id)" +
 						");";
 		
 		return query;

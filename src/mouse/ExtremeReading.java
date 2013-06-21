@@ -1,6 +1,5 @@
 package mouse;
 
-import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbStaticTableRow;
 import mouse.dbTableRows.TransponderRow;
 

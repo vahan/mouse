@@ -1,0 +1,136 @@
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import mouse.DataProcessor;
+
+public class FileChooserPanel extends JPanel implements ActionListener {
+
+	private JButton openButton, saveButton;
+	private JTextArea log;
+	private JFileChooser fc;
+	private File file = null;
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1495818979583613856L;
+
+	
+	public FileChooserPanel() {
+		super(new BorderLayout());
+		
+		init();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+ 
+		//Handle open button action.
+		if (e.getSource() == openButton) {
+			int returnVal = fc.showOpenDialog(FileChooserPanel.this);
+ 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				file = fc.getSelectedFile();
+				//This is where a real application would open the file.
+				log.append("Opening: " + file.getName() + ".");
+			} else {
+				log.append("Open command cancelled by user.\n");
+			}
+			log.setCaretPosition(log.getDocument().getLength());
+ 
+		//Handle save button action.
+		} else if (e.getSource() == saveButton) {
+			if (file == null)
+				return;
+			log.append("Saving: " + file.getName() + ".\n");
+			run(file.getName());
+			log.setCaretPosition(log.getDocument().getLength());
+		}
+
+	}
+	
+	private void run(String inputFileName) {
+
+		//Read the configuration data from the console
+		//TODO: change the config reading from a file (XML?)
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String username;
+		String password;
+		String host;
+		String port;
+		String dbName;
+		//try {
+			System.out.println("Enter the input CSV file name");
+			inputFileName = "data.csv";// br.readLine().trim();
+			System.out.println("Enter the DB username");
+			username = "vahan"; //br.readLine().trim();
+			System.out.println("Enter the DB password");
+			password = "123"; //br.readLine().trim();
+			System.out.println("Enter the DB host name");
+			host = "localhost"; //br.readLine().trim();
+			System.out.println("Enter the DB port");
+			port = "5432"; //br.readLine().trim();
+			System.out.println("Enter the DB name");
+			dbName = "mousedb"; //br.readLine().trim();
+		/*} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}*/
+		
+		DataProcessor processor = new DataProcessor(inputFileName, username, password, host, port, dbName);
+		if (!processor.getPsqlManager().connect(host, port, dbName)) {
+			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getUrl());
+			return;
+		}
+		if (!processor.process()) {
+			System.out.println("An error accurred! Please check the above error messages");
+			return;
+		}
+		
+		System.out.println("The data was successfully read, processed and stored in DB");
+	}
+	
+	private void init() {
+		//Create the log first, because the action listeners
+		//need to refer to it.
+		log = new JTextArea(5,20);
+		log.setMargin(new Insets(5,5,5,5));
+		log.setEditable(false);
+		JScrollPane logScrollPane = new JScrollPane(log);
+		
+		fc = new JFileChooser();
+		openButton = new JButton("Open a File");
+		openButton.addActionListener(this);
+		
+		//Create the save button.  We use the image from the JLF
+		//Graphics Repository (but we extracted it from the jar).
+		saveButton = new JButton("Import");
+		saveButton.addActionListener(this);
+		
+		//For layout purposes, put the buttons in a separate panel
+		JPanel buttonPanel = new JPanel(); //use FlowLayout
+		buttonPanel.add(openButton);
+		buttonPanel.add(saveButton);
+		
+		//Add the buttons and the log to this panel.
+		add(buttonPanel, BorderLayout.PAGE_START);
+		add(logScrollPane, BorderLayout.CENTER);
+	}
+	
+
+}

@@ -13,17 +13,12 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 	
 	private final TimeStamp timeStamp;
 	private final LogRow log;
-	private DirectionResultRow directionResult;
 	
 	public AntennaReadingRow(TimeStamp timeStamp, TransponderRow transponder,
 			AntennaRow antena, LogRow log) {
 		super(transponder, antena);
 		this.timeStamp = timeStamp;
 		this.log = log;
-	}
-
-	public void setDirectionResult(DirectionResultRow directionResult) {
-		this.directionResult = directionResult;
 	}
 
 	public TimeStamp getTimeStamp() {
@@ -34,15 +29,10 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 		return log;
 	}
 
-	public DirectionResultRow getDirectionResult() {
-		return directionResult;
-	}
-
 	@Override
 	public String toString() {
 		return "AntennaReading [timeStamp=" + timeStamp + ", log=" + log
-				+ ", transponder=" + transponder + ", antena=" + source
-				+ ", directionResult=" + directionResult + "]";
+				+ ", transponder=" + transponder + ", antena=" + source + "]";
 	}
 
 	@Override
