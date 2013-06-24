@@ -13,16 +13,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import mouse.DataProcessor;
+import mouse.postgresql.Settings;
+
+import dataProcessing.DataProcessor;
+import dataProcessing.XmlReader;
+
 
 public class ButtonsPanel extends JPanel implements ActionListener {
 
-	private JButton openButton, saveButton, histButton;
+	private JButton openButton, saveButton, histButton, settingsButton;
 	private JFileChooser fc;
 	private JTextArea log;
-	private File file = null;
+	private File sourceFile = null;
+	private File settingsFile = null;
 	
-	DataProcessor processor;
+	DataProcessor processor = null;
 	
 	
 	/**
@@ -47,21 +52,25 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		if (e.getSource() == openButton) {
 			int returnVal = fc.showOpenDialog(ButtonsPanel.this);
  			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				file = fc.getSelectedFile();
+				sourceFile = fc.getSelectedFile();
 				//This is where a real application would open the file.
-				log.append("Opening: " + file.getName() + ".");
+				log.append("Opening: " + sourceFile.getName() + ".");
 			} else {
 				log.append("Open command cancelled by user.\n");
 			}
 			log.setCaretPosition(log.getDocument().getLength());
  		//Handle save button action.
 		} else if (e.getSource() == saveButton) {
-			if (file == null)
+			if (sourceFile == null)
 				return;
-			log.append("Saving: " + file.getName() + ".\n");
-			run(file.getName());
+			log.append("Saving: " + sourceFile.getName() + ".\n");
+			run(sourceFile.getName());
 			log.setCaretPosition(log.getDocument().getLength());
 		} else if (e.getSource() == histButton) {
+			if (settingsFile == null) {
+				JOptionPane.showMessageDialog(getParent(), "First import settings.");
+				return;
+			}
 			if (processor == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import the data.");
 				return;
@@ -70,41 +79,31 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 			
 			HistogramFrame histFrame = new HistogramFrame(log, processor);
 			histFrame.run();
+		} else if (e.getSource() == settingsButton) {
+			int returnVal = fc.showOpenDialog(ButtonsPanel.this);
+ 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+ 				settingsFile = fc.getSelectedFile();
+				//This is where a real application would open the file.
+				log.append("Opening: " + settingsFile.getName() + ".");
+			} else {
+				log.append("Open command cancelled by user.\n");
+			}
+			log.setCaretPosition(log.getDocument().getLength());
 		}
 
 	}
 	
 	private void run(String inputFileName) {
-		//Read the configuration data from the console
-		//TODO: change the config reading from a file (XML?)
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String username;
-		String password;
-		String host;
-		String port;
-		String dbName;
-		//try {
-			System.out.println("Enter the input CSV file name");
-			inputFileName = "data.csv";// br.readLine().trim();
-			System.out.println("Enter the DB username");
-			username = "vahan"; //br.readLine().trim();
-			System.out.println("Enter the DB password");
-			password = "123"; //br.readLine().trim();
-			System.out.println("Enter the DB host name");
-			host = "localhost"; //br.readLine().trim();
-			System.out.println("Enter the DB port");
-			port = "5432"; //br.readLine().trim();
-			System.out.println("Enter the DB name");
-			dbName = "mousedb"; //br.readLine().trim();
-		/*} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (settingsFile == null) {
+			System.out.println("No Settings file was given");
 			return;
-		}*/
+		}
 		
-		processor = new DataProcessor(inputFileName, username, password, host, port, dbName);
-		if (!processor.getPsqlManager().connect(host, port, dbName)) {
-			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getUrl());
+		XmlReader reader = new XmlReader();
+		Settings settings = reader.importSettingsFromXml(settingsFile.getName());
+		processor = new DataProcessor(inputFileName, settings);
+		if (!processor.getPsqlManager().connect()) {
+			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
 		}
 		if (!processor.process()) {
@@ -127,11 +126,15 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		histButton = new JButton("Draw histogram");
 		histButton.addActionListener(this);
 		
+		settingsButton = new JButton("Import Settings");
+		settingsButton.addActionListener(this);
+		
 		//For layout purposes, put the buttons in a separate panel
 		JPanel buttonPanel = new JPanel(); //use FlowLayout
 		buttonPanel.add(openButton);
 		buttonPanel.add(saveButton);
 		buttonPanel.add(histButton);
+		buttonPanel.add(settingsButton);
 		
 		//Add the buttons and the log to this panel.
 		add(buttonPanel, BorderLayout.PAGE_START);

@@ -27,7 +27,8 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
-import mouse.DataProcessor;
+import dataProcessing.DataProcessor;
+
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.MeetingResultRow;
 import mouse.postgresql.MeetingResults;

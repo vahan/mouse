@@ -1,6 +1,6 @@
 package mouse.dbTableRows;
 
-import mouse.Direction;
+import dataProcessing.Direction;
 import mouse.TimeStamp;
 
 /**

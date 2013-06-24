@@ -7,8 +7,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mouse.Column;
-import mouse.DataProcessor;
+import dataProcessing.Column;
+import dataProcessing.DataProcessor;
+
 
 /**
  * This class provides functionality to deal with the postgresql database
@@ -18,9 +19,7 @@ import mouse.DataProcessor;
 public class PostgreSQLManager {
 	//Connection data
 	private Connection conn = null;
-	private final String username;
-	private final String password;
-	private String url;
+	private Settings settings;
 
 	//The static tables
 	private Logs logs = new Logs("logs");
@@ -45,9 +44,8 @@ public class PostgreSQLManager {
 	 * @param password
 	 * @param columns
 	 */
-	public PostgreSQLManager(String username, String password, Column[] columns) {
-		this.username = username;
-		this.password = password;
+	public PostgreSQLManager(Settings settings, Column[] columns) {
+		this.settings = settings;
 
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -74,10 +72,6 @@ public class PostgreSQLManager {
 		tables.add(antennaReadings);
 		tables.add(meetingResults);
 		
-	}
-
-	public String getUrl() {
-		return url;
 	}
 	
 	public Connection getCon() {
@@ -123,14 +117,17 @@ public class PostgreSQLManager {
 	public MeetingResults getMeetingResults() {
 		return meetingResults;
 	}
+	
+	public Settings getSettings() {
+		return settings;
+	}
 
-	public boolean connect(String host, String port, String dbName) {
-		url = generateUrl(host, port, dbName);
+	public boolean connect() {
 		
 		try {
-			conn = DriverManager.getConnection(url, this.username, this.password);
+			conn = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
 		} catch (SQLException e) {
-			System.out.println("Connection to DB " + dbName + " could not be established:");
+			System.out.println("Connection to DB " + settings.getDbName() + " could not be established:");
 			e.printStackTrace();
 			return false;
 		}
@@ -229,7 +226,7 @@ public class PostgreSQLManager {
 		ArrayList<String> results = new ArrayList<String>();
 		
 		try {
-			conn = DriverManager.getConnection(url, username, password);
+			conn = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
 			stmt = conn.createStatement();
 			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
 			ResultSet resultSet = stmt.getGeneratedKeys();
@@ -267,7 +264,7 @@ public class PostgreSQLManager {
 		boolean success = true;
 		
 		try {
-			conn = DriverManager.getConnection(url, username, password);
+			conn = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
 			for (int i = 0; i < queries.length; ++i) {
 				String query = queries[i];
 				pst = conn.prepareStatement(query);
@@ -305,27 +302,6 @@ public class PostgreSQLManager {
 		}
 		
 		return true;
-	}
-
-	/**
-	 * Generate the appropriate url from the given host name, port and db name.
-	 * Note that host and port can be empty
-	 * @param host
-	 * @param port
-	 * @param dbName
-	 * @return
-	 */
-	private String generateUrl(String host, String port, String dbName) {
-		String url = "jdbc:postgresql:";
-		if (!host.isEmpty()) {
-			url += "//" + host;
-			if (!port.isEmpty())
-				url +=  ":" + port + "/";
-			else
-				url += "/";
-		}
-		url += dbName;
-		return url;
 	}
 
 }
