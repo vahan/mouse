@@ -10,6 +10,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.table.TableModel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -27,6 +28,8 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
 import mouse.DataProcessor;
+import mouse.dbTableRows.DbTableRow;
+import mouse.dbTableRows.MeetingResultRow;
 import mouse.postgresql.MeetingResults;
 
 public class HistogramFrame extends JFrame implements ActionListener, Runnable {
@@ -93,10 +96,25 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 	private IntervalXYDataset createDataset() {
 		final XYSeries series = new XYSeries("Data");
 		MeetingResults meetingResults = processor.getPsqlManager().getMeetingResults();
-		HashMap<Long, Integer> data = meetingResults.histData(intervalsNumber);
+		DbTableRow[] rows = meetingResults.getTableModels();
+		HashMap<Long, Integer> histData = new HashMap<Long, Integer>();
+		long min = meetingResults.getMinDuration();
+		long max = meetingResults.getMaxDuration();
+		long h = (max - min) / intervalsNumber;
 		
-		for (Long key : data.keySet()) {
-			series.add(key, data.get(key));
+		for (int i = 0; i < rows.length; ++i) {
+			MeetingResultRow meetingRow = (MeetingResultRow) rows[i];
+			long dur = meetingRow.getDuration();
+			long interval = min + (Math.min(Math.max(dur / h - 1, 0), intervalsNumber - 1)) * h;
+			if (histData.containsKey(interval)) {
+				histData.put(interval, histData.get(interval) + 1);
+			} else {
+				histData.put(interval, 1);
+			}
+		}
+		
+		for (Long interval : histData.keySet()) {
+			series.add(interval, histData.get(interval));
 		}
 		
 		final XYSeriesCollection dataset = new XYSeriesCollection(series);
@@ -111,11 +129,10 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 	 * @return A sample chart.
 	 */
 	private JFreeChart createChart(IntervalXYDataset dataset) {
-		final JFreeChart chart = ChartFactory.createXYBarChart(
-			"XY Series Demo",
-			"X", 
-			false,
-			"Y", 
+		final JFreeChart chart = ChartFactory.createHistogram(
+			"Histogram",
+			"Durations", 
+			"Number of occurancies",
 			dataset,
 			PlotOrientation.VERTICAL,
 			true,
@@ -140,9 +157,11 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 		setSize(1000, 400);
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 		
+		drawHistogram(histPanel);
 		pack();
 		setVisible(true);
-		drawHistogram(histPanel);
+		
+		log.append("Histogram was generated");
 	}
 
 }

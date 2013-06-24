@@ -40,18 +40,6 @@ public class MeetingResults extends DbDynamicTable {
 		}
 	}
 	
-	
-	public int getMeetingsInInterval(long durationLeft, long durationRight) {
-		int meetingsInInterval = 0;
-		for (DbTableRow row : tableModels) {
-			MeetingResultRow meetingResult = (MeetingResultRow) row;
-			long duration = meetingResult.getDuration();
-			if (durationLeft <= duration && duration <= durationRight) {
-				meetingsInInterval++;
-			}
-		}
-		return meetingsInInterval;
-	}
 
 	public long getMinDuration() {
 		if (maxDuration <= 0)
@@ -65,24 +53,6 @@ public class MeetingResults extends DbDynamicTable {
 		return maxDuration;
 	}
 	
-	
-	public HashMap<Long, Integer> histData(int intervalNumber) {
-		HashMap<Long, Integer> data = new HashMap<Long, Integer>();
-		
-		long min = getMinDuration();
-		long max = getMaxDuration();
-		long h = (max - min) / intervalNumber;
-		
-		for (long i = min; i < max; i += h) {
-			long nextInterval = Math.min(i + h, max);
-			int numberInInerval = getMeetingsInInterval(i, nextInterval);
-			if (numberInInerval == 0)
-				continue;
-			data.put(i, numberInInerval);
-		}
-		
-		return data;
-	}
 
 	@Override
 	protected String createTableQuery() {
