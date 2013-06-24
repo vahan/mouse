@@ -66,15 +66,18 @@ public class MeetingResults extends DbDynamicTable {
 	}
 	
 	
-	public HashMap<Long, Integer> histData(int intervalSize) {
+	public HashMap<Long, Integer> histData(int intervalNumber) {
 		HashMap<Long, Integer> data = new HashMap<Long, Integer>();
 		
 		long min = getMinDuration();
 		long max = getMaxDuration();
+		long h = (max - min) / intervalNumber;
 		
-		for (long i = min; i < max; i += intervalSize) {
-			long nextInterval = Math.min(i + intervalSize, max);
+		for (long i = min; i < max; i += h) {
+			long nextInterval = Math.min(i + h, max);
 			int numberInInerval = getMeetingsInInterval(i, nextInterval);
+			if (numberInInerval == 0)
+				continue;
 			data.put(i, numberInInerval);
 		}
 		
