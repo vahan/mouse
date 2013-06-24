@@ -16,7 +16,7 @@ public class Runner {
 	
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 
-		mainWindow = new MainWindow();
+		mainWindow = MainWindow.getWindow();
 		javax.swing.SwingUtilities.invokeAndWait(mainWindow);
 		
 	}

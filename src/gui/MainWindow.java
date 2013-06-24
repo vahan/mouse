@@ -12,9 +12,10 @@ public class MainWindow extends JFrame implements Runnable {
 
 	private JTextArea log;
 	
-	private FileChooserPanel fileChooserPanel;
+	private ButtonsPanel buttonsPanel;
 	
-	private HistogramPanel histPanel;
+	
+	private static MainWindow window = null;
 	
 	/**
 	 * 
@@ -22,11 +23,18 @@ public class MainWindow extends JFrame implements Runnable {
 	private static final long serialVersionUID = 2740437090361841747L;
 	
 	
-	public MainWindow() {
+	private MainWindow() {
 		super();
 		
 	}
 	
+	
+	public static MainWindow getWindow() {
+		if (window == null) {
+			window = new MainWindow();
+		}
+		return window;
+	}
 	
 	private void draw() {
 		//Create and set up the window.
@@ -39,11 +47,9 @@ public class MainWindow extends JFrame implements Runnable {
 		log.setEditable(false);
 		JScrollPane logScrollPane = new JScrollPane(log);
 
-		fileChooserPanel = new FileChooserPanel(log);
-		histPanel = new HistogramPanel(log, fileChooserPanel.processor.getPsqlManager().getMeetingResults());
+		buttonsPanel = new ButtonsPanel(log);
 		//Add content to the window.
-		getContentPane().add(fileChooserPanel);
-		getContentPane().add(histPanel);
+		getContentPane().add(buttonsPanel);
 		getContentPane().add(logScrollPane, BorderLayout.CENTER);
 
 		//Display the window.
