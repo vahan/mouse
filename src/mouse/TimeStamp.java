@@ -35,7 +35,7 @@ public class TimeStamp extends Date {
 	 * @param stop
 	 * @return
 	 */
-	public static float duration(TimeStamp start, TimeStamp stop) {
+	public static long duration(TimeStamp start, TimeStamp stop) {
 		Duration duration = new Duration(start.getTime(), stop.getTime());
 		return duration.getMillis();
 		

@@ -1,18 +1,15 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import mouse.DataProcessor;
@@ -20,9 +17,11 @@ import mouse.DataProcessor;
 public class FileChooserPanel extends JPanel implements ActionListener {
 
 	private JButton openButton, saveButton;
-	private JTextArea log;
 	private JFileChooser fc;
+	private JTextArea log;
 	private File file = null;
+	
+	DataProcessor processor;
 	
 	
 	/**
@@ -31,15 +30,18 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -1495818979583613856L;
 
 	
-	public FileChooserPanel() {
+	public FileChooserPanel(JTextArea log) {
 		super(new BorderLayout());
-		
+		this.log = log;
 		init();
+	}
+	
+	public DataProcessor getProcessor() {
+		return processor;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
- 
 		//Handle open button action.
 		if (e.getSource() == openButton) {
 			int returnVal = fc.showOpenDialog(FileChooserPanel.this);
@@ -51,8 +53,7 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 				log.append("Open command cancelled by user.\n");
 			}
 			log.setCaretPosition(log.getDocument().getLength());
- 
-		//Handle save button action.
+ 		//Handle save button action.
 		} else if (e.getSource() == saveButton) {
 			if (file == null)
 				return;
@@ -64,7 +65,6 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 	}
 	
 	private void run(String inputFileName) {
-
 		//Read the configuration data from the console
 		//TODO: change the config reading from a file (XML?)
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -92,7 +92,7 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 			return;
 		}*/
 		
-		DataProcessor processor = new DataProcessor(inputFileName, username, password, host, port, dbName);
+		processor = new DataProcessor(inputFileName, username, password, host, port, dbName);
 		if (!processor.getPsqlManager().connect(host, port, dbName)) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getUrl());
 			return;
@@ -106,12 +106,6 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 	}
 	
 	private void init() {
-		//Create the log first, because the action listeners
-		//need to refer to it.
-		log = new JTextArea(5,20);
-		log.setMargin(new Insets(5,5,5,5));
-		log.setEditable(false);
-		JScrollPane logScrollPane = new JScrollPane(log);
 		
 		fc = new JFileChooser();
 		openButton = new JButton("Open a File");
@@ -129,7 +123,6 @@ public class FileChooserPanel extends JPanel implements ActionListener {
 		
 		//Add the buttons and the log to this panel.
 		add(buttonPanel, BorderLayout.PAGE_START);
-		add(logScrollPane, BorderLayout.CENTER);
 	}
 	
 

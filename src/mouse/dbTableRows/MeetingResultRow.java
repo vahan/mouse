@@ -12,7 +12,7 @@ public class MeetingResultRow extends DbDynamicTableRow {
 	private final TransponderRow transponderTo;
 	private final TimeStamp start;
 	private final TimeStamp stop;
-	private final float duration;
+	private final long duration;
 	private final int terminatedBy;
 	
 	public MeetingResultRow(TransponderRow transponderFrom, TransponderRow transponderTo, 
@@ -37,7 +37,7 @@ public class MeetingResultRow extends DbDynamicTableRow {
 		return stop;
 	}
 
-	public float getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 
