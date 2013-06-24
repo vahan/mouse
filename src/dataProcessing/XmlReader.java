@@ -53,7 +53,7 @@ public class XmlReader {
 					String port = ((Node)textPortList.item(0)).getNodeValue().trim();
 	
 					NodeList dbNameList = firstPersonElement.getElementsByTagName("dbname");
-					Element dbNameElement = (Element)hostList.item(0);
+					Element dbNameElement = (Element)dbNameList.item(0);
 					NodeList textDbNameList = dbNameElement.getChildNodes();
 					String dbName = ((Node)textDbNameList.item(0)).getNodeValue().trim();
 					

@@ -21,7 +21,7 @@ import dataProcessing.XmlReader;
 
 public class ButtonsPanel extends JPanel implements ActionListener {
 
-	private JButton openButton, saveButton, histButton, settingsButton;
+	private JButton openButton, importButton, histButton, settingsButton;
 	private JFileChooser fc;
 	private JTextArea log;
 	private File sourceFile = null;
@@ -54,18 +54,17 @@ public class ButtonsPanel extends JPanel implements ActionListener {
  			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				sourceFile = fc.getSelectedFile();
 				//This is where a real application would open the file.
-				log.append("Opening: " + sourceFile.getName() + ".");
+				log.append("Chosen source file: " + sourceFile.getName() + "\n");
 			} else {
-				log.append("Open command cancelled by user.\n");
+				log.append("Open command cancelled by user\n");
 			}
 			log.setCaretPosition(log.getDocument().getLength());
  		//Handle save button action.
-		} else if (e.getSource() == saveButton) {
+		} else if (e.getSource() == importButton) {
 			if (sourceFile == null)
 				return;
-			log.append("Saving: " + sourceFile.getName() + ".\n");
-			run(sourceFile.getName());
-			log.setCaretPosition(log.getDocument().getLength());
+			log.append("Importing: " + sourceFile.getName() + "\n");
+			run(sourceFile.getPath());
 		} else if (e.getSource() == histButton) {
 			if (settingsFile == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import settings.");
@@ -100,7 +99,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		}
 		
 		XmlReader reader = new XmlReader();
-		Settings settings = reader.importSettingsFromXml(settingsFile.getName());
+		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
 		processor = new DataProcessor(inputFileName, settings);
 		if (!processor.getPsqlManager().connect()) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
@@ -117,24 +116,25 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 	private void init() {
 		
 		fc = new JFileChooser();
-		openButton = new JButton("Open a File");
+		
+		settingsButton = new JButton("Choose Settings File");
+		settingsButton.addActionListener(this);
+		
+		openButton = new JButton("Choose Data File");
 		openButton.addActionListener(this);
 		
-		saveButton = new JButton("Import");
-		saveButton.addActionListener(this);
+		importButton = new JButton("Import");
+		importButton.addActionListener(this);
 		
-		histButton = new JButton("Draw histogram");
+		histButton = new JButton("Draw Histogram");
 		histButton.addActionListener(this);
-		
-		settingsButton = new JButton("Import Settings");
-		settingsButton.addActionListener(this);
 		
 		//For layout purposes, put the buttons in a separate panel
 		JPanel buttonPanel = new JPanel(); //use FlowLayout
-		buttonPanel.add(openButton);
-		buttonPanel.add(saveButton);
-		buttonPanel.add(histButton);
 		buttonPanel.add(settingsButton);
+		buttonPanel.add(openButton);
+		buttonPanel.add(importButton);
+		buttonPanel.add(histButton);
 		
 		//Add the buttons and the log to this panel.
 		add(buttonPanel, BorderLayout.PAGE_START);
