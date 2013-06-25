@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mouse.TimeStamp;
 import mouse.dbTableRows.DbTableRow;
 
 import org.apache.commons.lang3.StringUtils;
@@ -235,7 +236,7 @@ public class PostgreSQLManager {
 	 * @param query	The query to be executed
 	 * @return		The returned result after the query execution
 	 */
-	public String[] executeQueries(String query) {
+	public String[] executeQuery(String query) {
 		conn = null;
 		Statement stmt = null;
 		ArrayList<String> results = new ArrayList<String>();
@@ -306,11 +307,66 @@ public class PostgreSQLManager {
 		}
 		return success;
 	}
+	
+	
+
+
+	/**
+	 * Wrapper to execute the given postrgeSql query
+	 * @param queries	The query to be executed
+	 * @return		The returned result after the query execution
+	 */
+	public String[] executeSelectQuery(String query, String field) {
+		conn = null;
+		PreparedStatement pst = null;
+		ArrayList<String> results = new ArrayList<String>();
+		
+		try {
+			conn = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
+			pst = conn.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				results.add(rs.getString(field));
+			}
+		} catch (SQLException ex) {
+			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
+			lgr.log(Level.SEVERE, ex.getMessage(), ex);
+			return null;
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
+				lgr.log(Level.WARNING, ex.getMessage(), ex);
+				return null;
+			}
+		}
+		return results.toArray(new String[results.size()]);
+	}
+	
+	
+	public String[] getLogEntries() {
+		String query = "SELECT * FROM " + logs.getTableName();
+		
+		return executeSelectQuery(query, "imported_at");
+	}
+	
+	
+	public boolean deleteLogEntries(TimeStamp importedAt) {
+		String query = "DELETE FROM " + logs.getTableName() + " WHERE imported_at=" + importedAt;
+		
+		return executeQuery(query).length > 0;
+	}
 
 	
 	private boolean storeStaticTable(DbStaticTable staticTable) {
 		String insertQuery = staticTable.insertQuery(staticTable.getTableModels());
-		String[] ids = executeQueries(insertQuery);
+		String[] ids = executeQuery(insertQuery);
 		for (int i = 0; i < ids.length; ++i) {
 			if (StringUtils.isEmpty(ids[i]))
 				return false;

@@ -249,7 +249,7 @@ public class DataProcessor {
 		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = antennaReadingsTable.insertQuery(antennaReadingsTable.getTableModels());
 		//Execute the query and return the generated serial IDs
-		String[] ids = psqlManager.executeQueries(insertQueries);
+		String[] ids = psqlManager.executeQuery(insertQueries);
 		if (ids.length <= 0) {
 			System.out.println("FAILED");
 			return false;
@@ -273,7 +273,7 @@ public class DataProcessor {
 		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = logsTable.insertQuery(logsTable.getTableModels());
 		//Execute the query and return the generated serial IDs
-		String[] ids = psqlManager.executeQueries(insertQueries);
+		String[] ids = psqlManager.executeQuery(insertQueries);
 		//Set the IDs to the appropriate objects
 		if (ids.length != 1) {
 			System.out.println("FAILED");
@@ -303,7 +303,7 @@ public class DataProcessor {
 			types[i] = staticTable.getColumn(fields[i]).getType();
 		}
 		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, extremeResultIndex, types);
-		String[] ids = psqlManager.executeQueries(updateLastReadingsQuery);
+		String[] ids = psqlManager.executeQuery(updateLastReadingsQuery);
 		
 		if (ids.length > 0) { //TODO: Check if ALL the rows were updated
 			System.out.println("OK. " + ids.length + " rows were modified");
@@ -372,7 +372,7 @@ public class DataProcessor {
 		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = dirResultsTable.insertQuery(dirResultsTable.getTableModels());
 		//Execute the query and return the generated serial IDs
-		String[] ids = psqlManager.executeQueries(insertQueries);
+		String[] ids = psqlManager.executeQuery(insertQueries);
 		//Set the IDs to the appropriate objects
 		for (int i = 0; i < directionResults.size(); ++i) {
 			directionResults.get(i).setId(ids[i]);
@@ -444,7 +444,7 @@ public class DataProcessor {
 		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = stayResultsTable.insertQuery(stayResultsTable.getTableModels());
 		//Execute the query and return the generated serial IDs
-		String[] ids = psqlManager.executeQueries(insertQueries);
+		String[] ids = psqlManager.executeQuery(insertQueries);
 		//Set the IDs to the appropriate objects
 		for (int i = 0; i < stayResults.size(); ++i) {
 			stayResults.get(i).setId(ids[i]);
@@ -531,7 +531,7 @@ public class DataProcessor {
 		//Generate the INSERT query that inserts the data into the according db table
 		String insertQueries = meetingResultsTable.insertQuery(meetingResultsTable.getTableModels());
 		//Execute the query and return the generated serial IDs
-		String[] ids = psqlManager.executeQueries(insertQueries);
+		String[] ids = psqlManager.executeQuery(insertQueries);
 		//Set the IDs to the appropriate objects
 		for (int i = 0; i < meetingResults.size(); ++i) {
 			meetingResults.get(i).setId(ids[i]);
@@ -544,7 +544,7 @@ public class DataProcessor {
 	
 	private boolean addTransponderCounts() {
 		System.out.println("Updating transponder count columns");
-		String[] ids = psqlManager.executeQueries(psqlManager.getTransponders().updateCountsQuery());
+		String[] ids = psqlManager.executeQuery(psqlManager.getTransponders().updateCountsQuery());
 		if (ids.length > 0) {
 			System.out.println("OK. " + ids.length + " rows were updated");
 			return true;

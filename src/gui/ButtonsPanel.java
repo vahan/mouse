@@ -25,8 +25,6 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 	private File sourceFile = null;
 	private File settingsFile = null;
 	
-	DataProcessor processor = null;
-	
 	
 	/**
 	 * 
@@ -39,10 +37,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		this.log = log;
 		init();
 	}
-	
-	public DataProcessor getProcessor() {
-		return processor;
-	}
+
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -68,13 +63,13 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(getParent(), "First import settings.");
 				return;
 			}
-			if (processor == null) {
+			if (MainWindow.getInstance().getProcessor() == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import the data.");
 				return;
 			}
 			log.append("Generating the histogram...\n");
 			
-			HistogramFrame histFrame = new HistogramFrame(log, processor);
+			HistogramFrame histFrame = new HistogramFrame(log, MainWindow.getInstance().getProcessor());
 			histFrame.run();
 		} else if (e.getSource() == settingsButton) {
 			int returnVal = fc.showOpenDialog(ButtonsPanel.this);
@@ -110,7 +105,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		
 		XmlReader reader = new XmlReader();
 		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
-		processor = new DataProcessor(inputFileName, settings);
+		DataProcessor processor = new DataProcessor(inputFileName, settings);
 		if (!processor.getPsqlManager().connect()) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
@@ -119,6 +114,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 			System.out.println("An error accurred! Please check the above error messages");
 			return;
 		}
+		MainWindow.getInstance().setProcessor(processor);
 		
 		System.out.println("The data was successfully read, processed and stored in DB");
 	}

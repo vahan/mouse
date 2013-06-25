@@ -8,14 +8,19 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import dataProcessing.DataProcessor;
+
 public class MainWindow extends JFrame implements Runnable {
 
 	private JTextArea log;
 	
 	private ButtonsPanel buttonsPanel;
 	
+	private LogsPanel deleteLogsPanel;
 	
 	private static MainWindow window = null;
+	
+	DataProcessor processor = null;
 	
 	/**
 	 * 
@@ -29,11 +34,20 @@ public class MainWindow extends JFrame implements Runnable {
 	}
 	
 	
-	public static MainWindow getWindow() {
+	public static MainWindow getInstance() {
 		if (window == null) {
 			window = new MainWindow();
 		}
 		return window;
+	}
+	
+	public DataProcessor getProcessor() {
+		return processor;
+	}
+	
+	public void setProcessor(DataProcessor processor) {
+		this.processor = processor;
+		deleteLogsPanel.setProcessor(processor);
 	}
 	
 	private void draw() {
@@ -48,9 +62,11 @@ public class MainWindow extends JFrame implements Runnable {
 		JScrollPane logScrollPane = new JScrollPane(log);
 
 		buttonsPanel = new ButtonsPanel(log);
+		deleteLogsPanel = new LogsPanel(processor);
 		//Add content to the window.
 		getContentPane().add(buttonsPanel);
 		getContentPane().add(logScrollPane, BorderLayout.CENTER);
+		getContentPane().add(deleteLogsPanel);
 
 		//Display the window.
 		pack();
