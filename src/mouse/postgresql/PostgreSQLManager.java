@@ -2,6 +2,8 @@ package mouse.postgresql;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,7 +11,7 @@ import mouse.dbTableRows.DbTableRow;
 
 import org.apache.commons.lang3.StringUtils;
 
-import dataProcessing.Column;
+import dataProcessing.CSVColumn;
 import dataProcessing.DataProcessor;
 
 
@@ -46,7 +48,7 @@ public class PostgreSQLManager {
 	 * @param password
 	 * @param columns
 	 */
-	public PostgreSQLManager(Settings settings, Column[] columns) {
+	public PostgreSQLManager(Settings settings, CSVColumn[] columns) {
 		this.settings = settings;
 
 		try {
@@ -164,24 +166,25 @@ public class PostgreSQLManager {
 	}
 	
 
-	public boolean storeStaticTables(boolean reset) {
-		if (reset) {
-			if (!storeStaticTable(this.boxes))
-				return false;
-			if (!storeStaticTable(this.antennas))
-				return false;
-			if (!storeStaticTable(this.transponders))
-				return false;
-			return true;
-		} else {
-			if (!getStaticTable(this.boxes))
-				return false;
-			if (!getStaticTable(this.antennas))
-				return false;
-			if (!getStaticTable(this.transponders))
-				return false;
-			return true;
-		}
+	public boolean storeStaticTables() {
+		if (!storeStaticTable(this.boxes))
+			return false;
+		if (!storeStaticTable(this.antennas))
+			return false;
+		if (!storeStaticTable(this.transponders))
+			return false;
+		return true;
+	}
+	
+	
+	public boolean getStaticTables() {
+		if (!getStaticTable(this.boxes))
+			return false;
+		if (!getStaticTable(this.antennas))
+			return false;
+		if (!getStaticTable(this.transponders))
+			return false;
+		return true;
 	}
 	
 	
@@ -326,12 +329,12 @@ public class PostgreSQLManager {
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = stmt.executeQuery(selectQuery);
-			String[] columnNames = staticTable.getColumnNames();
+			Set<String> columnNames = staticTable.getColumnNames();
 			ArrayList<DbTableRow> models = new ArrayList<DbTableRow>();
 			while (rs.next()) {
-				String[] columnValues = new String[columnNames.length];
-				for (int i = 0; i < columnNames.length; ++i) {
-					columnValues[i] = rs.getString(columnNames[i]);
+				HashMap<String, String> columnValues = new HashMap<String, String>();
+				for (String colName : columnNames) {
+					columnValues.put(colName, rs.getString(colName));
 				}
 				models.add(staticTable.createModel(columnValues));
 			}

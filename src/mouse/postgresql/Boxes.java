@@ -6,6 +6,8 @@ package mouse.postgresql;
  * @author vahan
  *
  */
+import java.util.HashMap;
+
 import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbTableRow;
 
@@ -38,22 +40,7 @@ public class Boxes extends DbStaticTable {
 		
 		return null;
 	}
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"name text," +
-				"segment text," +
-				"x_pos real," +
-				"y_pos real," +
-				"last_direction_result timestamp," +
-				"last_meeting timestamp" +
-			");";
-		
-		return query;
-	}
-
+	
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
@@ -74,24 +61,14 @@ public class Boxes extends DbStaticTable {
 										};
 		return values;
 	}
-
-	@Override
-	public String[] getColumnNames() {
-		String[] fields = new String[] {"name", 
-										"x_pos", 
-										"y_pos",
-										"id"
-										};
-		return fields;
-	}
 	
 	@Override
-	public DbTableRow createModel(String[] columnValues) {
+	public DbTableRow createModel(HashMap<String, String> columnValues) {
 		// TODO Auto-generated method stub
-		String name = columnValues[0];
-		Float xPos = Float.parseFloat(columnValues[1]);
-		Float yPos = Float.parseFloat(columnValues[2]);
-		String id = columnValues[3];
+		String name = columnValues.get("name");
+		Float xPos = Float.parseFloat(columnValues.get("x_pos"));
+		Float yPos = Float.parseFloat(columnValues.get("y_pos"));
+		String id = columnValues.get("id");
 		BoxRow box = new BoxRow(name, xPos, yPos);
 		box.setId(id);
 		return box;
@@ -102,5 +79,18 @@ public class Boxes extends DbStaticTable {
 		for (int i = 0; i < array.length; ++i) {
 			tableModels[i] = (BoxRow) array[i];
 		}
+	}
+
+	@Override
+	protected void initColumns() {
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("name", new DbTableColumn("name", ColumnTypes.text, ""));
+		columns.put("segment", new DbTableColumn("segment", ColumnTypes.text, ""));
+		columns.put("x_pos", new DbTableColumn("x_pos", ColumnTypes.real, ""));
+		columns.put("y_pos", new DbTableColumn("y_pos", ColumnTypes.real, ""));
+		columns.put("last_direction_result", new DbTableColumn("last_direction_result", ColumnTypes.timestamp, ""));
+		columns.put("last_meeting", new DbTableColumn("last_meeting", ColumnTypes.timestamp, ""));
+		
+		
 	}
 }

@@ -24,6 +24,7 @@ import mouse.dbTableRows.MeetingResultRow;
 import mouse.dbTableRows.StayResultRow;
 import mouse.dbTableRows.TransponderRow;
 import mouse.postgresql.AntennaReadings;
+import mouse.postgresql.ColumnTypes;
 import mouse.postgresql.DbDynamicTable;
 import mouse.postgresql.DbStaticTable;
 import mouse.postgresql.DirectionResults;
@@ -94,7 +95,7 @@ public class DataProcessor {
 	public DataProcessor(String inputCSVFileName, Settings settings) {
 		this.inputCSVFileName = inputCSVFileName;
 		
-		Column[] columns = columns(inputCSVFileName, true);
+		CSVColumn[] columns = columns(inputCSVFileName, true);
 		psqlManager = new PostgreSQLManager(settings, columns);
 	}
 	
@@ -130,7 +131,10 @@ public class DataProcessor {
 	public boolean process(boolean reset) {
 		if (reset && !psqlManager.initTables())
 			return false;
-		if (!psqlManager.storeStaticTables(reset)) {
+		if (reset && !psqlManager.storeStaticTables()) {
+			return false;
+		}
+		if (!reset && !psqlManager.getStaticTables()) {
 			return false;
 		}
 		log = new LogRow(inputCSVFileName);
@@ -140,21 +144,21 @@ public class DataProcessor {
 			return false;
 		if (!storeAntennaReadings())
 			return false;
-		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0, true, new String[] {"timestamp"}))
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getAntennas(), new String[] {"last_reading"}, 0, 0, true))
 			return false;
-		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"last_reading", "last_antenna_id"}, 0, 1, true, new String[] {"timestamp", "integer"}))
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"last_reading", "last_antenna_id"}, 0, 1, true))
 			return false;
-		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"first_reading"}, 0, 1, false, new String[] {"timestamp"}))
+		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"first_reading"}, 0, 1, false))
 			return false;
 		if (!generateDirectionResults())
 			return false;
-		if (!storeExtremeResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2, true, new String[] {"timestamp"}))
+		if (!storeExtremeResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2, true))
 			return false;
 		if (!generateStayResults())
 			return false;
 		if (!generateMeetingResults())
 			return false;
-		if (!storeExtremeResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2, true, new String[] {"timestamp"}))
+		if (!storeExtremeResults(psqlManager.getMeetingResults(), psqlManager.getBoxes(), new String[] {"last_meeting"}, 0, 2, true))
 			return false;
 		if (!addTransponderCounts())
 			return false;
@@ -288,12 +292,16 @@ public class DataProcessor {
 	 * @return
 	 */
 	private boolean storeExtremeResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
-			int extremeResultIndex, int staticTableRowIndex, boolean last, String[] types) {
+			int extremeResultIndex, int staticTableRowIndex, boolean last) {
 		System.out.println("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
 		
 		dynamicTable.putExtremeReadings(extremeResultIndex, staticTableRowIndex, last);
 		
 		DbStaticTableRow[] staticTableRows = staticTable.getTableModels();
+		ColumnTypes[] types = new ColumnTypes[fields.length];
+		for (int i = 0; i < fields.length; ++i) {
+			types[i] = staticTable.getColumn(fields[i]).getType();
+		}
 		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, extremeResultIndex, types);
 		String[] ids = psqlManager.executeQueries(updateLastReadingsQuery);
 		
@@ -555,13 +563,13 @@ public class DataProcessor {
 	 * @param unique			Determines if the generated columns contain only unique entries
 	 * @return					Columns of antennas, boxes and transponders; null if reading errors occur
 	 */
-	private Column[] columns(String inputCSVFileName, boolean unique) {
+	private CSVColumn[] columns(String inputCSVFileName, boolean unique) {
 		//Array of the column numbers
 		int[] staticColumnNumbers = new int[] {ANTENNA_ID_COLUMN, DEVICE_ID_COLUMN, RFID_COLUMN};
 		//Initializations
-		Column[] columns = new Column[COLUMN_COUNT];
+		CSVColumn[] columns = new CSVColumn[COLUMN_COUNT];
 		for (int i = 0; i < COLUMN_COUNT; ++i) {
-			columns[i] = new Column();
+			columns[i] = new CSVColumn();
 		}
 		CSVReader reader;
 		try {

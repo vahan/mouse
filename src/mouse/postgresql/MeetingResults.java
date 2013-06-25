@@ -51,23 +51,6 @@ public class MeetingResults extends DbDynamicTable {
 		return maxDuration;
 	}
 	
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"trans_from_id integer references transponders(id)," +
-				"trans_to_id integer references transponders(id)," +
-				"start timestamp," +
-				"stop timestamp," +
-				"duration real," +
-				"terminated_by integer," +
-				"box_id integer references boxes(id)" +
-			");";
-		
-		return query;
-	}
-
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"trans_from_id",
@@ -93,6 +76,19 @@ public class MeetingResults extends DbDynamicTable {
 										meetResult.getSource().getId()
 										};
 		return values;
+	}
+
+	@Override
+	protected void initColumns() {
+		// TODO Auto-generated method stub
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("trans_from_id", new DbTableColumn("trans_from_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("trans_to_id", new DbTableColumn("trans_to_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("start", new DbTableColumn("start", ColumnTypes.timestamp, ""));
+		columns.put("stop", new DbTableColumn("stop", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
+		columns.put("terminated_by", new DbTableColumn("terminated_by", ColumnTypes.integer, ""));
+		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
 	}
 	
 

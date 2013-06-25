@@ -54,20 +54,6 @@ public class DirectionResults extends DbDynamicTable {
 		}
 	}
 	
-	
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"timestamp timestamp," +
-				"direction text," +
-				"transponder_id integer references transponders(id)," +
-				"box_id integer references boxes(id)" +
-			");";
-
-		return query;
-	}
-
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"timestamp",
@@ -88,6 +74,17 @@ public class DirectionResults extends DbDynamicTable {
 										dirResult.getSource().getId(),
 		};
 		return values;
+	}
+
+
+	@Override
+	protected void initColumns() {
+		// TODO Auto-generated method stub
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("timestamp", new DbTableColumn("timestamp", ColumnTypes.timestamp, ""));
+		columns.put("direction", new DbTableColumn("direction", ColumnTypes.text, ""));
+		columns.put("transponder_id", new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
 	}
 	
 }

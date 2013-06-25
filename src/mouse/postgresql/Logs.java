@@ -16,22 +16,7 @@ public class Logs extends DbTable {
 		// TODO Auto-generated constructor stub
 		tableModels = new LogRow[1];
 	}
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"first_reading timestamp," +
-				"last_reading timestamp," +
-				"duration real," +
-				"imported_at timestamp," +
-				"nb_readings integer," +
-				"size real" +
-			");";
-
-		return query;
-	}
-
+	
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {
@@ -61,6 +46,18 @@ public class Logs extends DbTable {
 		};
 		
 		return values;
+	}
+
+	@Override
+	protected void initColumns() {
+		// TODO Auto-generated method stub
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("first_reading", new DbTableColumn("first_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
+		columns.put("imported_at", new DbTableColumn("imported_at", ColumnTypes.timestamp, ""));
+		columns.put("nb_readings", new DbTableColumn("nb_readings", ColumnTypes.integer, ""));
+		columns.put("size", new DbTableColumn("size", ColumnTypes.real, ""));
 	}
 	
 }

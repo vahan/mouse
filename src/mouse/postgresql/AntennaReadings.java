@@ -20,21 +20,6 @@ public class AntennaReadings extends DbDynamicTable {
 		
 	}
 	
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-							"id serial PRIMARY KEY," +
-							"timestamp timestamp," +
-							"log_id integer references logs(id)," +
-							"transponder_id integer references transponders(id)," +
-							"box_id integer references boxes(id)," +
-							"antenna_id integer references antennas(id)" +
-						");";
-		
-		return query;
-	}
-
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"timestamp", 
@@ -68,6 +53,17 @@ public class AntennaReadings extends DbDynamicTable {
 									};
 		
 		return values;
+	}
+
+
+	@Override
+	protected void initColumns() {
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("timestamp", new DbTableColumn("timestamp", ColumnTypes.timestamp, ""));
+		columns.put("log_id", new DbTableColumn("log_id", ColumnTypes.integer, "references logs(id)"));
+		columns.put("transponder_id", new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("antenna_id", new DbTableColumn("antenna_id", ColumnTypes.integer, "references antennas(id)"));
 	}
 
 

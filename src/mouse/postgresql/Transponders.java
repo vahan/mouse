@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import java.util.HashMap;
+
 import org.apache.commons.lang3.StringUtils;
 
 import mouse.dbTableRows.DbTableRow;
@@ -46,26 +48,6 @@ public class Transponders extends DbStaticTable {
 	}
 	
 	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"rfid text," +
-				"sex text," +
-				"first_reading timestamp," +
-				"last_reading timestamp," +
-				"first_scale_reading timestamp," +
-				"last_scale_reading timestamp," +
-				"last_antenna_id integer references antennas(id)," +
-				"last_box_id integer references boxes(id)," +
-				"stay_count integer," +
-				"meeting_count integer," +
-				"balade_count integer" +
-			");";
-		
-		return query;
-	}
-
-	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"rfid", 
 										"sex"
@@ -83,18 +65,10 @@ public class Transponders extends DbStaticTable {
 	}
 	
 	@Override
-	public String[] getColumnNames() {
-		String[] fields = new String[] {"rfid", 
-										"id"
-										};
-		return fields;
-	}
-
-	@Override
-	public DbTableRow createModel(String[] columnValues) {
+	public DbTableRow createModel(HashMap<String, String> columnValues) {
 		// TODO Auto-generated method stub
-		String rfid = columnValues[0];
-		String id = columnValues[1];
+		String rfid = columnValues.get("rfid");
+		String id = columnValues.get("id");
 		TransponderRow tr = new TransponderRow(rfid);
 		tr.setId(id);
 		return tr;
@@ -105,6 +79,23 @@ public class Transponders extends DbStaticTable {
 		for (int i = 0; i < array.length; ++i) {
 			tableModels[i] = (TransponderRow) array[i];
 		}
+	}
+
+
+	@Override
+	protected void initColumns() {
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("rfid", new DbTableColumn("rfid", ColumnTypes.text, ""));
+		columns.put("sex", new DbTableColumn("sex", ColumnTypes.text, ""));
+		columns.put("first_reading", new DbTableColumn("first_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("first_scale_reading", new DbTableColumn("first_scale_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_scale_reading", new DbTableColumn("last_scale_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_antenna_id", new DbTableColumn("last_antenna_id", ColumnTypes.integer, "references antennas(id)"));
+		columns.put("last_box_id", new DbTableColumn("last_box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("stay_count", new DbTableColumn("stay_count", ColumnTypes.integer, ""));
+		columns.put("meeting_count", new DbTableColumn("meeting_count", ColumnTypes.integer, ""));
+		columns.put("balade_count", new DbTableColumn("balade_count", ColumnTypes.integer, ""));
 	}
 	
 

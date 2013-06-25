@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import java.util.HashMap;
+
 import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbTableRow;
@@ -30,20 +32,6 @@ public class Antennas extends DbStaticTable {
 		}
 	}
 	
-	
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"name text," +
-				"position text," +
-				"last_reading timestamp," +
-				"box_id integer references boxes(id)" + 
-			");";
-
-		return query;
-	}
-
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
@@ -62,23 +50,14 @@ public class Antennas extends DbStaticTable {
 										};
 		return values;
 	}
-	
-	@Override
-	public String[] getColumnNames() {
-		String[] fields = new String[] {"position", 
-										"box_id",
-										"id"
-										};
-		return fields;
-	}
 
 	@Override
-	public DbTableRow createModel(String[] columnValues) {
+	public DbTableRow createModel(HashMap<String, String> columnValues) {
 		// TODO Auto-generated method stub
-		String position = columnValues[0];
-		String boxId = columnValues[1];
+		String position = columnValues.get("position");
+		String boxId = columnValues.get("box_id");
 		BoxRow box = BoxRow.getBoxById(boxId);
-		String id = columnValues[2];
+		String id = columnValues.get("id");
 		AntennaRow row = new AntennaRow(position, box);
 		row.setId(id);
 		return row;
@@ -89,6 +68,16 @@ public class Antennas extends DbStaticTable {
 		for (int i = 0; i < array.length; ++i) {
 			tableModels[i] = (AntennaRow) array[i];
 		}
+	}
+
+
+	@Override
+	protected void initColumns() {
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("name", new DbTableColumn("name", ColumnTypes.text, ""));
+		columns.put("position", new DbTableColumn("position", ColumnTypes.text, ""));
+		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
 	}
 	
 	

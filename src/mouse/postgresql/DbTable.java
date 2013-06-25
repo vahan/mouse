@@ -1,6 +1,10 @@
 package mouse.postgresql;
 
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 import mouse.dbTableRows.DbTableRow;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +24,14 @@ public abstract class DbTable {
 	 */
 	protected DbTableRow[] tableModels;
 	
+	
+	protected final HashMap<String, DbTableColumn> columns = new HashMap<String, DbTableColumn>();
+	
+	
 	protected DbTable(String tableName) {
 		this.tableName = tableName;
+		
+		initColumns();
 	}
 	
 	public String getTableName() {
@@ -32,6 +42,18 @@ public abstract class DbTable {
 		return tableModels;
 	}
 	
+	public DbTableColumn getColumn(String name) {
+		return columns.get(name);
+	}
+	
+	public Set<String> getColumnNames() {
+		return columns.keySet();
+	}
+	
+	public int columnsCount() {
+		return columns.size();
+	}
+
 	public String dropTableQuery() {
 		String query = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
 		return query;
@@ -93,10 +115,24 @@ public abstract class DbTable {
 	}
 	
 	/**
-	 * Give a specific query to create the exact table
+	 * Give the query to create the table
 	 * @return	A 'CREATE TABLE' query
 	 */
-	protected abstract String createTableQuery();
+	protected String createTableQuery() {
+		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
+		@SuppressWarnings("unchecked")
+		HashMap<String, DbTableColumn> columnsCopy = (HashMap<String, DbTableColumn>) columns.clone();
+		Iterator<String> it = columnsCopy.keySet().iterator();
+		while(it.hasNext()) {
+			String nextKey = it.next();
+			DbTableColumn col = columnsCopy.get(nextKey);
+			it.remove();
+			query += col.getName() + " " + col.getType() + " " + col.getNote() 
+					+ (it.hasNext() ? "," : "");
+		}
+		query += ")";
+		return query;
+	}
 	
 	/**
 	 * Gives an array of the column name's to be used for inserting
@@ -110,6 +146,9 @@ public abstract class DbTable {
 	 * @return		array of the values to be used for inserting
 	 */
 	protected abstract String[] insertValues(DbTableRow model);
+	
+	
+	protected abstract void initColumns();
 	
 
 

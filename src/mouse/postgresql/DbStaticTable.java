@@ -1,5 +1,7 @@
 package mouse.postgresql;
 
+import java.util.HashMap;
+
 import mouse.TimeStamp;
 import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbStaticTableRow;
@@ -50,17 +52,17 @@ public abstract class DbStaticTable extends DbTable {
 	 * 
 	 * @return
 	 */
-	public String updateLastReadingsQuery(String[] fields, DbStaticTableRow[] lastResult, int lastResultIndex, String[] types) {
+	public String updateLastReadingsQuery(String[] fields, DbStaticTableRow[] lastResult, int lastResultIndex, ColumnTypes[] types) {
 		String[][] values = new String[tableModels.length][fields.length];
 		for (int i = 0; i < tableModels.length; ++i) {
 			for (int j = 0; j < fields.length; ++j) {
-				if (types[j] == "timestamp") {
+				if (types[j] == ColumnTypes.timestamp) {
 					TimeStamp lastReading = lastResult[i].getLastResults()[lastResultIndex];
 					if (lastReading == null) {
 						lastReading = new TimeStamp(0); //TODO: This is madness!! It's still a mystery why some lastReadings are null
 					}
 					values[i][j] = "'" + lastReading + "'::" + types[j];
-				} else if (types[j] == "integer") {
+				} else if (types[j] == ColumnTypes.integer) {
 					AntennaRow lastAntenna = ((TransponderRow) lastResult[i]).getLastAntenna();
 					values[i][j] = lastAntenna.getId();
 				}
@@ -70,9 +72,7 @@ public abstract class DbStaticTable extends DbTable {
 		return updateQuery(fields, values);
 	}
 
-	public abstract String[] getColumnNames();
-
-	public abstract DbTableRow createModel(String[] columnValues);
+	public abstract DbTableRow createModel(HashMap<String, String> columnValues);
 
 	public abstract void setTableModels(Object[] array);
 

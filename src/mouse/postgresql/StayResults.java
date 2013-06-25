@@ -14,23 +14,7 @@ public class StayResults extends DbDynamicTable {
 		super(tableName);
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"start timestamp," +
-				"stop timestamp," +
-				"duration real," +
-				"transponder_id integer references transponders(id)," +
-				"box_id integer references boxes(id)," +
-				"dir_in_id integer references direction_results(id)," + 
-				"dir_out_id integer references direction_results(id)" +
-			");";
-
-		return query;
-	}
-
+	
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"start",
@@ -56,6 +40,19 @@ public class StayResults extends DbDynamicTable {
 										stayResult.getDirOut().getId()
 		};
 		return values;
+	}
+
+	@Override
+	protected void initColumns() {
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("start", new DbTableColumn("start", ColumnTypes.timestamp, ""));
+		columns.put("stop", new DbTableColumn("stop", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
+		columns.put("transponder_id", new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("dir_in_id", new DbTableColumn("dir_in_id", ColumnTypes.integer, "references direction_results(id)")); 
+		columns.put("dir_out_id", new DbTableColumn("dir_out_id", ColumnTypes.integer, "references direction_results(id)"));
+		
 	}
 	
 

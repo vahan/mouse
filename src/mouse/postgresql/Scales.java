@@ -30,20 +30,7 @@ public class Scales extends DbTable {
 		tableModels[0] = new ScaleRow("scale1", "segment1", 0, 0, new TimeStamp());
 		
 	}
-
-	@Override
-	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"id serial PRIMARY KEY," +
-				"segment text," +
-				"x_pos real," +
-				"y_pos real," +
-				"last_reading timestamp" +
-			");";
-		
-		return query;
-	}
-
+	
 	@Override
 	protected String[] insertFields() {
 		// TODO Auto-generated method stub
@@ -54,6 +41,17 @@ public class Scales extends DbTable {
 	protected String[] insertValues(DbTableRow model) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected void initColumns() {
+		// TODO Auto-generated method stub
+		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("segment", new DbTableColumn("segment", ColumnTypes.text, ""));
+		columns.put("x_pos", new DbTableColumn("x_pos", ColumnTypes.real, ""));
+		columns.put("y_pos", new DbTableColumn("y_pos", ColumnTypes.real, ""));
+		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
+		
 	}
 	
 
