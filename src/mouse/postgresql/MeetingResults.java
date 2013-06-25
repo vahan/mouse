@@ -81,14 +81,14 @@ public class MeetingResults extends DbDynamicTable {
 	@Override
 	protected void initColumns() {
 		// TODO Auto-generated method stub
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("trans_from_id", new DbTableColumn("trans_from_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("trans_to_id", new DbTableColumn("trans_to_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("start", new DbTableColumn("start", ColumnTypes.timestamp, ""));
-		columns.put("stop", new DbTableColumn("stop", ColumnTypes.timestamp, ""));
-		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
-		columns.put("terminated_by", new DbTableColumn("terminated_by", ColumnTypes.integer, ""));
-		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("trans_from_id", new DbEntry("trans_from_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("trans_to_id", new DbEntry("trans_to_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("start", new DbEntry("start", ColumnTypes.timestamp, ""));
+		columns.put("stop", new DbEntry("stop", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbEntry("duration", ColumnTypes.real, ""));
+		columns.put("terminated_by", new DbEntry("terminated_by", ColumnTypes.integer, ""));
+		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
 	}
 	
 

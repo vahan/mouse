@@ -71,7 +71,7 @@ public abstract class DbDynamicTable extends DbTable {
 				DbStaticTableRow source = lastReadings.get(row).getSource();
 				if (!(source instanceof AntennaRow))
 					continue;
-				lastReadings.get(row).getTransponder().setLastAntenna((AntennaRow) source);
+				lastReadings.get(row).getTransponder().setLastAntennaId(((AntennaRow) source).getId());
 			}
 		}
 	}

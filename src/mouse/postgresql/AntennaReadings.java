@@ -58,12 +58,12 @@ public class AntennaReadings extends DbDynamicTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("timestamp", new DbTableColumn("timestamp", ColumnTypes.timestamp, ""));
-		columns.put("log_id", new DbTableColumn("log_id", ColumnTypes.integer, "references logs(id)"));
-		columns.put("transponder_id", new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
-		columns.put("antenna_id", new DbTableColumn("antenna_id", ColumnTypes.integer, "references antennas(id)"));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("timestamp", new DbEntry("timestamp", ColumnTypes.timestamp, ""));
+		columns.put("log_id", new DbEntry("log_id", ColumnTypes.integer, "references logs(id)"));
+		columns.put("transponder_id", new DbEntry("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("antenna_id", new DbEntry("antenna_id", ColumnTypes.integer, "references antennas(id)"));
 	}
 
 

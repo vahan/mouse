@@ -73,11 +73,11 @@ public class Antennas extends DbStaticTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("name", new DbTableColumn("name", ColumnTypes.text, ""));
-		columns.put("position", new DbTableColumn("position", ColumnTypes.text, ""));
-		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
-		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("name", new DbEntry("name", ColumnTypes.text, ""));
+		columns.put("position", new DbEntry("position", ColumnTypes.text, ""));
+		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
 	}
 	
 	

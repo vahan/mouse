@@ -191,7 +191,7 @@ public class DataProcessor {
 			while ((nextLine = reader.readNext()) != null) {
 				TimeStamp timeStamp;
 				try {
-					timeStamp = new TimeStamp(nextLine[1]);
+					timeStamp = new TimeStamp(nextLine[1], TimeStamp.csvFormat);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

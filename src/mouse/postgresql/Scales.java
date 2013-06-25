@@ -46,11 +46,11 @@ public class Scales extends DbTable {
 	@Override
 	protected void initColumns() {
 		// TODO Auto-generated method stub
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("segment", new DbTableColumn("segment", ColumnTypes.text, ""));
-		columns.put("x_pos", new DbTableColumn("x_pos", ColumnTypes.real, ""));
-		columns.put("y_pos", new DbTableColumn("y_pos", ColumnTypes.real, ""));
-		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("segment", new DbEntry("segment", ColumnTypes.text, ""));
+		columns.put("x_pos", new DbEntry("x_pos", ColumnTypes.real, ""));
+		columns.put("y_pos", new DbEntry("y_pos", ColumnTypes.real, ""));
+		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));
 		
 	}
 	

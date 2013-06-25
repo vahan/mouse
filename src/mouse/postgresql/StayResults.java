@@ -44,14 +44,14 @@ public class StayResults extends DbDynamicTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("start", new DbTableColumn("start", ColumnTypes.timestamp, ""));
-		columns.put("stop", new DbTableColumn("stop", ColumnTypes.timestamp, ""));
-		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
-		columns.put("transponder_id", new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("box_id", new DbTableColumn("box_id", ColumnTypes.integer, "references boxes(id)"));
-		columns.put("dir_in_id", new DbTableColumn("dir_in_id", ColumnTypes.integer, "references direction_results(id)")); 
-		columns.put("dir_out_id", new DbTableColumn("dir_out_id", ColumnTypes.integer, "references direction_results(id)"));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("start", new DbEntry("start", ColumnTypes.timestamp, ""));
+		columns.put("stop", new DbEntry("stop", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbEntry("duration", ColumnTypes.real, ""));
+		columns.put("transponder_id", new DbEntry("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("dir_in_id", new DbEntry("dir_in_id", ColumnTypes.integer, "references direction_results(id)")); 
+		columns.put("dir_out_id", new DbEntry("dir_out_id", ColumnTypes.integer, "references direction_results(id)"));
 		
 	}
 	

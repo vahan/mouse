@@ -29,12 +29,12 @@ public class ScaleReadings extends DbTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id",  new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("timestamp",  new DbTableColumn("timestamp", ColumnTypes.timestamp, ""));
-		columns.put("weight",  new DbTableColumn("weight", ColumnTypes.real, ""));
-		columns.put("log_id",  new DbTableColumn("log_id", ColumnTypes.integer, "references logs(id)"));
-		columns.put("transponder_id",  new DbTableColumn("transponder_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("scale_id",  new DbTableColumn("scale_id", ColumnTypes.integer, "references scales(id)"));
+		columns.put("id",  new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("timestamp",  new DbEntry("timestamp", ColumnTypes.timestamp, ""));
+		columns.put("weight",  new DbEntry("weight", ColumnTypes.real, ""));
+		columns.put("log_id",  new DbEntry("log_id", ColumnTypes.integer, "references logs(id)"));
+		columns.put("transponder_id",  new DbEntry("transponder_id", ColumnTypes.integer, "references transponders(id)"));
+		columns.put("scale_id",  new DbEntry("scale_id", ColumnTypes.integer, "references scales(id)"));
 		
 	}
 	

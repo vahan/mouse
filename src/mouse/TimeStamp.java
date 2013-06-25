@@ -16,6 +16,10 @@ public class TimeStamp extends Date {
 	
 	private static final long serialVersionUID = 8348324320098343781L;
 	
+	public static SimpleDateFormat csvFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH);
+	
+	public static SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	
 	
 	public TimeStamp() {
 		super();
@@ -25,8 +29,8 @@ public class TimeStamp extends Date {
 		super(date);
 	}
 	
-	public TimeStamp(String str) throws ParseException {
-		super((new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH)).parse(str).getTime());
+	public TimeStamp(String str, SimpleDateFormat format) throws ParseException {
+		super(format.parse(str).getTime());
 	}
 	
 	/**
@@ -46,7 +50,7 @@ public class TimeStamp extends Date {
 	 */
 	@Override
 	public String toString() {
-		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS", Locale.ENGLISH).format(this);
+		String timeStamp = dbFormat.format(this);
 		return timeStamp;
 	}
 

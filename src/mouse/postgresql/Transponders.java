@@ -1,9 +1,12 @@
 package mouse.postgresql;
 
+import java.text.ParseException;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import mouse.Gender;
+import mouse.TimeStamp;
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.TransponderRow;
 
@@ -29,7 +32,7 @@ public class Transponders extends DbStaticTable {
 		for (int i = 0; i < tableModels.length; ++i) {
 			TransponderRow tr = (TransponderRow) tableModels[i];
 			values[i][0] = Integer.toString(tr.getStayCount());
-			values[i][1] = Integer.toString(tr.getMeetingsCount());
+			values[i][1] = Integer.toString(tr.getMeetingCount());
 			values[i][2] = Integer.toString(tr.getBaladeCount());
 		}
 		
@@ -66,11 +69,35 @@ public class Transponders extends DbStaticTable {
 	
 	@Override
 	public DbTableRow createModel(HashMap<String, String> columnValues) {
-		// TODO Auto-generated method stub
 		String rfid = columnValues.get("rfid");
 		String id = columnValues.get("id");
+		//Gender sex = Enum.valueOf(Gender.class, columnValues.get("sex")); //done automatically
+		TimeStamp firstReading, lastReading, firstScaleReading, lastScaleReading;
+		String lastAntennaId = columnValues.get("last_antenna_id");
+		//String lastBoxId = columnValues.get("last_box_id"); //done automatically
+		int stayCount = Integer.parseInt(columnValues.get("stay_count"));
+		int meetingCount = Integer.parseInt(columnValues.get("meeting_count"));
+		int baladeCount = Integer.parseInt(columnValues.get("balade_count"));
+		try {
+			firstReading = new TimeStamp(columnValues.get("first_reading"), TimeStamp.dbFormat);
+			lastReading = new TimeStamp(columnValues.get("last_reading"), TimeStamp.dbFormat);
+			//firstScaleReading = new TimeStamp(columnValues.get("first_scale_reading"), TimeStamp.dbFormat);
+			//lastScaleReading = new TimeStamp(columnValues.get("last_scale_reading"), TimeStamp.dbFormat);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
 		TransponderRow tr = new TransponderRow(rfid);
 		tr.setId(id);
+		tr.setFirstReading(firstReading);
+		tr.setLastReading(lastReading);
+		//tr.setFirstScaleReading(firstScaleReading);
+		//tr.setLastScaleReading(lastScaleReading);
+		tr.setLastAntennaId(lastAntennaId);
+		tr.setStayCount(stayCount);
+		tr.setMeetingCount(meetingCount);
+		tr.setBaladeCount(baladeCount);
+		
 		return tr;
 	}
 
@@ -84,18 +111,18 @@ public class Transponders extends DbStaticTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("rfid", new DbTableColumn("rfid", ColumnTypes.text, ""));
-		columns.put("sex", new DbTableColumn("sex", ColumnTypes.text, ""));
-		columns.put("first_reading", new DbTableColumn("first_reading", ColumnTypes.timestamp, ""));
-		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
-		columns.put("first_scale_reading", new DbTableColumn("first_scale_reading", ColumnTypes.timestamp, ""));
-		columns.put("last_scale_reading", new DbTableColumn("last_scale_reading", ColumnTypes.timestamp, ""));
-		columns.put("last_antenna_id", new DbTableColumn("last_antenna_id", ColumnTypes.integer, "references antennas(id)"));
-		columns.put("last_box_id", new DbTableColumn("last_box_id", ColumnTypes.integer, "references boxes(id)"));
-		columns.put("stay_count", new DbTableColumn("stay_count", ColumnTypes.integer, ""));
-		columns.put("meeting_count", new DbTableColumn("meeting_count", ColumnTypes.integer, ""));
-		columns.put("balade_count", new DbTableColumn("balade_count", ColumnTypes.integer, ""));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("rfid", new DbEntry("rfid", ColumnTypes.text, ""));
+		columns.put("sex", new DbEntry("sex", ColumnTypes.text, ""));
+		columns.put("first_reading", new DbEntry("first_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("first_scale_reading", new DbEntry("first_scale_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_scale_reading", new DbEntry("last_scale_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_antenna_id", new DbEntry("last_antenna_id", ColumnTypes.integer, "references antennas(id)"));
+		columns.put("last_box_id", new DbEntry("last_box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("stay_count", new DbEntry("stay_count", ColumnTypes.integer, ""));
+		columns.put("meeting_count", new DbEntry("meeting_count", ColumnTypes.integer, ""));
+		columns.put("balade_count", new DbEntry("balade_count", ColumnTypes.integer, ""));
 	}
 	
 

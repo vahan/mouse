@@ -266,7 +266,7 @@ public class PostgreSQLManager {
 				results = null;
 			}
 		}
-		return results.toArray(new String[results.size()]);
+		return results == null ? null : results.toArray(new String[results.size()]);
 	}
 
 	/**

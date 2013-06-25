@@ -25,7 +25,7 @@ public abstract class DbTable {
 	protected DbTableRow[] tableModels;
 	
 	
-	protected final HashMap<String, DbTableColumn> columns = new HashMap<String, DbTableColumn>();
+	protected final HashMap<String, DbEntry> columns = new HashMap<String, DbEntry>();
 	
 	
 	protected DbTable(String tableName) {
@@ -42,7 +42,7 @@ public abstract class DbTable {
 		return tableModels;
 	}
 	
-	public DbTableColumn getColumn(String name) {
+	public DbEntry getColumn(String name) {
 		return columns.get(name);
 	}
 	
@@ -53,7 +53,7 @@ public abstract class DbTable {
 	public int columnsCount() {
 		return columns.size();
 	}
-
+	
 	public String dropTableQuery() {
 		String query = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
 		return query;
@@ -121,11 +121,11 @@ public abstract class DbTable {
 	protected String createTableQuery() {
 		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
 		@SuppressWarnings("unchecked")
-		HashMap<String, DbTableColumn> columnsCopy = (HashMap<String, DbTableColumn>) columns.clone();
+		HashMap<String, DbEntry> columnsCopy = (HashMap<String, DbEntry>) columns.clone();
 		Iterator<String> it = columnsCopy.keySet().iterator();
 		while(it.hasNext()) {
 			String nextKey = it.next();
-			DbTableColumn col = columnsCopy.get(nextKey);
+			DbEntry col = columnsCopy.get(nextKey);
 			it.remove();
 			query += col.getName() + " " + col.getType() + " " + col.getNote() 
 					+ (it.hasNext() ? "," : "");

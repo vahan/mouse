@@ -18,9 +18,9 @@ public class TransponderRow extends DbStaticTableRow {
 	private TimeStamp lastReading;
 	private TimeStamp firstScaleReading;
 	private TimeStamp lastScaleReading;
-	private AntennaRow lastAntenna;
+	private String lastAntennaId;
 	private int stayCount;
-	private int meetingsCount;
+	private int meetingCount;
 	private int baladeCount;
 	
 	/**
@@ -57,12 +57,12 @@ public class TransponderRow extends DbStaticTableRow {
 		this.firstScaleReading = firstScaleReading;
 	}
 
-	public void setLastScaleReading(TimeStamp lastScaleReadin) {
-		this.lastScaleReading = lastScaleReadin;
+	public void setLastScaleReading(TimeStamp lastScaleReading) {
+		this.lastScaleReading = lastScaleReading;
 	}
 
-	public void setLastAntenna(AntennaRow lastAntenna) {
-		this.lastAntenna = lastAntenna;
+	public void setLastAntennaId(String lastAntennaId) {
+		this.lastAntennaId = lastAntennaId;
 	}
 
 	private Gender findSex() {
@@ -94,22 +94,36 @@ public class TransponderRow extends DbStaticTableRow {
 		return lastScaleReading;
 	}
 
-	public AntennaRow getLastAntenna() {
-		return lastAntenna;
+	public String getLastAntennaId() {
+		return lastAntennaId;
 	}
 
 	public int getStayCount() {
 		return stayCount;
 	}
 
-	public int getMeetingsCount() {
-		return meetingsCount;
+	public int getMeetingCount() {
+		return meetingCount;
 	}
 
 	public int getBaladeCount() {
 		return baladeCount;
 	}
 	
+	
+	
+	public void setStayCount(int stayCount) {
+		this.stayCount = stayCount;
+	}
+
+	public void setMeetingCount(int meetingsCount) {
+		this.meetingCount = meetingsCount;
+	}
+
+	public void setBaladeCount(int baladeCount) {
+		this.baladeCount = baladeCount;
+	}
+
 	@Override
 	public TimeStamp[] getLastResults() {
 		// TODO Auto-generated method stub
@@ -131,7 +145,7 @@ public class TransponderRow extends DbStaticTableRow {
 	}
 	
 	public void addMeeting() {
-		meetingsCount++;
+		meetingCount++;
 	}
 	
 	public void addBalade() {

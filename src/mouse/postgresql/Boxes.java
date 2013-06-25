@@ -83,13 +83,13 @@ public class Boxes extends DbStaticTable {
 
 	@Override
 	protected void initColumns() {
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("name", new DbTableColumn("name", ColumnTypes.text, ""));
-		columns.put("segment", new DbTableColumn("segment", ColumnTypes.text, ""));
-		columns.put("x_pos", new DbTableColumn("x_pos", ColumnTypes.real, ""));
-		columns.put("y_pos", new DbTableColumn("y_pos", ColumnTypes.real, ""));
-		columns.put("last_direction_result", new DbTableColumn("last_direction_result", ColumnTypes.timestamp, ""));
-		columns.put("last_meeting", new DbTableColumn("last_meeting", ColumnTypes.timestamp, ""));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("name", new DbEntry("name", ColumnTypes.text, ""));
+		columns.put("segment", new DbEntry("segment", ColumnTypes.text, ""));
+		columns.put("x_pos", new DbEntry("x_pos", ColumnTypes.real, ""));
+		columns.put("y_pos", new DbEntry("y_pos", ColumnTypes.real, ""));
+		columns.put("last_direction_result", new DbEntry("last_direction_result", ColumnTypes.timestamp, ""));
+		columns.put("last_meeting", new DbEntry("last_meeting", ColumnTypes.timestamp, ""));
 		
 		
 	}

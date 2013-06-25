@@ -3,7 +3,6 @@ package mouse.postgresql;
 import java.util.HashMap;
 
 import mouse.TimeStamp;
-import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbStaticTableRow;
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.TransponderRow;
@@ -63,8 +62,8 @@ public abstract class DbStaticTable extends DbTable {
 					}
 					values[i][j] = "'" + lastReading + "'::" + types[j];
 				} else if (types[j] == ColumnTypes.integer) {
-					AntennaRow lastAntenna = ((TransponderRow) lastResult[i]).getLastAntenna();
-					values[i][j] = lastAntenna.getId();
+					String lastAntennaId = ((TransponderRow) lastResult[i]).getLastAntennaId();
+					values[i][j] = lastAntennaId;
 				}
 			}
 		}

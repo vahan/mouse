@@ -51,13 +51,13 @@ public class Logs extends DbTable {
 	@Override
 	protected void initColumns() {
 		// TODO Auto-generated method stub
-		columns.put("id", new DbTableColumn("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("first_reading", new DbTableColumn("first_reading", ColumnTypes.timestamp, ""));
-		columns.put("last_reading", new DbTableColumn("last_reading", ColumnTypes.timestamp, ""));
-		columns.put("duration", new DbTableColumn("duration", ColumnTypes.real, ""));
-		columns.put("imported_at", new DbTableColumn("imported_at", ColumnTypes.timestamp, ""));
-		columns.put("nb_readings", new DbTableColumn("nb_readings", ColumnTypes.integer, ""));
-		columns.put("size", new DbTableColumn("size", ColumnTypes.real, ""));
+		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
+		columns.put("first_reading", new DbEntry("first_reading", ColumnTypes.timestamp, ""));
+		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));
+		columns.put("duration", new DbEntry("duration", ColumnTypes.real, ""));
+		columns.put("imported_at", new DbEntry("imported_at", ColumnTypes.timestamp, ""));
+		columns.put("nb_readings", new DbEntry("nb_readings", ColumnTypes.integer, ""));
+		columns.put("size", new DbEntry("size", ColumnTypes.real, ""));
 	}
 	
 }
