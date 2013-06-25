@@ -47,9 +47,9 @@ public class Antennas extends DbStaticTable {
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
-				"position", 
-				"box_id"
-				};
+										"position", 
+										"box_id"
+										};
 		return fields;
 	}
 
@@ -61,6 +61,34 @@ public class Antennas extends DbStaticTable {
 										"'" + antenna.getBox().getId() + "'"
 										};
 		return values;
+	}
+	
+	@Override
+	public String[] getColumnNames() {
+		String[] fields = new String[] {"position", 
+										"box_id",
+										"id"
+										};
+		return fields;
+	}
+
+	@Override
+	public DbTableRow createModel(String[] columnValues) {
+		// TODO Auto-generated method stub
+		String position = columnValues[0];
+		String boxId = columnValues[1];
+		BoxRow box = BoxRow.getBoxById(boxId);
+		String id = columnValues[2];
+		AntennaRow row = new AntennaRow(position, box);
+		row.setId(id);
+		return row;
+	}
+	
+	@Override
+	public void setTableModels(Object[] array) {
+		for (int i = 0; i < array.length; ++i) {
+			tableModels[i] = (AntennaRow) array[i];
+		}
 	}
 	
 	

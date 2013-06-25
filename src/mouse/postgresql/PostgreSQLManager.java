@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mouse.dbTableRows.DbTableRow;
+
 import org.apache.commons.lang3.StringUtils;
 
 import dataProcessing.Column;
@@ -162,14 +164,24 @@ public class PostgreSQLManager {
 	}
 	
 
-	public boolean storeStaticTables() {
-		if (!storeStaticTable(this.boxes))
-			return false;
-		if (!storeStaticTable(this.antennas))
-			return false;
-		if (!storeStaticTable(this.transponders))
-			return false;
-		return true;
+	public boolean storeStaticTables(boolean reset) {
+		if (reset) {
+			if (!storeStaticTable(this.boxes))
+				return false;
+			if (!storeStaticTable(this.antennas))
+				return false;
+			if (!storeStaticTable(this.transponders))
+				return false;
+			return true;
+		} else {
+			if (!getStaticTable(this.boxes))
+				return false;
+			if (!getStaticTable(this.antennas))
+				return false;
+			if (!getStaticTable(this.transponders))
+				return false;
+			return true;
+		}
 	}
 	
 	
@@ -236,6 +248,7 @@ public class PostgreSQLManager {
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
 			lgr.log(Level.SEVERE, ex.getMessage(), ex);
+			lgr.log(Level.SEVERE, "query: " + query);
 		} finally {
 			try {
 				if (stmt != null) {
@@ -300,6 +313,34 @@ public class PostgreSQLManager {
 				return false;
 			staticTable.getTableModels()[i].setId(ids[i]);
 		}
+		
+		return true;
+	}
+	
+	
+	private boolean getStaticTable(DbStaticTable staticTable) {
+		String selectQuery = "SELECT * FROM " + staticTable.getTableName();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement(
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = stmt.executeQuery(selectQuery);
+			String[] columnNames = staticTable.getColumnNames();
+			ArrayList<DbTableRow> models = new ArrayList<DbTableRow>();
+			while (rs.next()) {
+				String[] columnValues = new String[columnNames.length];
+				for (int i = 0; i < columnNames.length; ++i) {
+					columnValues[i] = rs.getString(columnNames[i]);
+				}
+				models.add(staticTable.createModel(columnValues));
+			}
+			staticTable.setTableModels(models.toArray());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		return true;
 	}

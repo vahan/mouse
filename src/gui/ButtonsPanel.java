@@ -3,9 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,7 +19,7 @@ import dataProcessing.XmlReader;
 
 public class ButtonsPanel extends JPanel implements ActionListener {
 
-	private JButton openButton, importButton, histButton, settingsButton;
+	private JButton openButton, importButton, histButton, settingsButton, resetButton;
 	private JFileChooser fc;
 	private JTextArea log;
 	private File sourceFile = null;
@@ -64,7 +62,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 			if (sourceFile == null)
 				return;
 			log.append("Importing: " + sourceFile.getName() + "\n");
-			run(sourceFile.getPath());
+			run(sourceFile.getPath(), false);
 		} else if (e.getSource() == histButton) {
 			if (settingsFile == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import settings.");
@@ -88,11 +86,23 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 				log.append("Open command cancelled by user.\n");
 			}
 			log.setCaretPosition(log.getDocument().getLength());
+		} else if (e.getSource() == resetButton) {
+			int confirm = JOptionPane.showConfirmDialog(
+					getParent(),
+					"Are you sure, you want to reset the entire Database!?",
+					"An Inane Question",
+					JOptionPane.YES_NO_OPTION);
+			if (confirm == JOptionPane.YES_OPTION) {
+				if (sourceFile == null)
+					return;
+				log.append("Reseting the DB and importing: " + sourceFile.getName() + "\n");
+				run(sourceFile.getPath(), true);
+			}
 		}
 
 	}
 	
-	private void run(String inputFileName) {
+	private void run(String inputFileName, boolean reset) {
 		if (settingsFile == null) {
 			System.out.println("No Settings file was given");
 			return;
@@ -105,7 +115,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
 		}
-		if (!processor.process()) {
+		if (!processor.process(reset)) {
 			System.out.println("An error accurred! Please check the above error messages");
 			return;
 		}
@@ -129,12 +139,16 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		histButton = new JButton("Draw Histogram");
 		histButton.addActionListener(this);
 		
+		resetButton = new JButton("Reset the DB and Import");
+		resetButton.addActionListener(this);
+		
 		//For layout purposes, put the buttons in a separate panel
 		JPanel buttonPanel = new JPanel(); //use FlowLayout
 		buttonPanel.add(settingsButton);
 		buttonPanel.add(openButton);
 		buttonPanel.add(importButton);
 		buttonPanel.add(histButton);
+		buttonPanel.add(resetButton);
 		
 		//Add the buttons and the log to this panel.
 		add(buttonPanel, BorderLayout.PAGE_START);

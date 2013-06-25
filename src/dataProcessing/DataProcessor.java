@@ -3,7 +3,6 @@ package dataProcessing;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,10 +127,10 @@ public class DataProcessor {
 	 * Process the input data and write it into the according tables
 	 * @return
 	 */
-	public boolean process() {
-		if (!psqlManager.initTables())
+	public boolean process(boolean reset) {
+		if (reset && !psqlManager.initTables())
 			return false;
-		if (!psqlManager.storeStaticTables()) {
+		if (!psqlManager.storeStaticTables(reset)) {
 			return false;
 		}
 		log = new LogRow(inputCSVFileName);

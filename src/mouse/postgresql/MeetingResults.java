@@ -1,7 +1,5 @@
 package mouse.postgresql;
 
-import java.util.HashMap;
-
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.MeetingResultRow;
 

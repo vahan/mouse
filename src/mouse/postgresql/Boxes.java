@@ -57,10 +57,10 @@ public class Boxes extends DbStaticTable {
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
-				"segment", 
-				"x_pos", 
-				"y_pos"
-				};
+										"segment", 
+										"x_pos", 
+										"y_pos"
+										};
 		return fields;
 	}
 
@@ -74,5 +74,33 @@ public class Boxes extends DbStaticTable {
 										};
 		return values;
 	}
+
+	@Override
+	public String[] getColumnNames() {
+		String[] fields = new String[] {"name", 
+										"x_pos", 
+										"y_pos",
+										"id"
+										};
+		return fields;
+	}
 	
+	@Override
+	public DbTableRow createModel(String[] columnValues) {
+		// TODO Auto-generated method stub
+		String name = columnValues[0];
+		Float xPos = Float.parseFloat(columnValues[1]);
+		Float yPos = Float.parseFloat(columnValues[2]);
+		String id = columnValues[3];
+		BoxRow box = new BoxRow(name, xPos, yPos);
+		box.setId(id);
+		return box;
+	}
+	
+	@Override
+	public void setTableModels(Object[] array) {
+		for (int i = 0; i < array.length; ++i) {
+			tableModels[i] = (BoxRow) array[i];
+		}
+	}
 }

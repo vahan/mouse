@@ -68,8 +68,8 @@ public class Transponders extends DbStaticTable {
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"rfid", 
-				"sex"
-				};
+										"sex"
+										};
 		return fields;
 	}
 
@@ -80,6 +80,31 @@ public class Transponders extends DbStaticTable {
 										"'" + tr.getSex() + "'"
 										};
 		return values;
+	}
+	
+	@Override
+	public String[] getColumnNames() {
+		String[] fields = new String[] {"rfid", 
+										"id"
+										};
+		return fields;
+	}
+
+	@Override
+	public DbTableRow createModel(String[] columnValues) {
+		// TODO Auto-generated method stub
+		String rfid = columnValues[0];
+		String id = columnValues[1];
+		TransponderRow tr = new TransponderRow(rfid);
+		tr.setId(id);
+		return tr;
+	}
+
+	@Override
+	public void setTableModels(Object[] array) {
+		for (int i = 0; i < array.length; ++i) {
+			tableModels[i] = (TransponderRow) array[i];
+		}
 	}
 	
 

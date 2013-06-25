@@ -3,6 +3,7 @@ package mouse.postgresql;
 import mouse.TimeStamp;
 import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbStaticTableRow;
+import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.TransponderRow;
 
 /**
@@ -68,6 +69,13 @@ public abstract class DbStaticTable extends DbTable {
 		
 		return updateQuery(fields, values);
 	}
+
+	public abstract String[] getColumnNames();
+
+	public abstract DbTableRow createModel(String[] columnValues);
+
+	public abstract void setTableModels(Object[] array);
+
 	
 	
 

@@ -92,6 +92,14 @@ public class BoxRow extends DbStaticTableRow {
 		
 	}
 
+	public static BoxRow getBoxById(String boxId) {
+		for (BoxRow box : boxes) {
+			if (box.getId().equals(boxId))
+				return box;
+		}
+		return null;
+	}
+
 	
 	
 	
