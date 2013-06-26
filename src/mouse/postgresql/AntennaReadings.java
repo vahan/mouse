@@ -60,7 +60,7 @@ public class AntennaReadings extends DbDynamicTable {
 	protected void initColumns() {
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
 		columns.put("timestamp", new DbEntry("timestamp", ColumnTypes.timestamp, ""));
-		columns.put("log_id", new DbEntry("log_id", ColumnTypes.integer, "references logs(id)"));
+		columns.put("log_id", new DbEntry("log_id", ColumnTypes.integer, "references logs(id) ON DELETE CASCADE"));
 		columns.put("transponder_id", new DbEntry("transponder_id", ColumnTypes.integer, "references transponders(id)"));
 		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
 		columns.put("antenna_id", new DbEntry("antenna_id", ColumnTypes.integer, "references antennas(id)"));

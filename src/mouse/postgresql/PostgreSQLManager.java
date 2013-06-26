@@ -358,7 +358,7 @@ public class PostgreSQLManager {
 	
 	
 	public boolean deleteLogEntries(TimeStamp importedAt) {
-		String query = "DELETE FROM " + logs.getTableName() + " WHERE imported_at=" + importedAt;
+		String query = "DELETE FROM " + logs.getTableName() + " WHERE imported_at='" + importedAt + "'";
 		
 		return executeQuery(query).length > 0;
 	}

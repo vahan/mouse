@@ -62,7 +62,7 @@ public class MainWindow extends JFrame implements Runnable {
 		JScrollPane logScrollPane = new JScrollPane(log);
 
 		buttonsPanel = new ButtonsPanel(log);
-		deleteLogsPanel = new LogsPanel(processor);
+		deleteLogsPanel = new LogsPanel();
 		//Add content to the window.
 		getContentPane().add(buttonsPanel);
 		getContentPane().add(logScrollPane, BorderLayout.CENTER);
