@@ -14,18 +14,16 @@ public class BoxRow extends DbStaticTableRow {
 	
 	private final String name;
 	private final String segment;
-	private final float xPos;
-	private final float yPos;
+	private String xPos;
+	private String yPos;
 	private TimeStamp lastDirectionResult;
 	private TimeStamp lastMeeting;
 	
 	private static ArrayList<BoxRow> boxes = new ArrayList<BoxRow>();
 	
-	public BoxRow(String name, float xPos, float yPos) {
+	public BoxRow(String name) {
 		super();
 		this.name = name;
-		this.xPos = xPos;
-		this.yPos = yPos;
 		this.segment = findSegment();
 		
 		boxes.add(this);
@@ -60,11 +58,11 @@ public class BoxRow extends DbStaticTableRow {
 		this.lastMeeting = lastMeetin;
 	}
 
-	public float getXPos() {
+	public String getxPos() {
 		return xPos;
 	}
 
-	public float getYPos() {
+	public String getyPos() {
 		return yPos;
 	}
 
@@ -100,7 +98,13 @@ public class BoxRow extends DbStaticTableRow {
 		return null;
 	}
 
-	
+	public void setxPos(String xPos) {
+		this.xPos = xPos;
+	}
+
+	public void setyPos(String yPos) {
+		this.yPos = yPos;
+	}
 	
 	
 	

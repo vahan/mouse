@@ -90,12 +90,14 @@ public class DataProcessor {
 	private final PostgreSQLManager psqlManager;
 	
 	private LogRow log;
+	private String boxDataFileName;
 	
 	
-	public DataProcessor(String inputCSVFileName, Settings settings) {
+	public DataProcessor(String inputCSVFileName, String boxDataFileName, Settings settings) {
 		this.inputCSVFileName = inputCSVFileName;
+		this.boxDataFileName = boxDataFileName;
 		
-		CSVColumn[] columns = columns(inputCSVFileName, true);
+		CSVColumn[] columns = csvColumns(inputCSVFileName, true);
 		psqlManager = new PostgreSQLManager(settings, columns);
 	}
 	
@@ -135,6 +137,9 @@ public class DataProcessor {
 			return false;
 		}
 		if (!reset && !psqlManager.getStaticTables()) {
+			return false;
+		}
+		if (!importBoxData(boxDataFileName)) {
 			return false;
 		}
 		log = new LogRow(inputCSVFileName);
@@ -561,9 +566,10 @@ public class DataProcessor {
 	 * Must be called before the actual data processing starts
 	 * @param inputCSVFileName	The name of the input file
 	 * @param unique			Determines if the generated columns contain only unique entries
+	 * @param seperator TODO
 	 * @return					Columns of antennas, boxes and transponders; null if reading errors occur
 	 */
-	private CSVColumn[] columns(String inputCSVFileName, boolean unique) {
+	private CSVColumn[] csvColumns(String inputCSVFileName, boolean unique) {
 		//Array of the column numbers
 		int[] staticColumnNumbers = new int[] {ANTENNA_ID_COLUMN, DEVICE_ID_COLUMN, RFID_COLUMN};
 		//Initializations
@@ -575,7 +581,7 @@ public class DataProcessor {
 		try {
 			reader = new CSVReader(new FileReader(inputCSVFileName), ';', '\'', 1); //skip the first (header) line
 			
-			String [] nextLine;
+			String[] nextLine;
 			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
 				//TODO: Not sure what to do when the rfid is missing
@@ -602,6 +608,58 @@ public class DataProcessor {
 		}
 		
 		return columns;
+	}
+	
+
+	
+	private HashMap<String, BoxData> boxDataColumns(String inputFileName) {
+		//Array of the column numbers
+		HashMap<String, BoxData> columns = new HashMap<String, BoxData>();
+		CSVReader reader;
+		try {
+			reader = new CSVReader(new FileReader(inputFileName), '\t', '\'', 1); //skip the first (header) line
+			
+			String[] nextLine;
+			//Read the file line by line
+			while ((nextLine = reader.readNext()) != null) {
+				if (nextLine.length <= 1) {
+					continue;
+				}
+				String boxId = nextLine[0];
+				String xPos = nextLine[1];
+				String yPos = nextLine[2];
+				columns.put(boxId, new BoxData(boxId, xPos, yPos));
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return columns;
+	}
+	
+	
+	private boolean importBoxData(String fileName) {
+		HashMap<String, BoxData> boxData = boxDataColumns(fileName);
+		
+		DbStaticTableRow[] boxRows = psqlManager.getBoxes().getTableModels();
+		for (int i = 0; i < boxRows.length; ++i) {
+			BoxRow boxRow = (BoxRow) boxRows[i];
+			String boxName = boxRow.getName();
+			BoxData boxDataObj = boxData.get(boxName);
+			boxRow.setxPos(boxDataObj != null ? boxDataObj.getxPos() : "");
+			boxRow.setyPos(boxDataObj != null ? boxDataObj.getyPos() : "");
+		}
+		
+		String updateBoxDataQuery = psqlManager.getBoxes().updateBoxDataQuery();
+		return psqlManager.executeQuery(updateBoxDataQuery).length > 0;
+		
 	}
 	
 }

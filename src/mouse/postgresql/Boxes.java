@@ -8,6 +8,8 @@ package mouse.postgresql;
  */
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbTableRow;
 
@@ -19,34 +21,33 @@ public class Boxes extends DbStaticTable {
 		super(tableName, boxNames, null);
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	public String updateBoxDataQuery() {
+		String[] fields = new String[] {"x_pos", "y_pos"};
+		String[][] values = new String[tableModels.length][fields.length];
+		
+		for (int i = 0; i < tableModels.length; ++i) {
+			values[i][0] = ((BoxRow) tableModels[i]).getxPos();
+			values[i][1] = ((BoxRow) tableModels[i]).getyPos();
+		}
+		return updateQueryByName(fields, values);
+	}
+	
 
 	@Override
 	protected void generateTables() {
 		tableModels = new BoxRow[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
-			tableModels[i] = new BoxRow(entries[i], 0, 0); //TODO Give proper xPos and yPos
+			tableModels[i] = new BoxRow(entries[i]);
 		}
 		
-	}
-
-	/**
-	 * Searches, finds and returns the box with the given name from the DB
-	 * @param boxName	The name of the searched box
-	 * @return	a Box object, with the searched name
-	 */
-	public static BoxRow getBoxByName(String boxName) {
-		//TODO Implement this!
-		
-		
-		return null;
 	}
 	
 	@Override
 	protected String[] insertFields() {
 		String[] fields = new String[] {"name", 
 										"segment", 
-										"x_pos", 
-										"y_pos"
 										};
 		return fields;
 	}
@@ -56,8 +57,6 @@ public class Boxes extends DbStaticTable {
 		BoxRow box = (BoxRow) model;
 		String[] values = new String[] {"'" + box.getName() + "'", 
 										"'" + box.getSegment() + "'", 
-										"'" + box.getXPos() + "'", 
-										"'" + box.getYPos() + "'"
 										};
 		return values;
 	}
@@ -66,10 +65,12 @@ public class Boxes extends DbStaticTable {
 	public DbTableRow createModel(HashMap<String, String> columnValues) {
 		// TODO Auto-generated method stub
 		String name = columnValues.get("name");
-		Float xPos = Float.parseFloat(columnValues.get("x_pos"));
-		Float yPos = Float.parseFloat(columnValues.get("y_pos"));
+		String xPos = columnValues.get("x_pos");
+		String yPos = columnValues.get("y_pos");
 		String id = columnValues.get("id");
-		BoxRow box = new BoxRow(name, xPos, yPos);
+		BoxRow box = new BoxRow(name);
+		box.setxPos(xPos);
+		box.setyPos(yPos);
 		box.setId(id);
 		return box;
 	}
@@ -93,4 +94,32 @@ public class Boxes extends DbStaticTable {
 		
 		
 	}
+	
+	
+
+	
+	private String updateQueryByName(String[] fields, String[][] values) {
+		String query = "UPDATE " + tableName + " SET ";
+		
+		for (int i = 0; i < fields.length; ++i) {
+			query += fields[i] + " = CASE name";
+			for (int j = 0; j < tableModels.length; ++j) {
+				if (StringUtils.isEmpty(values[j][i]))
+					continue;
+				BoxRow row = (BoxRow) tableModels[j];
+				query += " WHEN '" + row.getName() + "' THEN " + values[j][i];
+			}
+			query += " END";
+			query += i == fields.length - 1 ? " " : ", ";
+		}
+		String[] allIds = new String[tableModels.length];
+		for (int j = 0; j < tableModels.length; ++j) {
+			BoxRow row = (BoxRow) tableModels[j];
+			allIds[j] = row.getName();
+		}
+		query += "WHERE id IN (" + StringUtils.join(allIds, ", ") + " )";
+		
+		return query;
+	}
+	
 }

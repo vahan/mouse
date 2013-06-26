@@ -19,11 +19,12 @@ import dataProcessing.XmlReader;
 
 public class ButtonsPanel extends JPanel implements ActionListener {
 
-	private JButton openButton, importButton, histButton, settingsButton, resetButton;
+	private JButton openButton, boxDataButton, importButton, histButton, settingsButton, resetButton;
 	private JFileChooser fc;
 	private JTextArea log;
 	private File sourceFile = null;
 	private File settingsFile = null;
+	private String boxDataFileName = null;
 	
 	
 	/**
@@ -52,12 +53,21 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 				log.append("Open command cancelled by user\n");
 			}
 			log.setCaretPosition(log.getDocument().getLength());
- 		//Handle save button action.
+		} else if (e.getSource() == boxDataButton) {
+			int returnVal = fc.showOpenDialog(ButtonsPanel.this);
+ 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				boxDataFileName = fc.getSelectedFile().getPath();
+				//This is where a real application would open the file.
+				log.append("Chosen source file: " + boxDataFileName + "\n");
+			} else {
+				log.append("Open command cancelled by user\n");
+			}
+			log.setCaretPosition(log.getDocument().getLength());
 		} else if (e.getSource() == importButton) {
-			if (sourceFile == null)
+			if (sourceFile == null || boxDataFileName == null)
 				return;
 			log.append("Importing: " + sourceFile.getName() + "\n");
-			run(sourceFile.getPath(), false);
+			run(sourceFile.getPath(), boxDataFileName, false);
 		} else if (e.getSource() == histButton) {
 			if (settingsFile == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import settings.");
@@ -88,16 +98,16 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 					"An Inane Question",
 					JOptionPane.YES_NO_OPTION);
 			if (confirm == JOptionPane.YES_OPTION) {
-				if (sourceFile == null)
+				if (sourceFile == null || boxDataFileName == null)
 					return;
 				log.append("Reseting the DB and importing: " + sourceFile.getName() + "\n");
-				run(sourceFile.getPath(), true);
+				run(sourceFile.getPath(), boxDataFileName, true);
 			}
 		}
 
 	}
 	
-	private void run(String inputFileName, boolean reset) {
+	private void run(String inputFileName, String boxDataFileName, boolean reset) {
 		if (settingsFile == null) {
 			System.out.println("No Settings file was given");
 			return;
@@ -105,7 +115,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		
 		XmlReader reader = new XmlReader();
 		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
-		DataProcessor processor = new DataProcessor(inputFileName, settings);
+		DataProcessor processor = new DataProcessor(inputFileName, boxDataFileName, settings);
 		if (!processor.getPsqlManager().connect()) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
@@ -129,6 +139,9 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		openButton = new JButton("Choose Data File");
 		openButton.addActionListener(this);
 		
+		boxDataButton = new JButton("Choose Boxes Data File");
+		boxDataButton.addActionListener(this);
+		
 		importButton = new JButton("Import");
 		importButton.addActionListener(this);
 		
@@ -142,6 +155,7 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		JPanel buttonPanel = new JPanel(); //use FlowLayout
 		buttonPanel.add(settingsButton);
 		buttonPanel.add(openButton);
+		buttonPanel.add(boxDataButton);
 		buttonPanel.add(importButton);
 		buttonPanel.add(histButton);
 		buttonPanel.add(resetButton);

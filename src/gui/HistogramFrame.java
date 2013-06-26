@@ -53,8 +53,6 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 	}
 	
 	private void init() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		histPanel = new JPanel();
 		getContentPane().add(histPanel);
 	}
