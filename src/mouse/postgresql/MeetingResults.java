@@ -18,7 +18,6 @@ public class MeetingResults extends DbDynamicTable {
 	
 	public MeetingResults(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 		
 	}
 	
@@ -80,7 +79,6 @@ public class MeetingResults extends DbDynamicTable {
 
 	@Override
 	protected void initColumns() {
-		// TODO Auto-generated method stub
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
 		columns.put("trans_from_id", new DbEntry("trans_from_id", ColumnTypes.integer, "references transponders(id)"));
 		columns.put("trans_to_id", new DbEntry("trans_to_id", ColumnTypes.integer, "references transponders(id)"));

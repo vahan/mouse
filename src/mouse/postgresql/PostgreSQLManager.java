@@ -149,7 +149,7 @@ public class PostgreSQLManager {
 			return false;
 		}
 		
-		//First, drop all tables TODO remove this!
+		//drop all tables
 		String[] dropQueries = new String[tables.size()];
 		for (int i = 0; i < tables.size(); ++i) {
 			dropQueries[i] = tables.get(i).dropTableQuery();
@@ -247,7 +247,7 @@ public class PostgreSQLManager {
 			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
 			ResultSet resultSet = stmt.getGeneratedKeys();
 			while (resultSet.next()) {
-				results.add(resultSet.getString(1)); //TODO Hard typed 1, assuming only ID is returned
+				results.add(resultSet.getString("id")); //TODO Hard typed 1, assuming only ID is returned
 			}
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
@@ -396,10 +396,8 @@ public class PostgreSQLManager {
 			}
 			staticTable.setTableModels(models.toArray());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		
 		return true;
 	}

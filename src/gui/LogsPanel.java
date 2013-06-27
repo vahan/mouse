@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -11,8 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import mouse.TimeStamp;
-
-import org.jfree.data.resources.DataPackageResources;
 
 import dataProcessing.DataProcessor;
 
@@ -69,7 +69,6 @@ public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 	
 	public void setProcessor(DataProcessor processor) {
 		this.processor = processor;
-		
 		updateComboList();
 	}
 	

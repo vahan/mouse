@@ -16,7 +16,6 @@ public class AntennaReadings extends DbDynamicTable {
 	
 	public AntennaReadings(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 		
 	}
 	

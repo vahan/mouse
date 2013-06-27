@@ -66,7 +66,6 @@ public class TransponderRow extends DbStaticTableRow {
 	}
 
 	private Gender findSex() {
-		// TODO Auto-generated method stub
 		return Gender.ItsComplicated;
 	}
 
@@ -126,13 +125,11 @@ public class TransponderRow extends DbStaticTableRow {
 
 	@Override
 	public TimeStamp[] getLastResults() {
-		// TODO Auto-generated method stub
 		return new TimeStamp[] {lastReading, lastScaleReading};
 	}
 
 	@Override
 	public void setLastResult(TimeStamp result, int lastResultIndex) {
-		// TODO Auto-generated method stub
 		if (lastResultIndex == 0) {
 			lastReading = result;
 		} else {

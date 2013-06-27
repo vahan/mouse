@@ -55,13 +55,11 @@ public class MeetingResultRow extends DbDynamicTableRow {
 
 	@Override
 	public TimeStamp timeStamp(int timeStampIndex) {
-		// TODO Auto-generated method stub
 		return timeStampIndex == 0 ? start : stop;
 	}
 
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
-		// TODO Auto-generated method stub
 		switch (staticTableRowIndex) {
 			case 0:		return transponder;
 			case 1:		return transponderTo;

@@ -7,9 +7,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Observable;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,7 +40,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author vahan
  *
  */
-public class DataProcessor {
+public class DataProcessor extends Observable implements Runnable {
 	//TODO: The following constants can be changed to be read from the input file and/or from an configuration file 
 	/**
 	 * Constant representing the number of columns expected to be in the input CSV file
@@ -90,12 +89,29 @@ public class DataProcessor {
 	private final PostgreSQLManager psqlManager;
 	
 	private LogRow log;
+	
 	private String boxDataFileName;
 	
+	private String message = "";
 	
-	public DataProcessor(String inputCSVFileName, String boxDataFileName, Settings settings) {
+	private boolean reset;
+	
+	private static DataProcessor instance = null;
+	
+	private boolean success = false;
+	
+	
+	public static DataProcessor getInstance(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
+		if (instance == null)
+			instance = new DataProcessor(inputCSVFileName, boxDataFileName, settings, reset);
+		return instance;
+	}
+	
+	
+	private DataProcessor(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
 		this.inputCSVFileName = inputCSVFileName;
 		this.boxDataFileName = boxDataFileName;
+		this.reset = reset;
 		
 		CSVColumn[] columns = csvColumns(inputCSVFileName, true);
 		psqlManager = new PostgreSQLManager(settings, columns);
@@ -125,14 +141,23 @@ public class DataProcessor {
 		return psqlManager;
 	}
 	
+	public String getMessage() {
+		return message;
+	}
+	
+	public boolean getSuccess() {
+		return success;
+	}
+	
 	
 	/**
 	 * Process the input data and write it into the according tables
 	 * @return
 	 */
-	public boolean process(boolean reset) {
-		if (reset && !psqlManager.initTables())
+	public boolean process() {
+		if (reset && !psqlManager.initTables()) {
 			return false;
+		}
 		if (reset && !psqlManager.storeStaticTables()) {
 			return false;
 		}
@@ -167,12 +192,9 @@ public class DataProcessor {
 			return false;
 		if (!addTransponderCounts())
 			return false;
-		
+		success = true;
 		return true;
 	}
-	
-	
-	
 	
 	/**
 	 * Reads the content of a given CSV file into antennaReadings array 
@@ -182,7 +204,8 @@ public class DataProcessor {
 	 */
 	private boolean readAntennaReadingsCSV(String sourceFile) {
 		//TODO: change the info output from the default out to a controllable one
-		System.out.println("Reading input file: " + sourceFile);
+		notifyMessage("Reading input file: " + sourceFile);
+		
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(sourceFile), ';', '\'', 1); //skip the first (header) line
@@ -198,7 +221,6 @@ public class DataProcessor {
 				try {
 					timeStamp = new TimeStamp(nextLine[1], TimeStamp.csvFormat);
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					reader.close();
 					return false;
@@ -231,11 +253,9 @@ public class DataProcessor {
 			log.setDuration();
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -245,7 +265,7 @@ public class DataProcessor {
 	
 	
 	private boolean storeAntennaReadings() {
-		System.out.println("Saving antenna readings into DB");
+		notifyMessage("Saving antenna readings into DB");
 		
 		//Set the read data into the according db table object of psqlManager
 		AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
@@ -256,7 +276,7 @@ public class DataProcessor {
 		//Execute the query and return the generated serial IDs
 		String[] ids = psqlManager.executeQuery(insertQueries);
 		if (ids.length <= 0) {
-			System.out.println("FAILED");
+			notifyMessage("FAILED");
 			return false;
 		}
 			
@@ -265,13 +285,13 @@ public class DataProcessor {
 			antennaReadings.get(i).setId(ids[i]);
 		}
 		
-		System.out.println("OK");
+		notifyMessage("OK");
 		return true;
 	}
 	
 	
 	private boolean storeLog(String sourceFile) {
-		System.out.println("Inserting into Log table");
+		notifyMessage("Inserting into Log table");
 
 		Logs logsTable = psqlManager.getLogs();
 		logsTable.getTableModels()[0] = log;
@@ -281,11 +301,11 @@ public class DataProcessor {
 		String[] ids = psqlManager.executeQuery(insertQueries);
 		//Set the IDs to the appropriate objects
 		if (ids.length != 1) {
-			System.out.println("FAILED");
+			notifyMessage("FAILED");
 			return false;
 		}
 		log.setId(ids[0]);
-		System.out.println("OK");
+		notifyMessage("OK");
 		
 		return true;
 	}
@@ -298,7 +318,7 @@ public class DataProcessor {
 	 */
 	private boolean storeExtremeResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
 			int extremeResultIndex, int staticTableRowIndex, boolean last) {
-		System.out.println("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
+		notifyMessage("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
 		
 		dynamicTable.putExtremeReadings(extremeResultIndex, staticTableRowIndex, last);
 		
@@ -311,11 +331,11 @@ public class DataProcessor {
 		String[] ids = psqlManager.executeQuery(updateLastReadingsQuery);
 		
 		if (ids.length > 0) { //TODO: Check if ALL the rows were updated
-			System.out.println("OK. " + ids.length + " rows were modified");
+			notifyMessage("OK. " + ids.length + " rows were modified");
 			return true;
 		}
 		else {
-			System.out.println("FAILED");
+			notifyMessage("FAILED");
 			return false;
 		}
 	}
@@ -328,12 +348,8 @@ public class DataProcessor {
 	private boolean generateDirectionResults() {
 		//A HashMap data structure to efficiently handle mouse-box - antenna-recordtime connections.
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
-		//A copy of the antenna readings array. Needed to not modify the original one.
-		ArrayList<AntennaReadingRow> antennaReadingsCopy = new ArrayList<AntennaReadingRow>(antennaReadings);
 		//Iterate through the antenna readings and transform the data into direction results form
-		Iterator<AntennaReadingRow> it = antennaReadingsCopy.iterator();
-		while (it.hasNext()) {
-			AntennaReadingRow antennaReading = it.next();
+		for (AntennaReadingRow antennaReading : antennaReadings) {
 			TransponderRow mouse = antennaReading.getTransponder();
 			AntennaRow antenna = (AntennaRow) antennaReading.getSource();
 			BoxRow box = antenna.getBox();
@@ -366,10 +382,9 @@ public class DataProcessor {
 				//count the time from the last recorded time 
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			}
-			it.remove();
 		}
 
-		System.out.println("Saving direction results into DB");
+		notifyMessage("Saving direction results into DB");
 		//Set the read data into the according db table object of psqlManager
 		DirectionResults dirResultsTable = psqlManager.getDirectionResults();
 		dirResultsTable.setTableModels(
@@ -382,7 +397,7 @@ public class DataProcessor {
 		for (int i = 0; i < directionResults.size(); ++i) {
 			directionResults.get(i).setId(ids[i]);
 		}
-		System.out.println("OK");
+		notifyMessage("OK");
 		
 		return true;
 	}
@@ -396,27 +411,21 @@ public class DataProcessor {
 	private boolean generateStayResults() {
 		//A HashMap data structure to efficiently handle mouse-box connections.
 		HashMap<MouseInBox, DirectionResultRow> mouseInBoxSet = new HashMap<MouseInBox, DirectionResultRow>();
-		//A copy of the direction results array. Needed to not modify the original one.
-		ArrayList<DirectionResultRow> directionResultsCopy = new ArrayList<DirectionResultRow>(directionResults);
-		//Iterate through the direction results and transform the data into stay results form
-		Iterator<DirectionResultRow> it = directionResultsCopy.iterator();
-		while (it.hasNext()) {
-			DirectionResultRow dirRes = it.next();
+		for (DirectionResultRow dirRes : directionResults) {
 			TransponderRow mouse = dirRes.getTransponder();
 			BoxRow box = (BoxRow) dirRes.getSource();
 			TimeStamp timeStamp = dirRes.getTimeStamp();
-			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //TODO: perhaps a new type is needed instead of putting null for Antenna
+			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp);
 			DirectionResultRow secondDir = mouseInBoxSet.get(mouseInBox);
 			DirectionResultRow firstDir = dirRes;
 			//if the mouse-box pair appears for the first time, add it to the mouseInBoxSet array
 			if (secondDir == null) {
 				mouseInBoxSet.put(mouseInBox, dirRes);
-				it.remove();
 				continue;
 			} else {
 				//The first event must be before the second
 				if (firstDir.getTimeStamp().after(secondDir.getTimeStamp())) {
-					//System.out.println("swapping");
+					//notifyMessage("swapping");
 					DirectionResultRow temp = firstDir;
 					firstDir = secondDir;
 					secondDir = temp;
@@ -431,17 +440,16 @@ public class DataProcessor {
 					mouse.addStay();
 					stayResults.add(stayResult);
 					if (mouseInBoxSet.remove(mouseInBox) == null) {
-						System.out.println("The mouseInBox could not be removed from the set after being added to the stayResults array! That's odd");
+						notifyMessage("The mouseInBox could not be removed from the set after being added to the stayResults array! That's odd");
 					} else {
-						//System.out.println("good boy!");
+						//notifyMessage("good boy!");
 					}
-					it.remove();
 				}
 				
 			}
 		}
 		
-		System.out.println("Saving stay results into DB");
+		notifyMessage("Saving stay results into DB");
 		//Set the read data into the according db table object of psqlManager
 		StayResults stayResultsTable = psqlManager.getStayResults();
 		stayResultsTable.setTableModels(
@@ -454,7 +462,7 @@ public class DataProcessor {
 		for (int i = 0; i < stayResults.size(); ++i) {
 			stayResults.get(i).setId(ids[i]);
 		}
-		System.out.println("OK");
+		notifyMessage("OK");
 		
 		return true;
 	}
@@ -484,11 +492,7 @@ public class DataProcessor {
 			boxSet.put(box, mouseIntervals);
 		}
 		//Then iterate for each box and check which mice and when met there
-		Iterator<Entry<BoxRow, ArrayList<MouseInterval>>> it = boxSet.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<BoxRow, ArrayList<MouseInterval>> pair = 
-					(Map.Entry<BoxRow, ArrayList<MouseInterval>>) it.next();
-			
+		for (Map.Entry<BoxRow, ArrayList<MouseInterval>> pair : boxSet.entrySet()) {
 			BoxRow box = pair.getKey();
 			//For each box iterate through the list of mouse-start-stop objects checking if there are overlapping timestamps
 			ArrayList<MouseInterval> mouseIntervals = pair.getValue();
@@ -524,11 +528,9 @@ public class DataProcessor {
 				}
 				
 			}
-			
-			it.remove();
 		}
 
-		System.out.println("Saving meeting results into DB");
+		notifyMessage("Saving meeting results into DB");
 		//Set the read data into the according db table object of psqlManager
 		MeetingResults meetingResultsTable = psqlManager.getMeetingResults();
 		meetingResultsTable.setTableModels(
@@ -541,20 +543,20 @@ public class DataProcessor {
 		for (int i = 0; i < meetingResults.size(); ++i) {
 			meetingResults.get(i).setId(ids[i]);
 		}
-		System.out.println("OK");
+		notifyMessage("OK");
 		
 		return true;
 	}
 	
 	
 	private boolean addTransponderCounts() {
-		System.out.println("Updating transponder count columns");
+		notifyMessage("Updating transponder count columns");
 		String[] ids = psqlManager.executeQuery(psqlManager.getTransponders().updateCountsQuery());
 		if (ids.length > 0) {
-			System.out.println("OK. " + ids.length + " rows were updated");
+			notifyMessage("OK. " + ids.length + " rows were updated");
 			return true;
 		} else {
-			System.out.println("FAILED");
+			notifyMessage("FAILED");
 			return false;
 		}
 	}
@@ -566,7 +568,6 @@ public class DataProcessor {
 	 * Must be called before the actual data processing starts
 	 * @param inputCSVFileName	The name of the input file
 	 * @param unique			Determines if the generated columns contain only unique entries
-	 * @param seperator TODO
 	 * @return					Columns of antennas, boxes and transponders; null if reading errors occur
 	 */
 	private CSVColumn[] csvColumns(String inputCSVFileName, boolean unique) {
@@ -584,7 +585,6 @@ public class DataProcessor {
 			String[] nextLine;
 			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
-				//TODO: Not sure what to do when the rfid is missing
 				String rfid = nextLine[RFID_COLUMN];
 				if (StringUtils.isEmpty(rfid))
 					continue;
@@ -598,11 +598,9 @@ public class DataProcessor {
 			reader.close();
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -632,11 +630,9 @@ public class DataProcessor {
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -662,4 +658,16 @@ public class DataProcessor {
 		
 	}
 	
+	
+	private void notifyMessage(String message) {
+		this.message = message;
+		setChanged();
+		notifyObservers();
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 }

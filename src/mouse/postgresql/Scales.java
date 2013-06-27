@@ -45,7 +45,6 @@ public class Scales extends DbTable {
 
 	@Override
 	protected void initColumns() {
-		// TODO Auto-generated method stub
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
 		columns.put("segment", new DbEntry("segment", ColumnTypes.text, ""));
 		columns.put("x_pos", new DbEntry("x_pos", ColumnTypes.real, ""));

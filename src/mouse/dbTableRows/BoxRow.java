@@ -76,7 +76,6 @@ public class BoxRow extends DbStaticTableRow {
 
 	@Override
 	public TimeStamp[] getLastResults() {
-		// TODO Auto-generated method stub
 		return new TimeStamp[] {lastDirectionResult, lastMeeting};
 	}
 

@@ -37,13 +37,11 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 
 	@Override
 	public TimeStamp timeStamp(int timeStampIndex) {
-		// TODO Auto-generated method stub
 		return timeStamp;
 	}
 
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
-		// TODO Auto-generated method stub
 		return staticTableRowIndex == 0 ? source : transponder;
 	}
 

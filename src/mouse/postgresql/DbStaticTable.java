@@ -25,11 +25,9 @@ public abstract class DbStaticTable extends DbTable {
 	
 	protected DbStaticTable(String tableName, String[] entries, String[] data) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
-
+		
 		this.entries = entries;
 		this.data = data;
-		
 		generateTables();
 	}
 	

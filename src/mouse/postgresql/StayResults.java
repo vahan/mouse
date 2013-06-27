@@ -12,7 +12,6 @@ public class StayResults extends DbDynamicTable {
 	
 	public StayResults(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

@@ -17,7 +17,6 @@ public class DirectionResults extends DbDynamicTable {
 	
 	public DirectionResults(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 		
 	}
 
@@ -61,7 +60,6 @@ public class DirectionResults extends DbDynamicTable {
 										"transponder_id",
 										"box_id",
 										};
-		// TODO Auto-generated method stub
 		return fields;
 	}
 
@@ -79,7 +77,6 @@ public class DirectionResults extends DbDynamicTable {
 
 	@Override
 	protected void initColumns() {
-		// TODO Auto-generated method stub
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
 		columns.put("timestamp", new DbEntry("timestamp", ColumnTypes.timestamp, ""));
 		columns.put("direction", new DbEntry("direction", ColumnTypes.text, ""));

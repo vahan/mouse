@@ -97,7 +97,6 @@ public class AntennaRow extends DbStaticTableRow {
 
 	@Override
 	public void setLastResult(TimeStamp result, int lastResultIndex) {
-		// TODO Auto-generated method stub
 		lastReading = result;
 	}
 	

@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mouse.Gender;
 import mouse.TimeStamp;
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.TransponderRow;
@@ -21,7 +20,6 @@ public class Transponders extends DbStaticTable {
 	public Transponders(String tableName, String[] transponderNames) {
 		super(tableName, transponderNames, null);
 		
-		// TODO Auto-generated constructor stub
 	}
 	
 	

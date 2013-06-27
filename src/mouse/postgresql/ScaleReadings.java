@@ -12,7 +12,6 @@ public class ScaleReadings extends DbTable {
 
 	public ScaleReadings(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

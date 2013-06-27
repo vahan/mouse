@@ -20,7 +20,6 @@ public abstract class DbDynamicTable extends DbTable {
 
 	protected DbDynamicTable(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 	}
 	
 

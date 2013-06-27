@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -17,7 +19,7 @@ import dataProcessing.DataProcessor;
 import dataProcessing.XmlReader;
 
 
-public class ButtonsPanel extends JPanel implements ActionListener {
+public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 
 	private JButton openButton, boxDataButton, importButton, histButton, settingsButton, resetButton;
 	private JFileChooser fc;
@@ -115,12 +117,13 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		
 		XmlReader reader = new XmlReader();
 		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
-		DataProcessor processor = new DataProcessor(inputFileName, boxDataFileName, settings);
+		DataProcessor processor = DataProcessor.getInstance(inputFileName, boxDataFileName, settings, reset);
+		processor.addObserver(this);
 		if (!processor.getPsqlManager().connect()) {
 			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
 		}
-		if (!processor.process(reset)) {
+		if (!processor.process()) {
 			System.out.println("An error accurred! Please check the above error messages");
 			return;
 		}
@@ -162,6 +165,17 @@ public class ButtonsPanel extends JPanel implements ActionListener {
 		
 		//Add the buttons and the log to this panel.
 		add(buttonPanel, BorderLayout.PAGE_START);
+	}
+
+
+	@Override
+	public void update(Observable o, Object arg) {
+		DataProcessor processor = (DataProcessor) o;
+		log.append(processor.getMessage() + "\n");
+
+		log.setVisible(true);
+		log.updateUI();
+		
 	}
 	
 

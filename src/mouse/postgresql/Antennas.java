@@ -17,7 +17,6 @@ public class Antennas extends DbStaticTable {
 	
 	public Antennas(String tableName, String[] antennaNames, String[] boxNames) {
 		super(tableName, antennaNames, boxNames);
-		// TODO Auto-generated constructor stub
 		
 	}
 	
@@ -53,7 +52,6 @@ public class Antennas extends DbStaticTable {
 
 	@Override
 	public DbTableRow createModel(HashMap<String, String> columnValues) {
-		// TODO Auto-generated method stub
 		String position = columnValues.get("position");
 		String boxId = columnValues.get("box_id");
 		BoxRow box = BoxRow.getBoxById(boxId);

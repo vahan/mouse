@@ -19,7 +19,6 @@ public class Boxes extends DbStaticTable {
 
 	public Boxes(String tableName, String[] boxNames) {
 		super(tableName, boxNames, null);
-		// TODO Auto-generated constructor stub
 	}
 	
 	
@@ -63,7 +62,6 @@ public class Boxes extends DbStaticTable {
 	
 	@Override
 	public DbTableRow createModel(HashMap<String, String> columnValues) {
-		// TODO Auto-generated method stub
 		String name = columnValues.get("name");
 		String xPos = columnValues.get("x_pos");
 		String yPos = columnValues.get("y_pos");

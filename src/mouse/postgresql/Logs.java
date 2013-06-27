@@ -13,7 +13,6 @@ public class Logs extends DbTable {
 
 	public Logs(String tableName) {
 		super(tableName);
-		// TODO Auto-generated constructor stub
 		tableModels = new LogRow[1];
 	}
 	
@@ -50,7 +49,6 @@ public class Logs extends DbTable {
 
 	@Override
 	protected void initColumns() {
-		// TODO Auto-generated method stub
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
 		columns.put("first_reading", new DbEntry("first_reading", ColumnTypes.timestamp, ""));
 		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));

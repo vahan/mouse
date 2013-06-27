@@ -54,13 +54,11 @@ public class StayResultRow extends DbDynamicTableRow {
 
 	@Override
 	public TimeStamp timeStamp(int timeStampIndex) {
-		// TODO Auto-generated method stub
 		return timeStampIndex == 0 ? start : stop;
 	}
 
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
-		// TODO Auto-generated method stub
 		return staticTableRowIndex == 0 ? transponder : source;
 	}
 	
