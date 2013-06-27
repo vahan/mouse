@@ -100,6 +100,8 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	private boolean success = false;
 	
+	private boolean finished = false;
+	
 	
 	public static DataProcessor getInstance(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
 		if (instance == null)
@@ -154,12 +156,17 @@ public class DataProcessor extends Observable implements Runnable {
 		this.reset = reset;
 	}
 	
+	public boolean isFinished() {
+		return finished;
+	}
+	
 	
 	/**
 	 * Process the input data and write it into the according tables
 	 * @return
 	 */
-	public boolean process() {
+	private boolean process() {
+		finished = false;
 		if (reset && !psqlManager.initTables()) {
 			return false;
 		}
@@ -197,7 +204,7 @@ public class DataProcessor extends Observable implements Runnable {
 			return false;
 		if (!addTransponderCounts())
 			return false;
-		success = true;
+		finished = true;
 		return true;
 	}
 	
@@ -665,14 +672,16 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	
 	private void notifyMessage(String message) {
-		this.message = message;
-		setChanged();
-		notifyObservers();
+		synchronized (message) {
+			this.message = message;
+			this.message.notifyAll();
+			setChanged();
+			notifyObservers();
+		}
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		success = process();
 	}
 }

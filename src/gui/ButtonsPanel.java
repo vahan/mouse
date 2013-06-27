@@ -69,7 +69,13 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 			if (sourceFile == null || boxDataFileName == null)
 				return;
 			log.append("Importing: " + sourceFile.getName() + "\n");
-			run(sourceFile.getPath(), boxDataFileName, false);
+			try {
+				run(sourceFile.getPath(), boxDataFileName, false);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
+			}
 		} else if (e.getSource() == histButton) {
 			if (settingsFile == null) {
 				JOptionPane.showMessageDialog(getParent(), "First import settings.");
@@ -103,15 +109,21 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 				if (sourceFile == null || boxDataFileName == null)
 					return;
 				log.append("Reseting the DB and importing: " + sourceFile.getName() + "\n");
-				run(sourceFile.getPath(), boxDataFileName, true);
+				try {
+					run(sourceFile.getPath(), boxDataFileName, true);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
+					e1.printStackTrace();
+				}
 			}
 		}
 
 	}
 	
-	private void run(String inputFileName, String boxDataFileName, boolean reset) {
+	private void run(String inputFileName, String boxDataFileName, boolean reset) throws InterruptedException {
 		if (settingsFile == null) {
-			System.out.println("No Settings file was given");
+			JOptionPane.showMessageDialog(this, "No Settings file was given");
 			return;
 		}
 		
@@ -120,16 +132,41 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 		DataProcessor processor = DataProcessor.getInstance(inputFileName, boxDataFileName, settings, reset);
 		processor.addObserver(this);
 		if (!processor.getPsqlManager().connect()) {
-			System.out.println("Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
+			JOptionPane.showMessageDialog(this, "Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());
 			return;
 		}
-		if (!processor.process()) {
-			System.out.println("An error accurred! Please check the above error messages");
+		//TODO Doesn't update the log continuously, but rather show the entire log after process() is done.
+		Thread thr = new Thread(processor);
+		thr.start();
+		try {
+			thr.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
+			e.printStackTrace();
 			return;
+		}
+		//TODO is supposed to fix the previous todo, but doesn't!
+		while (!processor.isFinished()) {
+			synchronized (processor.getMessage())
+			{
+				try 
+				{
+					this.wait();
+				} 
+				catch (InterruptedException e1) 
+				{
+					JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
+				}
+			}
+			if (!processor.getSuccess()) {
+				JOptionPane.showMessageDialog(this, "An error accurred! Please check the above error messages\n");
+				return;
+			}
 		}
 		MainWindow.getInstance().setProcessor(processor);
-		
-		System.out.println("The data was successfully read, processed and stored in DB");
+		log.append("Like a sir\n");
+		JOptionPane.showMessageDialog(this, "The data was successfully read, processed and stored in DB\n");
 	}
 	
 	private void init() {
