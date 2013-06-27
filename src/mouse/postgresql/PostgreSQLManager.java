@@ -49,7 +49,7 @@ public class PostgreSQLManager {
 	 * @param password
 	 * @param columns
 	 */
-	public PostgreSQLManager(Settings settings, CSVColumn[] columns) {
+	public PostgreSQLManager(Settings settings, CSVColumn[] columns, boolean reset) {
 		this.settings = settings;
 
 		try {
@@ -60,10 +60,10 @@ public class PostgreSQLManager {
 			return;
 		}
 		
-		this.boxes = new Boxes("boxes", columns[DataProcessor.DEVICE_ID_COLUMN].toArray());
+		this.boxes = new Boxes("boxes", columns[DataProcessor.DEVICE_ID_COLUMN].toArray(), reset);
 		this.antennas = new Antennas("antennas", columns[DataProcessor.ANTENNA_ID_COLUMN].toArray(), 
-												columns[DataProcessor.DEVICE_ID_COLUMN].toArray());
-		this.transponders = new Transponders("transponders", columns[DataProcessor.RFID_COLUMN].toArray());
+												columns[DataProcessor.DEVICE_ID_COLUMN].toArray(), reset);
+		this.transponders = new Transponders("transponders", columns[DataProcessor.RFID_COLUMN].toArray(), reset);
 		
 		//The order must be kept, because of the dependencies among the tables!
 		tables.add(logs);

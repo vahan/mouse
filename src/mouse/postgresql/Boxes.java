@@ -17,8 +17,11 @@ public class Boxes extends DbStaticTable {
 	
 	public static final int BOX_COUNT = 44;
 
-	public Boxes(String tableName, String[] boxNames) {
-		super(tableName, boxNames, null);
+	public Boxes(String tableName, String[] boxNames, boolean generate) {
+		super(tableName, boxNames, null, generate);
+
+		if (tableModels == null)
+			tableModels = new BoxRow[entries.length];
 	}
 	
 	
@@ -36,7 +39,8 @@ public class Boxes extends DbStaticTable {
 
 	@Override
 	protected void generateTables() {
-		tableModels = new BoxRow[entries.length];
+		if (tableModels == null)
+			tableModels = new BoxRow[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
 			tableModels[i] = new BoxRow(entries[i]);
 		}
@@ -93,8 +97,6 @@ public class Boxes extends DbStaticTable {
 		
 	}
 	
-	
-
 	
 	private String updateQueryByName(String[] fields, String[][] values) {
 		String query = "UPDATE " + tableName + " SET ";

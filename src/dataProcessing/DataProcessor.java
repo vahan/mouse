@@ -104,6 +104,7 @@ public class DataProcessor extends Observable implements Runnable {
 	public static DataProcessor getInstance(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
 		if (instance == null)
 			instance = new DataProcessor(inputCSVFileName, boxDataFileName, settings, reset);
+		instance.reset = reset;
 		return instance;
 	}
 	
@@ -114,7 +115,7 @@ public class DataProcessor extends Observable implements Runnable {
 		this.reset = reset;
 		
 		CSVColumn[] columns = csvColumns(inputCSVFileName, true);
-		psqlManager = new PostgreSQLManager(settings, columns);
+		psqlManager = new PostgreSQLManager(settings, columns, reset);
 	}
 	
 	public String getInputCSVFileName() {
@@ -147,6 +148,10 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	public boolean getSuccess() {
 		return success;
+	}
+	
+	public void setReset(boolean reset) {
+		this.reset = reset;
 	}
 	
 	

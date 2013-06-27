@@ -23,12 +23,13 @@ public abstract class DbStaticTable extends DbTable {
 	 */
 	protected String[] data;
 	
-	protected DbStaticTable(String tableName, String[] entries, String[] data) {
+	protected DbStaticTable(String tableName, String[] entries, String[] data, boolean generate) {
 		super(tableName);
 		
 		this.entries = entries;
 		this.data = data;
-		generateTables();
+		if (generate)
+			generateTables();
 	}
 	
 	@Override

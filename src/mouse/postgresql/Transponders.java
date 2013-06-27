@@ -17,9 +17,11 @@ import mouse.dbTableRows.TransponderRow;
  */
 public class Transponders extends DbStaticTable {
 	
-	public Transponders(String tableName, String[] transponderNames) {
-		super(tableName, transponderNames, null);
-		
+	public Transponders(String tableName, String[] transponderNames, boolean generate) {
+		super(tableName, transponderNames, null, generate);
+
+		if (tableModels == null)
+			tableModels = new TransponderRow[entries.length];
 	}
 	
 	
@@ -39,7 +41,8 @@ public class Transponders extends DbStaticTable {
 
 	@Override
 	protected void generateTables() {
-		tableModels = new TransponderRow[entries.length];
+		if (tableModels == null)
+			tableModels = new TransponderRow[entries.length];
 		for (int i = 0; i < entries.length; ++i) {
 			if (StringUtils.isEmpty(entries[i]))
 				entries[i] = "-";	//TODO handle empty 'rfid's

@@ -15,15 +15,18 @@ public class Antennas extends DbStaticTable {
 
 	public static final int ANTENNAS_PER_BOX = 2;
 	
-	public Antennas(String tableName, String[] antennaNames, String[] boxNames) {
-		super(tableName, antennaNames, boxNames);
+	public Antennas(String tableName, String[] antennaNames, String[] boxNames, boolean generate) {
+		super(tableName, antennaNames, boxNames, generate);
+		if (tableModels == null)
+			tableModels = new AntennaRow[data.length * entries.length];
 		
 	}
 	
 	
 	@Override
 	protected void generateTables() {
-		tableModels = new AntennaRow[data.length * entries.length];
+		if (tableModels == null)
+			tableModels = new AntennaRow[data.length * entries.length];
 		for (int j = 0, k = 0; j < data.length; ++j) {
 			for (int i = 0; i < entries.length; ++i) {
 				tableModels[k++] = new AntennaRow(entries[i], BoxRow.getBoxByName(data[j]));
