@@ -74,8 +74,20 @@ public class XmlReader {
 				NodeList textDbDateFormatList = dbDateFormatElement.getChildNodes();
 				String dbDateFormat = ((Node) textDbDateFormatList.item(0)).getNodeValue().trim();
 				
+				NodeList maxTubeTimeList = settingsElement.getElementsByTagName("max-tube-time");
+				Element maxTubeTimeElement = (Element) maxTubeTimeList.item(0);
+				NodeList textMaxTubeTimeList = maxTubeTimeElement.getChildNodes();
+				String maxTubeTime = ((Node) textMaxTubeTimeList.item(0)).getNodeValue().trim();
+				long maxTubeTimeNumber = Long.parseLong(maxTubeTime);
+
+				NodeList maxBoxTimeList = settingsElement.getElementsByTagName("max-box-time");
+				Element maxBoxTimeElement = (Element) maxBoxTimeList.item(0);
+				NodeList textMaxBoxTimeList = maxBoxTimeElement.getChildNodes();
+				String maxBoxTime = ((Node) textMaxBoxTimeList.item(0)).getNodeValue().trim();
+				long maxBoxTimeNumber = Long.parseLong(maxBoxTime);
+				
 				return new Settings(username, password, host, port, dbName, 
-						inervalsNumber, csvDateFormat, dbDateFormat);
+						inervalsNumber, csvDateFormat, dbDateFormat, maxTubeTimeNumber, maxBoxTimeNumber);
 			}
 			return null;
 		} catch (SAXParseException err) {

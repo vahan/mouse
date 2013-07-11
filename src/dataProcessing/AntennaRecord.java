@@ -8,7 +8,7 @@ import mouse.dbTableRows.AntennaRow;
  * @author vahan
  *
  */
-public class AntennaRecord implements Comparable {
+public class AntennaRecord implements Comparable<Object> {
 	
 	private final AntennaRow antenna;
 	

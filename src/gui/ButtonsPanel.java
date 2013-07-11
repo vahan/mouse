@@ -148,8 +148,7 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 		try {
 			thr.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
+			JOptionPane.showMessageDialog(this, "dafuq did just happen?");
 			e.printStackTrace();
 			return;
 		}

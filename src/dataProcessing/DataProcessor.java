@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
@@ -100,7 +99,9 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	private boolean reset;
 	
-	private static DataProcessor instance = null;
+	private Settings settings;
+	
+	private static DataProcessor instance = new DataProcessor();
 	
 	private boolean success = false;
 	
@@ -108,16 +109,16 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	
 	public static DataProcessor getInstance() {
-		if (instance == null)
-			instance = new DataProcessor();
 		return instance;
 	}
 	
 	
-	public void init(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
+	public void init(String inputCSVFileName, String boxDataFileName, Settings settings, 
+			boolean reset) {
 		this.inputCSVFileName = inputCSVFileName;
 		this.boxDataFileName = boxDataFileName;
 		this.reset = reset;
+		this.settings = settings;
 		
 		CSVColumn[] columns = csvColumns(inputCSVFileName, true);
 		psqlManager = new PostgreSQLManager(settings, columns, reset);
@@ -363,7 +364,8 @@ public class DataProcessor extends Observable implements Runnable {
 	
 	private void generateDirAndStayResults() {
 		for (Entry<TransponderRow, MouseRecords> entry : mouseReadings.entrySet()) {
-			entry.getValue().addDirectionAndStayResults(directionResults, stayResults);
+			entry.getValue().addDirectionAndStayResults(directionResults, stayResults,
+					settings.getMaxTubeTime(), settings.getMaxBoxTime());
 		}
 	}
 	

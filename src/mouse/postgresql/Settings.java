@@ -19,10 +19,16 @@ public class Settings {
 	private String csvDateFormat;
 
 	private String dbDateFormat;
+	
+	private long maxTubeTime;
+	
+	private long maxBoxTime;
+	
 
 	public Settings(String username, String password, String hostName,
 			String port, String dbName, int intervalsNumber,
-			String csvDateFormat, String dbDateFormat) {
+			String csvDateFormat, String dbDateFormat, 
+			long maxTubeTime, long maxBoxTime) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -33,6 +39,8 @@ public class Settings {
 		this.intervalsNumber = intervalsNumber;
 		this.csvDateFormat = csvDateFormat;
 		this.dbDateFormat = dbDateFormat;
+		this.maxTubeTime = maxTubeTime;
+		this.maxBoxTime = maxBoxTime;
 	}
 
 	public String getUsername() {
@@ -78,6 +86,14 @@ public class Settings {
 		url = generateUrl(hostName, port, dbName);
 	}
 	
+	public long getMaxTubeTime() {
+		return maxTubeTime;
+	}
+
+	public long getMaxBoxTime() {
+		return maxBoxTime;
+	}
+
 	public String getUrl() {
 		return url;
 	}
