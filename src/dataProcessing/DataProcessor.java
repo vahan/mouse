@@ -7,7 +7,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,6 +85,8 @@ public class DataProcessor extends Observable implements Runnable {
 	 * An array containing data transformed into "meeting results" from "stay results"
 	 */
 	private final ArrayList<MeetingResultRow> meetingResults = new ArrayList<MeetingResultRow>();
+	
+	private final HashMap<TransponderRow, MouseRecords> mouseReadings = new HashMap<TransponderRow, MouseRecords>();
 	/**
 	 * Provides functionality to work with postgresql data bases.
 	 */
@@ -195,11 +199,12 @@ public class DataProcessor extends Observable implements Runnable {
 			return false;
 		if (!storeExtremeResults(psqlManager.getAntennaReadings(), psqlManager.getTransponders(), new String[] {"first_reading"}, 0, 1, false))
 			return false;
-		if (!generateDirectionResults())
+		generateDirAndStayResults();
+		if (!storeDirectionResults())
 			return false;
 		if (!storeExtremeResults(psqlManager.getDirectionResults(), psqlManager.getBoxes(), new String[] {"last_direction_result"}, 0, 2, true))
 			return false;
-		if (!generateStayResults())
+		if (!storeStayResults())
 			return false;
 		if (!generateMeetingResults())
 			return false;
@@ -256,6 +261,12 @@ public class DataProcessor extends Observable implements Runnable {
 				//create and the the antenna reading object to the correcponding array
 				AntennaReadingRow antennaReading = new AntennaReadingRow(timeStamp, transponder, antenna, log);
 				antennaReadings.add(antennaReading);
+				//store into mouseReadings array as well; needed for further processing
+				MouseRecords mouseRecords = mouseReadings.get(transponder);
+				if (mouseRecords == null)
+					mouseReadings.put(transponder, new MouseRecords(transponder));
+				else
+					mouseRecords.add(new AntennaRecord(antenna, timeStamp));
 				
 				nbReadings++; //increment the number of readings
 			}
@@ -349,13 +360,20 @@ public class DataProcessor extends Observable implements Runnable {
 		}
 	}
 	
+	
+	private void generateDirAndStayResults() {
+		for (Entry<TransponderRow, MouseRecords> entry : mouseReadings.entrySet()) {
+			entry.getValue().addDirectionAndStayResults(directionResults, stayResults);
+		}
+	}
+	
 	/**
 	 * Generates entry rows from antennaReadings array to directionResults array
 	 * 
 	 * @return	true if the successful; false - otherwise
 	 */
-	private boolean generateDirectionResults() {
-		//A dictionary to efficiently handle mouse-box - antenna-recordtime connections.
+	private boolean storeDirectionResults() {
+		/*//A dictionary to efficiently handle mouse-box - antenna-record time connections.
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
 		//Iterate through the antenna readings and transform the data into a direction results form
 		for (AntennaReadingRow antennaReading : antennaReadings) {
@@ -393,7 +411,7 @@ public class DataProcessor extends Observable implements Runnable {
 				//count the time from the last recorded time 
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			}
-		}
+		}*/
 
 		notifyMessage("Saving direction results into DB");
 		//Set the read data into the according db table object of psqlManager
@@ -419,20 +437,21 @@ public class DataProcessor extends Observable implements Runnable {
 	 * 
 	 * @return	true if successful; false - otherwise
 	 */
-	private boolean generateStayResults() {
-		//A HashMap data structure to efficiently handle mouse-box connections.
+	private boolean storeStayResults() {
+		/*//A HashMap data structure to efficiently handle mouse-box connections.
 		HashMap<MouseInBox, DirectionResultRow> mouseInBoxSet = new HashMap<MouseInBox, DirectionResultRow>();
+		HashSet<TransponderRow> insideMice = new HashSet<TransponderRow>(); //Set of mice that are inside a box
 		for (DirectionResultRow dirRes : directionResults) {
 			TransponderRow mouse = dirRes.getTransponder();
 			BoxRow box = (BoxRow) dirRes.getSource();
 			TimeStamp timeStamp = dirRes.getTimeStamp();
-			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp);
+			MouseInBox mouseInBox = new MouseInBox(mouse, box, null, timeStamp); //no need to keep the particular antenna; TODO maybe a new class?
 			DirectionResultRow secondDir = mouseInBoxSet.get(mouseInBox);
 			DirectionResultRow firstDir = dirRes;
 			//if the mouse-box pair appears for the first time, add it to the mouseInBoxSet array
 			if (secondDir == null) {
 				mouseInBoxSet.put(mouseInBox, dirRes);
-				continue;
+				insideMice.add(mouse);
 			} else {
 				//The first event must be before the second
 				if (firstDir.getTimeStamp().after(secondDir.getTimeStamp())) {
@@ -448,17 +467,13 @@ public class DataProcessor extends Observable implements Runnable {
 					TimeStamp stop = secondDir.getTimeStamp();
 					//Create and store the stayResult data entry
 					StayResultRow stayResult = new StayResultRow(start, stop, mouse, box, firstDir, secondDir);
-					mouse.addStay();
+					mouse.addStay(); //increment the stay count
 					stayResults.add(stayResult);
-					if (mouseInBoxSet.remove(mouseInBox) == null) {
-						notifyMessage("The mouseInBox could not be removed from the set after being added to the stayResults array! That's odd");
-					} else {
-						//notifyMessage("good boy!");
-					}
+					mouseInBoxSet.remove(mouseInBox);
+					insideMice.remove(mouse);
 				}
-				
 			}
-		}
+		}*/
 		
 		notifyMessage("Saving stay results into DB");
 		//Set the read data into the according db table object of psqlManager
