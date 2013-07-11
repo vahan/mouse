@@ -55,9 +55,13 @@ public class MouseRecords {
 				i += 2;
 				continue;
 			}
-			DirectionResultRow outDirRes = getDirectionResultRow(antRecArray[i + 2], antRecArray[i + 3], maxTubeTime);
+			AntennaRecord ant1 = antRecArray[i + 2];
+			AntennaRecord ant2 = (antRecArray[i + 3].getAntenna().getBox() == ant1.getAntenna().getBox())
+									? antRecArray[i + 3]
+									: antRecArray[i + 2]; //For the special case stayResult of form A1-A2-A1
+			DirectionResultRow outDirRes = getDirectionResultRow(ant1, ant2, maxTubeTime);
 			if (outDirRes == null) {
-				i += 2;
+				i += ant1 == ant2 ? 1 : 2; //For the special case stayResult of form A1-A2-A1
 				continue;
 			}
 			dirResults.add(outDirRes);
@@ -78,7 +82,8 @@ public class MouseRecords {
 	}
 	
 	
-	private DirectionResultRow getDirectionResultRow(AntennaRecord in, AntennaRecord out, long maxTubeTime) {
+	private DirectionResultRow getDirectionResultRow(AntennaRecord in, AntennaRecord out, 
+				long maxTubeTime) {
 		if (in.getAntenna().getBox() != out.getAntenna().getBox())
 			return null;
 		BoxRow box = in.getAntenna().getBox();
