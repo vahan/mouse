@@ -16,9 +16,9 @@ public class TimeStamp extends Date {
 	
 	private static final long serialVersionUID = 8348324320098343781L;
 	
-	public static SimpleDateFormat csvFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss:SSSS", Locale.ENGLISH);
+	private static SimpleDateFormat csvFormat;
 	
-	public static SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	private static SimpleDateFormat dbFormat;
 	
 	
 	public TimeStamp() {
@@ -32,6 +32,21 @@ public class TimeStamp extends Date {
 	public TimeStamp(String str, SimpleDateFormat format) throws ParseException {
 		super(format.parse(str).getTime());
 	}
+	
+	
+	public static void setDateFormats(String csv, String db) {
+		csvFormat = new SimpleDateFormat(csv, Locale.ENGLISH);
+		dbFormat = new SimpleDateFormat(db, Locale.ENGLISH);
+	}
+	
+	public static SimpleDateFormat getCsvForamt() {
+		return csvFormat;
+	}
+	
+	public static SimpleDateFormat getDbFormat() {
+		return dbFormat;
+	}
+	
 	
 	/**
 	 * Static method to calculate time difference in between two times

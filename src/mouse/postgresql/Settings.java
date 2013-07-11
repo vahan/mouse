@@ -14,8 +14,15 @@ public class Settings {
 	
 	private String url;
 
+	private int intervalsNumber;
+
+	private String csvDateFormat;
+
+	private String dbDateFormat;
+
 	public Settings(String username, String password, String hostName,
-			String port, String dbName) {
+			String port, String dbName, int intervalsNumber,
+			String csvDateFormat, String dbDateFormat) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -23,6 +30,9 @@ public class Settings {
 		this.port = port;
 		this.dbName = dbName;
 		url = generateUrl(hostName, port, dbName);
+		this.intervalsNumber = intervalsNumber;
+		this.csvDateFormat = csvDateFormat;
+		this.dbDateFormat = dbDateFormat;
 	}
 
 	public String getUsername() {
@@ -92,6 +102,18 @@ public class Settings {
 		}
 		url += dbName;
 		return url;
+	}
+
+	public int getIntervalsNumber() {
+		return intervalsNumber;
+	}
+
+	public String getCsvDateFormat() {
+		return csvDateFormat;
+	}
+
+	public String getDbDateFormat() {
+		return dbDateFormat;
 	}
 
 }

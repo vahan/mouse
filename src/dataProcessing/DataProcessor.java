@@ -66,7 +66,7 @@ public class DataProcessor extends Observable implements Runnable {
 	/**
 	 * The full name (can contain path as well) of the input .csv file
 	 */
-	private final String inputCSVFileName;
+	private String inputCSVFileName;
 	/**
 	 * An array containing the data read from the input file
 	 */
@@ -86,7 +86,7 @@ public class DataProcessor extends Observable implements Runnable {
 	/**
 	 * Provides functionality to work with postgresql data bases.
 	 */
-	private final PostgreSQLManager psqlManager;
+	private PostgreSQLManager psqlManager;
 	
 	private LogRow log;
 	
@@ -103,21 +103,24 @@ public class DataProcessor extends Observable implements Runnable {
 	private boolean finished = false;
 	
 	
-	public static DataProcessor getInstance(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
+	public static DataProcessor getInstance() {
 		if (instance == null)
-			instance = new DataProcessor(inputCSVFileName, boxDataFileName, settings, reset);
-		instance.reset = reset;
+			instance = new DataProcessor();
 		return instance;
 	}
 	
 	
-	private DataProcessor(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
+	public void init(String inputCSVFileName, String boxDataFileName, Settings settings, boolean reset) {
 		this.inputCSVFileName = inputCSVFileName;
 		this.boxDataFileName = boxDataFileName;
 		this.reset = reset;
 		
 		CSVColumn[] columns = csvColumns(inputCSVFileName, true);
 		psqlManager = new PostgreSQLManager(settings, columns, reset);
+	}
+	
+	private DataProcessor() {
+		
 	}
 	
 	public String getInputCSVFileName() {
@@ -231,7 +234,7 @@ public class DataProcessor extends Observable implements Runnable {
 			while ((nextLine = reader.readNext()) != null) {
 				TimeStamp timeStamp;
 				try {
-					timeStamp = new TimeStamp(nextLine[1], TimeStamp.csvFormat);
+					timeStamp = new TimeStamp(nextLine[1], TimeStamp.getCsvForamt());
 				} catch (ParseException e) {
 					e.printStackTrace();
 					reader.close();

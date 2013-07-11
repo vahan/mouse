@@ -15,7 +15,6 @@ import mouse.dbTableRows.DbTableRow;
 
 public class Boxes extends DbStaticTable {
 	
-	public static final int BOX_COUNT = 44;
 
 	public Boxes(String tableName, String[] boxNames, boolean generate) {
 		super(tableName, boxNames, null, generate);
@@ -23,7 +22,6 @@ public class Boxes extends DbStaticTable {
 		if (tableModels == null)
 			tableModels = new BoxRow[entries.length];
 	}
-	
 	
 	public String updateBoxDataQuery() {
 		String[] fields = new String[] {"x_pos", "y_pos"};

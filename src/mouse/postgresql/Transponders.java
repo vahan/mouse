@@ -80,8 +80,8 @@ public class Transponders extends DbStaticTable {
 		int meetingCount = Integer.parseInt(columnValues.get("meeting_count"));
 		int baladeCount = Integer.parseInt(columnValues.get("balade_count"));
 		try {
-			firstReading = new TimeStamp(columnValues.get("first_reading"), TimeStamp.dbFormat);
-			lastReading = new TimeStamp(columnValues.get("last_reading"), TimeStamp.dbFormat);
+			firstReading = new TimeStamp(columnValues.get("first_reading"), TimeStamp.getDbFormat());
+			lastReading = new TimeStamp(columnValues.get("last_reading"), TimeStamp.getDbFormat());
 			//firstScaleReading = new TimeStamp(columnValues.get("first_scale_reading"), TimeStamp.dbFormat);
 			//lastScaleReading = new TimeStamp(columnValues.get("last_scale_reading"), TimeStamp.dbFormat);
 		} catch (ParseException e) {

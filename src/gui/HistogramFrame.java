@@ -35,7 +35,7 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 	private JTextArea log;
 	private JPanel histPanel;
 	
-	private int intervalsNumber = 100;
+	private final int intervalsNumber;
 	
 	private DataProcessor processor;
 	
@@ -45,10 +45,11 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 	private static final long serialVersionUID = 8110266043635101267L;
 	
 	
-	public HistogramFrame(JTextArea log, DataProcessor processor) {
+	public HistogramFrame(JTextArea log, DataProcessor processor, int intervalsNumber) {
 		super();
 		this.log = log;
 		this.processor = processor;
+		this.intervalsNumber = intervalsNumber;
 		init();
 	}
 	
@@ -59,11 +60,6 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 
 	public int getIntervalSize() {
 		return intervalsNumber;
-	}
-	
-	
-	public void setIntervalSize(int intervalSize) {
-		this.intervalsNumber = intervalSize;
 	}
 	
 	

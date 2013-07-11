@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import mouse.TimeStamp;
 import mouse.postgresql.Settings;
 
 import dataProcessing.DataProcessor;
@@ -86,8 +87,10 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 				return;
 			}
 			log.append("Generating the histogram...\n");
-			
-			HistogramFrame histFrame = new HistogramFrame(log, MainWindow.getInstance().getProcessor());
+			XmlReader reader = new XmlReader();
+			Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
+			HistogramFrame histFrame = new HistogramFrame(log, 
+					MainWindow.getInstance().getProcessor(), settings.getIntervalsNumber());
 			histFrame.run();
 		} else if (e.getSource() == settingsButton) {
 			int returnVal = fc.showOpenDialog(ButtonsPanel.this);
@@ -129,7 +132,11 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 		
 		XmlReader reader = new XmlReader();
 		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
-		DataProcessor processor = DataProcessor.getInstance(inputFileName, boxDataFileName, settings, reset);
+		
+		TimeStamp.setDateFormats(settings.getCsvDateFormat(), settings.getDbDateFormat());
+		
+		DataProcessor processor = DataProcessor.getInstance();
+		processor.init(inputFileName, boxDataFileName, settings, reset);
 		processor.addObserver(this);
 		if (!processor.getPsqlManager().connect()) {
 			JOptionPane.showMessageDialog(this, "Could not connect to the DB at " + processor.getPsqlManager().getSettings().getUrl());

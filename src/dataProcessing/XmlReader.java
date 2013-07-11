@@ -29,36 +29,53 @@ public class XmlReader {
 
 			for (int s = 0; s < listOfSettins.getLength(); ++s) {
 				Node firstSettingNode = listOfSettins.item(s);
-				if(firstSettingNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element firstPersonElement = (Element)firstSettingNode;
-	
-					NodeList usernameList = firstPersonElement.getElementsByTagName("username");
-					Element usernameElement = (Element)usernameList.item(0);
-					NodeList textUsernameList = usernameElement.getChildNodes();
-					String username = ((Node)textUsernameList.item(0)).getNodeValue().trim();
-	
-					NodeList passwordList = firstPersonElement.getElementsByTagName("password");
-					Element passwordElement = (Element)passwordList.item(0);
-					NodeList textPasswordList = passwordElement.getChildNodes();
-					String password = ((Node)textPasswordList.item(0)).getNodeValue().trim();
-	
-					NodeList hostList = firstPersonElement.getElementsByTagName("hostname");
-					Element hostElement = (Element)hostList.item(0);
-					NodeList textHostList = hostElement.getChildNodes();
-					String host = ((Node)textHostList.item(0)).getNodeValue().trim();
-					
-					NodeList portList = firstPersonElement.getElementsByTagName("port");
-					Element portElement = (Element)portList.item(0);
-					NodeList textPortList = portElement.getChildNodes();
-					String port = ((Node)textPortList.item(0)).getNodeValue().trim();
-	
-					NodeList dbNameList = firstPersonElement.getElementsByTagName("dbname");
-					Element dbNameElement = (Element)dbNameList.item(0);
-					NodeList textDbNameList = dbNameElement.getChildNodes();
-					String dbName = ((Node)textDbNameList.item(0)).getNodeValue().trim();
-					
-					return new Settings(username, password, host, port, dbName);
-				}
+				if(firstSettingNode.getNodeType() != Node.ELEMENT_NODE)
+					continue;
+				Element settingsElement = (Element) firstSettingNode;
+
+				NodeList usernameList = settingsElement.getElementsByTagName("username");
+				Element usernameElement = (Element) usernameList.item(0);
+				NodeList textUsernameList = usernameElement.getChildNodes();
+				String username = ((Node) textUsernameList.item(0)).getNodeValue().trim();
+
+				NodeList passwordList = settingsElement.getElementsByTagName("password");
+				Element passwordElement = (Element) passwordList.item(0);
+				NodeList textPasswordList = passwordElement.getChildNodes();
+				String password = ((Node) textPasswordList.item(0)).getNodeValue().trim();
+
+				NodeList hostList = settingsElement.getElementsByTagName("hostname");
+				Element hostElement = (Element) hostList.item(0);
+				NodeList textHostList = hostElement.getChildNodes();
+				String host = ((Node) textHostList.item(0)).getNodeValue().trim();
+				
+				NodeList portList = settingsElement.getElementsByTagName("port");
+				Element portElement = (Element) portList.item(0);
+				NodeList textPortList = portElement.getChildNodes();
+				String port = ((Node) textPortList.item(0)).getNodeValue().trim();
+
+				NodeList dbNameList = settingsElement.getElementsByTagName("dbname");
+				Element dbNameElement = (Element) dbNameList.item(0);
+				NodeList textDbNameList = dbNameElement.getChildNodes();
+				String dbName = ((Node) textDbNameList.item(0)).getNodeValue().trim();
+				
+				NodeList inervalsList = settingsElement.getElementsByTagName("hist-intervals");
+				Element inervalsElement = (Element) inervalsList.item(0);
+				NodeList textIntervalsList = inervalsElement.getChildNodes();
+				String inervals = ((Node) textIntervalsList.item(0)).getNodeValue().trim();
+				int inervalsNumber = Integer.parseInt(inervals);
+				
+				NodeList csvDateFormatList = settingsElement.getElementsByTagName("date-format-csv");
+				Element csvDateFormatElement = (Element) csvDateFormatList.item(0);
+				NodeList textcsvDateFormatList = csvDateFormatElement.getChildNodes();
+				String csvDateFormat = ((Node) textcsvDateFormatList.item(0)).getNodeValue().trim();
+
+				NodeList dbDateFormatList = settingsElement.getElementsByTagName("date-format-db");
+				Element dbDateFormatElement = (Element) dbDateFormatList.item(0);
+				NodeList textDbDateFormatList = dbDateFormatElement.getChildNodes();
+				String dbDateFormat = ((Node) textDbDateFormatList.item(0)).getNodeValue().trim();
+				
+				return new Settings(username, password, host, port, dbName, 
+						inervalsNumber, csvDateFormat, dbDateFormat);
 			}
 			return null;
 		} catch (SAXParseException err) {

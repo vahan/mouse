@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -53,7 +51,7 @@ public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 			if (n == JOptionPane.YES_OPTION) {
 				TimeStamp importedAt;
 				try {
-					importedAt = new TimeStamp(selectedLog, TimeStamp.dbFormat);
+					importedAt = new TimeStamp(selectedLog, TimeStamp.getDbFormat());
 				} catch (ParseException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
