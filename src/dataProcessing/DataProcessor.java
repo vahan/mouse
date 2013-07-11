@@ -185,7 +185,7 @@ public class DataProcessor extends Observable implements Runnable {
 		log = new LogRow(inputCSVFileName);
 		if (!readAntennaReadingsCSV(inputCSVFileName))
 			return false;
-		if (!storeLog(inputCSVFileName))
+		if (!storeLog())
 			return false;
 		if (!storeAntennaReadings())
 			return false;
@@ -218,55 +218,53 @@ public class DataProcessor extends Observable implements Runnable {
 	 * @return				true if successful, false - otherwise
 	 */
 	private boolean readAntennaReadingsCSV(String sourceFile) {
-		//TODO: change the info output from the default out to a controllable one
 		notifyMessage("Reading input file: " + sourceFile);
 		
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(sourceFile), ';', '\'', 1); //skip the first (header) line
 			
-			TimeStamp firstReading = null;
-			TimeStamp lastReading = null;
-			int nbReadings = 0;
+			TimeStamp firstReading = null; //the earliest reading; for the Logs table
+			TimeStamp lastReading = null; //the latest reading; for the Logs table
+			int nbReadings = 0; //number of the readings; for the Logs table
 			
 			String [] nextLine;
 			//Read the file line by line
 			while ((nextLine = reader.readNext()) != null) {
 				TimeStamp timeStamp;
 				try {
-					timeStamp = new TimeStamp(nextLine[1], TimeStamp.getCsvForamt());
+					timeStamp = new TimeStamp(nextLine[DATE_TIME_STAMP_COLUMN], TimeStamp.getCsvForamt()); //read the timestamp column of the current row
 				} catch (ParseException e) {
 					e.printStackTrace();
 					reader.close();
 					return false;
 				}
+				//check for the first and last readings
 				if (firstReading == null || timeStamp.before(firstReading))
 					firstReading = timeStamp;
 				if (lastReading == null || timeStamp.after(lastReading))
 					lastReading = timeStamp;
 				
-				String boxName = nextLine[2];
-				BoxRow box = BoxRow.getBoxByName(boxName);
-				String antennaPosition = nextLine[3];
-				AntennaRow antenna = AntennaRow.getAntenna(box, antennaPosition);
-				String rfid = nextLine[4];
-				//TODO: Not sure what to do when the rfid is missing 
+				String boxName = nextLine[DEVICE_ID_COLUMN]; //read the box name column of the current row
+				BoxRow box = BoxRow.getBoxByName(boxName); //get the box object via its read name
+				String antennaPosition = nextLine[ANTENNA_ID_COLUMN]; //read the antenna position (1 or 2) column of the current row
+				AntennaRow antenna = AntennaRow.getAntenna(box, antennaPosition); //get the antenna object using its corresponding box and position (id) on the box
+				String rfid = nextLine[RFID_COLUMN]; //read the rfid column of the current row
 				if (StringUtils.isEmpty(rfid))
-					continue;
-				TransponderRow transponder = TransponderRow.getTransponder(rfid);
-				
+					continue; //TODO: skip the line if the rfid is missing?
+				TransponderRow transponder = TransponderRow.getTransponder(rfid); //get the transponder object via its rfid
+				//create and the the antenna reading object to the correcponding array
 				AntennaReadingRow antennaReading = new AntennaReadingRow(timeStamp, transponder, antenna, log);
 				antennaReadings.add(antennaReading);
 				
-				nbReadings++;
+				nbReadings++; //increment the number of readings
 			}
 			reader.close();
-			
+			//set the data for Logs table
 			log.setFirstReading(firstReading);
 			log.setLastReading(lastReading);
 			log.setNbReadings(nbReadings);
 			log.setDuration();
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return false;
@@ -278,10 +276,12 @@ public class DataProcessor extends Observable implements Runnable {
 		return true;
 	}
 	
-	
+	/**
+	 * Stores the antenna readings into its table in the DB
+	 * @return	true if successful, false - otherwise
+	 */
 	private boolean storeAntennaReadings() {
 		notifyMessage("Saving antenna readings into DB");
-		
 		//Set the read data into the according db table object of psqlManager
 		AntennaReadings antennaReadingsTable = psqlManager.getAntennaReadings();
 		antennaReadingsTable.setTableModels(
@@ -294,20 +294,20 @@ public class DataProcessor extends Observable implements Runnable {
 			notifyMessage("FAILED");
 			return false;
 		}
-			
 		//Set the IDs to the appropriate objects
 		for (int i = 0; i < antennaReadings.size(); ++i) {
 			antennaReadings.get(i).setId(ids[i]);
 		}
-		
 		notifyMessage("OK");
 		return true;
 	}
 	
-	
-	private boolean storeLog(String sourceFile) {
-		notifyMessage("Inserting into Log table");
-
+	/**
+	 * Insert the log data into its table in the DB
+	 * @return	true if successful, false - otherwise
+	 */
+	private boolean storeLog() {
+		notifyMessage("Inserting into the Log table");
 		Logs logsTable = psqlManager.getLogs();
 		logsTable.getTableModels()[0] = log;
 		//Generate the INSERT query that inserts the data into the according db table
@@ -321,22 +321,17 @@ public class DataProcessor extends Observable implements Runnable {
 		}
 		log.setId(ids[0]);
 		notifyMessage("OK");
-		
 		return true;
 	}
 	
-	
-	
 	/**
-	 * 
-	 * @return
+	 * A general method used to store extreme (earliest, latest) type of entries into various tables
+	 * @return	true if successful, false - otherwise
 	 */
 	private boolean storeExtremeResults(DbDynamicTable dynamicTable, DbStaticTable staticTable, String[] fields, 
 			int extremeResultIndex, int staticTableRowIndex, boolean last) {
 		notifyMessage("Updating " + staticTable.getTableName() + "." + Arrays.toString(fields));
-		
 		dynamicTable.putExtremeReadings(extremeResultIndex, staticTableRowIndex, last);
-		
 		DbStaticTableRow[] staticTableRows = staticTable.getTableModels();
 		ColumnTypes[] types = new ColumnTypes[fields.length];
 		for (int i = 0; i < fields.length; ++i) {
@@ -344,8 +339,7 @@ public class DataProcessor extends Observable implements Runnable {
 		}
 		String updateLastReadingsQuery = staticTable.updateLastReadingsQuery(fields, staticTableRows, extremeResultIndex, types);
 		String[] ids = psqlManager.executeQuery(updateLastReadingsQuery);
-		
-		if (ids.length > 0) { //TODO: Check if ALL the rows were updated
+		if (ids.length > 0) { //TODO: Check if ALL the rows were updated?
 			notifyMessage("OK. " + ids.length + " rows were modified");
 			return true;
 		}
@@ -361,21 +355,22 @@ public class DataProcessor extends Observable implements Runnable {
 	 * @return	true if the successful; false - otherwise
 	 */
 	private boolean generateDirectionResults() {
-		//A HashMap data structure to efficiently handle mouse-box - antenna-recordtime connections.
+		//A dictionary to efficiently handle mouse-box - antenna-recordtime connections.
 		HashMap<MouseInBox, AntennaRecord> mouseInBoxSet = new HashMap<MouseInBox, AntennaRecord>();
-		//Iterate through the antenna readings and transform the data into direction results form
+		//Iterate through the antenna readings and transform the data into a direction results form
 		for (AntennaReadingRow antennaReading : antennaReadings) {
 			TransponderRow mouse = antennaReading.getTransponder();
 			AntennaRow antenna = (AntennaRow) antennaReading.getSource();
 			BoxRow box = antenna.getBox();
 			TimeStamp timestamp = antennaReading.getTimeStamp();
-			MouseInBox mouseInBox = new MouseInBox(mouse, box, antenna, timestamp);
-			AntennaRecord antennaRecord = mouseInBoxSet.get(mouseInBox);
-			//If the mouse-box pair is not already in the array, then add it
-			if (!mouseInBoxSet.containsKey(mouseInBox)) {
+			MouseInBox mouseInBox = new MouseInBox(mouse, box, antenna, timestamp); //represents an events of a mouse that appeared in a box
+			AntennaRecord antennaRecord = mouseInBoxSet.get(mouseInBox); //get the exact antenna (and timestamp) that recorded the mouse showing up in the box
+			//If the mouse-box pair is not already in the array, then add it; 
+			//meaning that the mouse was not recorded in this particular box before 
+			if (antennaRecord == null) {
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			} else if (!antennaRecord.getAntenna().equals(antenna)) {
-				//Otherwise nothing 'illegal' happened add the direction result to the array
+				//Otherwise if nothing 'illegal' happened add the direction result to the array
 				AntennaRow in;
 				AntennaRow out;
 				if (timestamp.before(antennaRecord.getRecordTime())) {
@@ -391,6 +386,7 @@ public class DataProcessor extends Observable implements Runnable {
 				TransponderRow transponder = antennaReading.getTransponder();
 				DirectionResultRow dirResult = new DirectionResultRow(timestamp, direction, transponder, box);
 				directionResults.add(dirResult);
+				mouseInBoxSet.remove(mouseInBox); //Remove the mouse-in-box entry, when its pair is found 
 			} else {
 				//If the mouse entered and never left the box before entering it again,
 				//or left and never entered before living again,
