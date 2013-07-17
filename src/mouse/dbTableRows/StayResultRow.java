@@ -9,20 +9,25 @@ import mouse.TimeStamp;
  */
 public class StayResultRow extends DbDynamicTableRow {
 	
+	public static final int TYPE_NORMAL = 1;
+	public static final int TYPE_CORRUPT = 2;
+	
 	private final TimeStamp start;
 	private final TimeStamp stop;
 	private final float duration;
 	private final DirectionResultRow dirIn;
 	private final DirectionResultRow dirOut;
+	private final int type;
 	
 	public StayResultRow(TimeStamp start, TimeStamp stop, TransponderRow transponder, 
-						BoxRow box, DirectionResultRow dirIn, DirectionResultRow dirOut) {
+						BoxRow box, DirectionResultRow dirIn, DirectionResultRow dirOut, int type) {
 		super(transponder, box);
 		this.start = start;
 		this.stop = stop;
 		this.duration = TimeStamp.duration(start, stop);
 		this.dirIn = dirIn;
 		this.dirOut = dirOut;
+		this.type = type;
 	}
 
 	public TimeStamp getStart() {
@@ -44,12 +49,16 @@ public class StayResultRow extends DbDynamicTableRow {
 	public DirectionResultRow getDirOut() {
 		return dirOut;
 	}
+	
+	public int getType() {
+		return type;
+	}
 
 	@Override
 	public String toString() {
 		return "StayResult [start=" + start + ", stop=" + stop
 				+ ", transponder=" + transponder + ", box=" + source + ", dirIn="
-				+ dirIn + ", dirOut=" + dirOut + "]";
+				+ dirIn + ", dirOut=" + dirOut + ", type=" + type + "]";
 	}
 
 	@Override

@@ -89,6 +89,8 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 			log.append("Generating the histogram...\n");
 			XmlReader reader = new XmlReader();
 			Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
+			if (settings == null)
+				return;
 			HistogramFrame histFrame = new HistogramFrame(log, 
 					MainWindow.getInstance().getProcessor(), settings.getIntervalsNumber());
 			histFrame.run();
@@ -132,6 +134,8 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 		
 		XmlReader reader = new XmlReader();
 		Settings settings = reader.importSettingsFromXml(settingsFile.getPath());
+		if (settings == null)
+			return;
 		
 		TimeStamp.setDateFormats(settings.getCsvDateFormat(), settings.getDbDateFormat());
 		

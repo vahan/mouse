@@ -361,11 +361,11 @@ public class DataProcessor extends Observable implements Runnable {
 		}
 	}
 	
-	
 	private void generateDirAndStayResults() {
 		for (Entry<TransponderRow, MouseRecords> entry : mouseReadings.entrySet()) {
 			entry.getValue().addDirectionAndStayResults(directionResults, stayResults,
-					settings.getMaxTubeTime(), settings.getMaxBoxTime());
+					settings.getMinTubeTime(), settings.getMaxTubeTime(), 
+					settings.getMinBoxTime(), settings.getMaxBoxTime());
 		}
 	}
 	

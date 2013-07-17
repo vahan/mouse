@@ -35,7 +35,7 @@ public class MouseRecords {
 	
 	
 	public void addDirectionAndStayResults(ArrayList<DirectionResultRow> dirResults, ArrayList<StayResultRow> stayResults,
-				long maxTubeTime, long maxBoxTime) {
+				long minTubeTime, long maxTubeTime, long minBoxTime, long maxBoxTime) {
 		AntennaRecord[] antRecArray = antennaRecords.toArray(new AntennaRecord[antennaRecords.size()]);
 		Arrays.sort(antRecArray);
 		for (int i = 0; i < antRecArray.length - 4; ) {
@@ -45,7 +45,8 @@ public class MouseRecords {
 				continue;
 			}
 			//add the direction result to the array
-			DirectionResultRow inDirRes = getDirectionResultRow(antRecArray[i], antRecArray[i + 1], maxTubeTime);
+			DirectionResultRow inDirRes = getDirectionResultRow(antRecArray[i], antRecArray[i + 1], 
+												minTubeTime, maxTubeTime);
 			if (inDirRes == null) {
 				i++;
 				continue;
@@ -59,7 +60,7 @@ public class MouseRecords {
 			AntennaRecord ant2 = (antRecArray[i + 3].getAntenna().getBox() == ant1.getAntenna().getBox())
 									? antRecArray[i + 3]
 									: antRecArray[i + 2]; //For the special case stayResult of form A1-A2-A1
-			DirectionResultRow outDirRes = getDirectionResultRow(ant1, ant2, maxTubeTime);
+			DirectionResultRow outDirRes = getDirectionResultRow(ant1, ant2, minTubeTime, maxTubeTime);
 			if (outDirRes == null) {
 				i += ant1 == ant2 ? 1 : 2; //For the special case stayResult of form A1-A2-A1
 				continue;
@@ -71,7 +72,7 @@ public class MouseRecords {
 				i += 2;
 				continue;
 			}
-			StayResultRow stayRes = getStayResultRow(inDirRes, outDirRes, maxBoxTime);
+			StayResultRow stayRes = getStayResultRow(inDirRes, outDirRes, minBoxTime, maxBoxTime);
 			if (stayRes == null) {
 				i += 4;
 				continue;
@@ -83,7 +84,7 @@ public class MouseRecords {
 	
 	
 	private DirectionResultRow getDirectionResultRow(AntennaRecord in, AntennaRecord out, 
-				long maxTubeTime) {
+				long minTubeTime, long maxTubeTime) {
 		if (in.getAntenna().getBox() != out.getAntenna().getBox())
 			return null;
 		BoxRow box = in.getAntenna().getBox();
@@ -93,7 +94,8 @@ public class MouseRecords {
 			in = out;
 			out = temp;
 		}
-		if (TimeStamp.duration(in.getRecordTime(), out.getRecordTime()) > maxTubeTime)
+		long duration = TimeStamp.duration(in.getRecordTime(), out.getRecordTime());
+		if (duration < minTubeTime || duration > maxTubeTime)
 			return null;
 		Direction direction = new Direction(in.getAntenna(), out.getAntenna());
 		if (direction.toString() == null)
@@ -104,7 +106,7 @@ public class MouseRecords {
 	
 	
 	private StayResultRow getStayResultRow(DirectionResultRow firstDir, DirectionResultRow secondDir,
-				long maxBoxTime) {
+			long minBoxTime, long maxBoxTime) {
 		//The first event must be before the second
 		if (firstDir.getTimeStamp().after(secondDir.getTimeStamp())) {
 			//notifyMessage("swapping");
@@ -117,11 +119,15 @@ public class MouseRecords {
 				secondDir.getDirection().getType() == Directions.Out) {
 			TimeStamp start = firstDir.getTimeStamp();
 			TimeStamp stop = secondDir.getTimeStamp();
-			if (TimeStamp.duration(start, stop) > maxBoxTime)
+			long duration = TimeStamp.duration(start, stop);
+			if (duration < minBoxTime || duration > maxBoxTime)
 				return null;
 			BoxRow box = firstDir.getDirection().getIn().getBox();
+			int type = secondDir.getDirection().getIn().equals(secondDir.getDirection().getOut())
+						? StayResultRow.TYPE_CORRUPT
+						: StayResultRow.TYPE_NORMAL;
 			//Create and store the stayResult data entry
-			StayResultRow stayResult = new StayResultRow(start, stop, mouse, box, firstDir, secondDir);
+			StayResultRow stayResult = new StayResultRow(start, stop, mouse, box, firstDir, secondDir, type);
 			mouse.addStay(); //increment the stay count
 			return stayResult;
 		}

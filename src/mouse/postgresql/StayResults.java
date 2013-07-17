@@ -22,7 +22,8 @@ public class StayResults extends DbDynamicTable {
 										"transponder_id",
 										"box_id",
 										"dir_in_id",
-										"dir_out_id"
+										"dir_out_id",
+										"type",
 										};
 		return fields;
 	}
@@ -36,7 +37,8 @@ public class StayResults extends DbDynamicTable {
 										stayResult.getTransponder().getId(),
 										stayResult.getSource().getId(),
 										stayResult.getDirIn().getId(),
-										stayResult.getDirOut().getId()
+										stayResult.getDirOut().getId(),
+										Integer.toString(stayResult.getType()),
 		};
 		return values;
 	}
@@ -51,6 +53,7 @@ public class StayResults extends DbDynamicTable {
 		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
 		columns.put("dir_in_id", new DbEntry("dir_in_id", ColumnTypes.integer, "references direction_results(id)")); 
 		columns.put("dir_out_id", new DbEntry("dir_out_id", ColumnTypes.integer, "references direction_results(id)"));
+		columns.put("type", new DbEntry("type", ColumnTypes.integer, ""));
 		
 	}
 	

@@ -2,33 +2,36 @@ package mouse.postgresql;
 
 public class Settings {
 	
-	private String username;
+	private final String username;
 	
-	private String password;
+	private final String password;
 	
-	private String hostName;
+	private final String hostName;
 	
-	private String port;
+	private final String port;
 	
-	private String dbName;
+	private final String dbName;
 	
-	private String url;
+	private final String url;
 
-	private int intervalsNumber;
+	private final int intervalsNumber;
 
-	private String csvDateFormat;
+	private final String csvDateFormat;
 
-	private String dbDateFormat;
+	private final String dbDateFormat;
 	
-	private long maxTubeTime;
+	private final long maxTubeTime;
 	
-	private long maxBoxTime;
+	private final long maxBoxTime;
 	
+	private final long minTubeTime;
+	
+	private final long minBoxTime;
 
 	public Settings(String username, String password, String hostName,
 			String port, String dbName, int intervalsNumber,
 			String csvDateFormat, String dbDateFormat, 
-			long maxTubeTime, long maxBoxTime) {
+			long maxTubeTime, long maxBoxTime, long minTubeTime, long minBoxTime) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -41,49 +44,28 @@ public class Settings {
 		this.dbDateFormat = dbDateFormat;
 		this.maxTubeTime = maxTubeTime;
 		this.maxBoxTime = maxBoxTime;
+		this.minTubeTime = minTubeTime;
+		this.minBoxTime = minBoxTime;
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String userName) {
-		this.username = userName;
-	}
-
 	public String getPassword() {
 		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getHostName() {
 		return hostName;
 	}
 
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-		url = generateUrl(hostName, port, dbName);
-	}
-
 	public String getPort() {
 		return port;
 	}
 
-	public void setPort(String port) {
-		this.port = port;
-		url = generateUrl(hostName, port, dbName);
-	}
-
 	public String getDbName() {
 		return dbName;
-	}
-
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
-		url = generateUrl(hostName, port, dbName);
 	}
 	
 	public long getMaxTubeTime() {
@@ -92,6 +74,14 @@ public class Settings {
 
 	public long getMaxBoxTime() {
 		return maxBoxTime;
+	}
+	
+	public long getMinTubeTime() {
+		return minTubeTime;
+	}
+
+	public long getMinBoxTime() {
+		return minBoxTime;
 	}
 
 	public String getUrl() {

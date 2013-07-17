@@ -86,8 +86,21 @@ public class XmlReader {
 				String maxBoxTime = ((Node) textMaxBoxTimeList.item(0)).getNodeValue().trim();
 				long maxBoxTimeNumber = Long.parseLong(maxBoxTime);
 				
+				NodeList minTubeTimeList = settingsElement.getElementsByTagName("min-tube-time");
+				Element minTubeTimeElement = (Element) minTubeTimeList.item(0);
+				NodeList textMinTubeTimeList = minTubeTimeElement.getChildNodes();
+				String minTubeTime = ((Node) textMinTubeTimeList.item(0)).getNodeValue().trim();
+				long minTubeTimeNumber = Long.parseLong(minTubeTime);
+
+				NodeList minBoxTimeList = settingsElement.getElementsByTagName("min-box-time");
+				Element minBoxTimeElement = (Element) minBoxTimeList.item(0);
+				NodeList textMinBoxTimeList = minBoxTimeElement.getChildNodes();
+				String minBoxTime = ((Node) textMinBoxTimeList.item(0)).getNodeValue().trim();
+				long minBoxTimeNumber = Long.parseLong(minBoxTime);
+				
 				return new Settings(username, password, host, port, dbName, 
-						inervalsNumber, csvDateFormat, dbDateFormat, maxTubeTimeNumber, maxBoxTimeNumber);
+						inervalsNumber, csvDateFormat, dbDateFormat, maxTubeTimeNumber, 
+						maxBoxTimeNumber, minTubeTimeNumber, minBoxTimeNumber);
 			}
 			return null;
 		} catch (SAXParseException err) {
