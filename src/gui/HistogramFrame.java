@@ -80,9 +80,7 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		parentPanel.add(chartPanel);
-		
 	}
-	
 
 	/**
 	 * Creates a sample dataset.
@@ -145,7 +143,6 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 		return dataset;
 	}
 	
-
 	/**
 	 * Creates a sample chart.
 	 * 
@@ -175,7 +172,6 @@ public class HistogramFrame extends JFrame implements ActionListener, Runnable {
 		return chart;
 	}
 	
-
 	@Override
 	public void run() {
 		setTitle("Histogram");
