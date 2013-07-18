@@ -88,10 +88,12 @@ public class Direction {
 	private void init() {
 		int inPos = Integer.parseInt(in.getPosition());
 		int outPos = Integer.parseInt(out.getPosition());
-		if (inPos == outPos) {
+		if (in.equals(out)) {
+			type = Directions.SpecialOut;
+		}else if (inPos == outPos) {
 			type = Directions.Undefined;
 		} else {
-			type = inPos > outPos ? Directions.In : Directions.Out;
+			type = inPos > outPos ? Directions.In : Directions.Out; //2-1 = IN; 1-2 = OUT
 		}
 	}
 	

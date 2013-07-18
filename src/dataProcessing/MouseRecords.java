@@ -16,9 +16,10 @@ public class MouseRecords {
 	
 	private final HashSet<AntennaRecord> antennaRecords = new HashSet<AntennaRecord>();
 
-	public MouseRecords(TransponderRow mouse) {
+	public MouseRecords(TransponderRow mouse, AntennaRecord antennaRecord) {
 		super();
 		this.mouse = mouse;
+		add(antennaRecord);
 	}
 
 	public TransponderRow getMouse() {
@@ -38,8 +39,10 @@ public class MouseRecords {
 				long minTubeTime, long maxTubeTime, long minBoxTime, long maxBoxTime) {
 		AntennaRecord[] antRecArray = antennaRecords.toArray(new AntennaRecord[antennaRecords.size()]);
 		Arrays.sort(antRecArray);
-		for (int i = 0; i < antRecArray.length - 4; ) {
-			BoxRow box = antRecArray[i + 1].getAntenna().getBox();
+		for (int i = 0; i < antRecArray.length; ) {
+			BoxRow box = antRecArray[i].getAntenna().getBox();
+			if (i + 1 >= antRecArray.length)
+				break;
 			if (antRecArray[i + 1].getAntenna().getBox() != box) {
 				i++;
 				continue;
@@ -52,33 +55,27 @@ public class MouseRecords {
 				continue;
 			}
 			dirResults.add(inDirRes);
-			if (antRecArray[i + 2].getAntenna().getBox() != box || antRecArray[i + 3].getAntenna().getBox() != box) {
-				i += 2;
-				continue;
-			}
+			if (i + 2 >= antRecArray.length)
+				break;
 			AntennaRecord ant1 = antRecArray[i + 2];
-			AntennaRecord ant2 = (antRecArray[i + 3].getAntenna().getBox() == ant1.getAntenna().getBox())
-									? antRecArray[i + 3]
-									: antRecArray[i + 2]; //For the special case stayResult of form A1-A2-A1
-			DirectionResultRow outDirRes = getDirectionResultRow(ant1, ant2, minTubeTime, maxTubeTime);
-			if (outDirRes == null) {
-				i += ant1 == ant2 ? 1 : 2; //For the special case stayResult of form A1-A2-A1
-				continue;
-			}
-			dirResults.add(outDirRes);
-			
-			if (inDirRes.getDirection().getType() != Directions.In || 
-					outDirRes.getDirection().getType() != Directions.Out) {
+			AntennaRecord ant2 = antRecArray[i + 2]; //For the special case stayResult of form A1-A2-A1
+			if (antRecArray[i + 2].getAntenna().getBox() != box) {
 				i += 2;
 				continue;
 			}
-			StayResultRow stayRes = getStayResultRow(inDirRes, outDirRes, minBoxTime, maxBoxTime);
-			if (stayRes == null) {
-				i += 4;
+			if (i + 3 < antRecArray.length && antRecArray[i + 3].getAntenna().getBox() == ant1.getAntenna().getBox())
+				ant2 = antRecArray[i + 3];
+			
+			i += ant1 == ant2 ? 3 : 4; //For the special case stayResult of form A1-A2-A1
+			
+			DirectionResultRow outDirRes = getDirectionResultRow(ant1, ant2, minTubeTime, maxTubeTime);
+			if (outDirRes == null)
 				continue;
-			}
+			dirResults.add(outDirRes);
+			StayResultRow stayRes = getStayResultRow(inDirRes, outDirRes, minBoxTime, maxBoxTime);
+			if (stayRes == null)
+				continue;
 			stayResults.add(stayRes);
-			i += 4;
 		}
 	}
 	
@@ -116,7 +113,8 @@ public class MouseRecords {
 		}
 		//In must be before out
 		if (firstDir.getDirection().getType() == Directions.In && 
-				secondDir.getDirection().getType() == Directions.Out) {
+				(secondDir.getDirection().getType() == Directions.Out 
+						|| secondDir.getDirection().getType() == Directions.SpecialOut)) {
 			TimeStamp start = firstDir.getTimeStamp();
 			TimeStamp stop = secondDir.getTimeStamp();
 			long duration = TimeStamp.duration(start, stop);

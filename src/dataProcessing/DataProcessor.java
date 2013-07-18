@@ -264,8 +264,10 @@ public class DataProcessor extends Observable implements Runnable {
 				antennaReadings.add(antennaReading);
 				//store into mouseReadings array as well; needed for further processing
 				MouseRecords mouseRecords = mouseReadings.get(transponder);
-				if (mouseRecords == null)
-					mouseReadings.put(transponder, new MouseRecords(transponder));
+				if (mouseRecords == null) {
+					mouseRecords = new MouseRecords(transponder, new AntennaRecord(antenna, timeStamp));
+					mouseReadings.put(transponder, mouseRecords);
+				}
 				else
 					mouseRecords.add(new AntennaRecord(antenna, timeStamp));
 				
@@ -414,7 +416,8 @@ public class DataProcessor extends Observable implements Runnable {
 				mouseInBoxSet.put(mouseInBox, new AntennaRecord(antenna, timestamp));
 			}
 		}*/
-
+		if (directionResults == null || directionResults.size() < 1)
+			return false;
 		notifyMessage("Saving direction results into DB");
 		//Set the read data into the according db table object of psqlManager
 		DirectionResults dirResultsTable = psqlManager.getDirectionResults();
@@ -476,7 +479,9 @@ public class DataProcessor extends Observable implements Runnable {
 				}
 			}
 		}*/
-		
+
+		if (stayResults == null || stayResults.size() < 1)
+			return false;
 		notifyMessage("Saving stay results into DB");
 		//Set the read data into the according db table object of psqlManager
 		StayResults stayResultsTable = psqlManager.getStayResults();
@@ -558,6 +563,8 @@ public class DataProcessor extends Observable implements Runnable {
 			}
 		}
 
+		if (meetingResults == null || meetingResults.size() < 1)
+			return false;
 		notifyMessage("Saving meeting results into DB");
 		//Set the read data into the according db table object of psqlManager
 		MeetingResults meetingResultsTable = psqlManager.getMeetingResults();
@@ -682,7 +689,8 @@ public class DataProcessor extends Observable implements Runnable {
 		}
 		
 		String updateBoxDataQuery = psqlManager.getBoxes().updateBoxDataQuery();
-		return psqlManager.executeQuery(updateBoxDataQuery).length > 0;
+		String res[] = psqlManager.executeQuery(updateBoxDataQuery);
+		return res.length > 0;
 		
 	}
 	

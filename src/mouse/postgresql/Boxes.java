@@ -31,7 +31,7 @@ public class Boxes extends DbStaticTable {
 			values[i][0] = ((BoxRow) tableModels[i]).getxPos();
 			values[i][1] = ((BoxRow) tableModels[i]).getyPos();
 		}
-		return updateQueryByName(fields, values);
+		return updateQueryByName(fields, values, "name", ColumnTypes.text);
 	}
 	
 
@@ -96,16 +96,16 @@ public class Boxes extends DbStaticTable {
 	}
 	
 	
-	private String updateQueryByName(String[] fields, String[][] values) {
+	private String updateQueryByName(String[] fields, String[][] values, String field, ColumnTypes type) {
 		String query = "UPDATE " + tableName + " SET ";
-		
+		String quote = type.requiresQuotes() ? "'" : "";
 		for (int i = 0; i < fields.length; ++i) {
 			query += fields[i] + " = CASE name";
 			for (int j = 0; j < tableModels.length; ++j) {
 				if (StringUtils.isEmpty(values[j][i]))
 					continue;
 				BoxRow row = (BoxRow) tableModels[j];
-				query += " WHEN '" + row.getName() + "' THEN " + values[j][i];
+				query += " WHEN " + quote + row.getName() + quote + " THEN " + values[j][i];
 			}
 			query += " END";
 			query += i == fields.length - 1 ? " " : ", ";
@@ -115,7 +115,7 @@ public class Boxes extends DbStaticTable {
 			BoxRow row = (BoxRow) tableModels[j];
 			allIds[j] = row.getName();
 		}
-		query += "WHERE id IN (" + StringUtils.join(allIds, ", ") + " )";
+		query += "WHERE " + field + " IN (" + quote + StringUtils.join(allIds, quote + ", " + quote) + quote + " )";
 		
 		return query;
 	}

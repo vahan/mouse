@@ -31,6 +31,9 @@ public class StayResults extends DbDynamicTable {
 	@Override
 	protected String[] insertValues(DbTableRow model) {
 		StayResultRow stayResult = (StayResultRow) model;
+		if (stayResult == null) {
+			String s = "holy crap";
+		}
 		String[] values = new String[] {"'" + stayResult.getStart().toString() + "'",
 										"'" + stayResult.getStop().toString() + "'",
 										Float.toString(stayResult.getDuration()),

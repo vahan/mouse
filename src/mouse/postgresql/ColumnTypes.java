@@ -6,6 +6,11 @@ public enum ColumnTypes {
 	timestamp,
 	integer,
 	real,
-	serial
+	serial;
+	
+	
+	public boolean requiresQuotes() {
+		return this.equals(text) || this.equals(timestamp);
+	}
 
 }
