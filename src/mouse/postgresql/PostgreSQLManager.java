@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mouse.Settings;
 import mouse.TimeStamp;
 import mouse.dbTableRows.DbTableRow;
 

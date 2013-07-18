@@ -13,6 +13,7 @@ import java.util.Observable;
 
 import org.apache.commons.lang3.StringUtils;
 
+import mouse.Settings;
 import mouse.TimeStamp;
 import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.AntennaReadingRow;
@@ -31,7 +32,6 @@ import mouse.postgresql.DirectionResults;
 import mouse.postgresql.Logs;
 import mouse.postgresql.MeetingResults;
 import mouse.postgresql.PostgreSQLManager;
-import mouse.postgresql.Settings;
 import mouse.postgresql.StayResults;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -168,6 +168,9 @@ public class DataProcessor extends Observable implements Runnable {
 		return finished;
 	}
 	
+	public Settings getSettings() {
+		return settings;
+	}
 	
 	/**
 	 * Process the input data and write it into the according tables

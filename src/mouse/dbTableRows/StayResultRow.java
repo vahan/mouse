@@ -14,7 +14,7 @@ public class StayResultRow extends DbDynamicTableRow {
 	
 	private final TimeStamp start;
 	private final TimeStamp stop;
-	private final float duration;
+	private final long duration;
 	private final DirectionResultRow dirIn;
 	private final DirectionResultRow dirOut;
 	private final int type;
@@ -38,7 +38,7 @@ public class StayResultRow extends DbDynamicTableRow {
 		return stop;
 	}
 
-	public float getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 

@@ -13,8 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import mouse.Settings;
 import mouse.TimeStamp;
-import mouse.postgresql.Settings;
 
 import dataProcessing.DataProcessor;
 import dataProcessing.XmlReader;

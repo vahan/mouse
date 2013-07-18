@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import mouse.postgresql.Settings;
+import mouse.Settings;
 
 public class XmlReader {
 
