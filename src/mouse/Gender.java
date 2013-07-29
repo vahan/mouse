@@ -2,8 +2,6 @@ package mouse;
 
 public enum Gender {
 
-	Male,
-	Female,
-	ItsComplicated
-	
+	Male, Female, ItsComplicated
+
 }

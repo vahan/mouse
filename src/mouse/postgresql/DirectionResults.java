@@ -7,24 +7,23 @@ import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.DirectionResultRow;
 
-
 /**
  * Models the direction_results table
+ * 
  * @author vahan
- *
+ * 
  */
 public class DirectionResults extends DbDynamicTable {
-	
-	public DirectionResults(String tableName) {
-		super(tableName);
-		
+
+	public DirectionResults() {
+		super("direction_results");
+
 	}
 
-	
 	/**
 	 * Gives the last reading of a given antenna
 	 * 
-	 * @param antenna	
+	 * @param antenna
 	 * @return
 	 */
 	public HashMap<BoxRow, TimeStamp> lastReadings() {
@@ -44,44 +43,42 @@ public class DirectionResults extends DbDynamicTable {
 		}
 		return lastReadings;
 	}
-	
-	
+
 	public void putLastReadings() {
 		HashMap<BoxRow, TimeStamp> lastReadings = lastReadings();
 		for (BoxRow box : lastReadings.keySet()) {
 			box.setLastDirectionResult(lastReadings.get(box));
 		}
 	}
-	
+
 	@Override
 	protected String[] insertFields() {
-		String[] fields = new String[] {"timestamp",
-										"direction",
-										"transponder_id",
-										"box_id",
-										};
+		String[] fields = new String[] { "timestamp", "direction",
+				"transponder_id", "box_id", };
 		return fields;
 	}
 
 	@Override
 	protected String[] insertValues(DbTableRow model) {
 		DirectionResultRow dirResult = (DirectionResultRow) model;
-		String[] values = new String[] {"'" + dirResult.getTimeStamp().toString() + "'",
-										"'" + dirResult.getDirection().toString() + "'",
-										dirResult.getTransponder().getId(),
-										dirResult.getSource().getId(),
-		};
+		String[] values = new String[] {
+				"'" + dirResult.getTimeStamp().toString() + "'",
+				"'" + dirResult.getDirection().toString() + "'",
+				dirResult.getTransponder().getId(),
+				dirResult.getSource().getId(), };
 		return values;
 	}
-
 
 	@Override
 	protected void initColumns() {
 		columns.put("id", new DbEntry("id", ColumnTypes.serial, "PRIMARY KEY"));
-		columns.put("timestamp", new DbEntry("timestamp", ColumnTypes.timestamp, ""));
+		columns.put("timestamp", new DbEntry("timestamp",
+				ColumnTypes.timestamp, ""));
 		columns.put("direction", new DbEntry("direction", ColumnTypes.text, ""));
-		columns.put("transponder_id", new DbEntry("transponder_id", ColumnTypes.integer, "references transponders(id)"));
-		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer, "references boxes(id)"));
+		columns.put("transponder_id", new DbEntry("transponder_id",
+				ColumnTypes.integer, "references transponders(id)"));
+		columns.put("box_id", new DbEntry("box_id", ColumnTypes.integer,
+				"references boxes(id)"));
 	}
-	
+
 }

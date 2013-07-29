@@ -70,7 +70,6 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 			try {
 				run(sourceFile.getPath(), boxDataFileName, false);
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				JOptionPane.showMessageDialog(this, "dafuq did just happenn?");
 			}
@@ -117,7 +116,6 @@ public class ButtonsPanel extends JPanel implements ActionListener, Observer {
 				try {
 					run(sourceFile.getPath(), boxDataFileName, true);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					JOptionPane.showMessageDialog(this,
 							"dafuq did just happenn?");
 					e1.printStackTrace();

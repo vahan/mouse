@@ -1,22 +1,20 @@
 package mouse.postgresql;
 
-
 import mouse.TimeStamp;
 import mouse.dbTableRows.DbTableRow;
 import mouse.dbTableRows.ScaleRow;
 
-
 /**
  * Models the scales table
+ * 
  * @author vahan
- *
+ * 
  */
 public class Scales extends DbTable {
-	
-	public Scales(String tableName) {
-		super(tableName);
-		// TODO Auto-generated constructor stub
-		
+
+	public Scales() {
+		super("scales");
+
 		generateScales();
 	}
 
@@ -24,13 +22,12 @@ public class Scales extends DbTable {
 	 * Generates scales
 	 */
 	private void generateScales() {
-		// TODO Auto-generated method stub
-		
 		tableModels = new ScaleRow[1];
-		tableModels[0] = new ScaleRow("scale1", "segment1", 0, 0, new TimeStamp());
-		
+		tableModels[0] = new ScaleRow("scale1", "segment1", 0, 0,
+				new TimeStamp());
+
 	}
-	
+
 	@Override
 	protected String[] insertFields() {
 		// TODO Auto-generated method stub
@@ -49,9 +46,9 @@ public class Scales extends DbTable {
 		columns.put("segment", new DbEntry("segment", ColumnTypes.text, ""));
 		columns.put("x_pos", new DbEntry("x_pos", ColumnTypes.real, ""));
 		columns.put("y_pos", new DbEntry("y_pos", ColumnTypes.real, ""));
-		columns.put("last_reading", new DbEntry("last_reading", ColumnTypes.timestamp, ""));
-		
+		columns.put("last_reading", new DbEntry("last_reading",
+				ColumnTypes.timestamp, ""));
+
 	}
-	
 
 }

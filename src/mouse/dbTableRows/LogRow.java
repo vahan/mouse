@@ -6,8 +6,9 @@ import mouse.TimeStamp;
 
 /**
  * Models a row for the logs table
+ * 
  * @author vahan
- *
+ * 
  */
 public class LogRow extends DbTableRow {
 
@@ -18,7 +19,7 @@ public class LogRow extends DbTableRow {
 	private final TimeStamp importedAt;
 	private int nbReadings;
 	private final long size;
-	
+
 	public LogRow(String fileName) {
 		super();
 		this.fileName = fileName;
@@ -69,8 +70,5 @@ public class LogRow extends DbTableRow {
 	public void setDuration() {
 		this.duration = TimeStamp.duration(firstReading, lastReading);
 	}
-	
-	
-	
-	
+
 }

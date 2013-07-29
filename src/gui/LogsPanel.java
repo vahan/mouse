@@ -14,23 +14,21 @@ import mouse.TimeStamp;
 
 import dataProcessing.DataProcessor;
 
-
 public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 
 	private JComboBox<String> logsCombo;
-	
+
 	private JButton deleteButton;
-	
+
 	private String selectedLog = null;
-	
+
 	private DataProcessor processor;
-	
+
 	public LogsPanel() {
 		super();
 		draw();
 	}
-	
-	
+
 	/**
 	 * 
 	 */
@@ -39,21 +37,19 @@ public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getSource().equals(logsCombo)) {
-			selectedLog = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
+			selectedLog = (String) ((JComboBox<String>) e.getSource())
+					.getSelectedItem();
 		} else if (e.getSource().equals(deleteButton)) {
-			int n = JOptionPane.showConfirmDialog(
-					getParent(),
+			int n = JOptionPane.showConfirmDialog(getParent(),
 					"Delete all entries imported at " + selectedLog,
-					"An Inane Question",
-					JOptionPane.YES_NO_OPTION);
+					"An Inane Question", JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				TimeStamp importedAt;
 				try {
-					importedAt = new TimeStamp(selectedLog, TimeStamp.getDbFormat());
+					importedAt = new TimeStamp(selectedLog,
+							TimeStamp.getDbFormat());
 				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(getParent(), e1.getMessage());
 					return;
@@ -64,13 +60,12 @@ public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 		}
 
 	}
-	
+
 	public void setProcessor(DataProcessor processor) {
 		this.processor = processor;
 		updateComboList();
 	}
-	
-	
+
 	private void updateComboList() {
 		String[] logImportedAts = processor.getPsqlManager().getLogEntries();
 		logsCombo.removeAllItems();
@@ -80,21 +75,20 @@ public class LogsPanel extends javax.swing.JPanel implements ActionListener {
 		logsCombo.setVisible(true);
 		logsCombo.updateUI();
 	}
-	
-	
+
 	private void draw() {
 		logsCombo = new JComboBox<String>();
 		logsCombo.addActionListener(this);
-		
+
 		deleteButton = new JButton("Delete the Log");
 		deleteButton.addActionListener(this);
-		
+
 		JPanel logsPanel = new JPanel();
 		logsPanel.add(logsCombo);
 		logsPanel.add(deleteButton);
-		
+
 		add(logsPanel, BorderLayout.PAGE_START);
-		
+
 	}
 
 }

@@ -4,19 +4,21 @@ import mouse.TimeStamp;
 
 /**
  * Models a row for meeting_results table
+ * 
  * @author vahan
- *
+ * 
  */
 public class MeetingResultRow extends DbDynamicTableRow {
-	
+
 	private final TransponderRow transponderTo;
 	private final TimeStamp start;
 	private final TimeStamp stop;
 	private final long duration;
 	private final int terminatedBy;
-	
-	public MeetingResultRow(TransponderRow transponderFrom, TransponderRow transponderTo, 
-			TimeStamp start, TimeStamp stop, int terminatedBy, BoxRow box) {
+
+	public MeetingResultRow(TransponderRow transponderFrom,
+			TransponderRow transponderTo, TimeStamp start, TimeStamp stop,
+			int terminatedBy, BoxRow box) {
 		super(transponderFrom, box);
 		this.transponderTo = transponderTo;
 		this.start = start;
@@ -61,13 +63,15 @@ public class MeetingResultRow extends DbDynamicTableRow {
 	@Override
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		switch (staticTableRowIndex) {
-			case 0:		return transponder;
-			case 1:		return transponderTo;
-			case 2:		return source;
-			default:	return null;
+		case 0:
+			return transponder;
+		case 1:
+			return transponderTo;
+		case 2:
+			return source;
+		default:
+			return null;
 		}
 	}
-	
-	
 
 }

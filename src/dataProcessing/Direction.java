@@ -2,26 +2,26 @@ package dataProcessing;
 
 import mouse.dbTableRows.AntennaRow;
 
-
 /**
  * Models directions, i.e. the in and out antennas.
+ * 
  * @author vahan
- *
+ * 
  */
 public class Direction {
-	
+
 	private final AntennaRow in;
-	
+
 	private final AntennaRow out;
-	
+
 	private Directions type;
 
 	public Direction(AntennaRow in, AntennaRow out) {
 		super();
-		
+
 		this.in = in;
 		this.out = out;
-		
+
 		init();
 	}
 
@@ -32,7 +32,7 @@ public class Direction {
 	public AntennaRow getOut() {
 		return out;
 	}
-	
+
 	public Directions getType() {
 		return type;
 	}
@@ -41,7 +41,7 @@ public class Direction {
 	public String toString() {
 		return type.toString();
 	}
-	
+
 	/**
 	 * Use the in, out and type members for calculating the hashcode
 	 */
@@ -90,13 +90,12 @@ public class Direction {
 		int outPos = Integer.parseInt(out.getPosition());
 		if (in.equals(out)) {
 			type = Directions.SpecialOut;
-		}else if (inPos == outPos) {
+		} else if (inPos == outPos) {
 			type = Directions.Undefined;
 		} else {
-			type = inPos > outPos ? Directions.In : Directions.Out; //2-1 = IN; 1-2 = OUT
+			type = inPos > outPos ? Directions.In : Directions.Out; // 2-1 = IN;
+																	// 1-2 = OUT
 		}
 	}
-	
-	
 
 }

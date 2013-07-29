@@ -7,11 +7,12 @@ import mouse.TimeStamp;
 
 /**
  * Models a row for the transponders table
+ * 
  * @author vahan
- *
+ * 
  */
 public class TransponderRow extends DbStaticTableRow {
-	
+
 	private final String rfid;
 	private final Gender sex;
 	private TimeStamp firstReading;
@@ -22,27 +23,27 @@ public class TransponderRow extends DbStaticTableRow {
 	private int stayCount;
 	private int meetingCount;
 	private int baladeCount;
-	
+
 	/**
-	 * Keeps the list of all existing transponders.
-	 * A new item to this list should be added only on the last line of the constructor 
+	 * Keeps the list of all existing transponders. A new item to this list
+	 * should be added only on the last line of the constructor
 	 */
 	private static ArrayList<TransponderRow> transponders = new ArrayList<TransponderRow>();
-	
-	public TransponderRow(String rfid) {
+
+	private TransponderRow(String rfid) {
 		super();
 		this.rfid = rfid;
 		this.sex = findSex();
-		
+
 		transponders.add(this);
 	}
-	
-	public static TransponderRow getTransponder(String rfid) {
+
+	public static TransponderRow getTransponderRow(String rfid) {
 		for (TransponderRow transp : transponders) {
 			if (transp.getRfid().equals(rfid))
 				return transp;
 		}
-		return new TransponderRow("NaT");
+		return new TransponderRow(rfid);
 	}
 
 	public void setFirstReading(TimeStamp firstReading) {
@@ -108,9 +109,7 @@ public class TransponderRow extends DbStaticTableRow {
 	public int getBaladeCount() {
 		return baladeCount;
 	}
-	
-	
-	
+
 	public void setStayCount(int stayCount) {
 		this.stayCount = stayCount;
 	}
@@ -125,7 +124,7 @@ public class TransponderRow extends DbStaticTableRow {
 
 	@Override
 	public TimeStamp[] getLastResults() {
-		return new TimeStamp[] {lastReading, lastScaleReading};
+		return new TimeStamp[] { lastReading, lastScaleReading };
 	}
 
 	@Override
@@ -140,15 +139,13 @@ public class TransponderRow extends DbStaticTableRow {
 	public void addStay() {
 		stayCount++;
 	}
-	
+
 	public void addMeeting() {
 		meetingCount++;
 	}
-	
+
 	public void addBalade() {
 		baladeCount++;
 	}
-	
-	
 
 }

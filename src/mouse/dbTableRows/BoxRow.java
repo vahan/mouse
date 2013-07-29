@@ -4,37 +4,37 @@ import java.util.ArrayList;
 
 import mouse.TimeStamp;
 
-
 /**
- * Models a row for the boxes table's 
+ * Models a row for the boxes table's
+ * 
  * @author vahan
- *
+ * 
  */
 public class BoxRow extends DbStaticTableRow {
-	
+
 	private final String name;
 	private final String segment;
 	private String xPos;
 	private String yPos;
 	private TimeStamp lastDirectionResult;
 	private TimeStamp lastMeeting;
-	
+
 	private static ArrayList<BoxRow> boxes = new ArrayList<BoxRow>();
-	
-	public BoxRow(String name) {
+
+	private BoxRow(String name) {
 		super();
 		this.name = name;
 		this.segment = findSegment();
-		
+
 		boxes.add(this);
 	}
-	
-	public static BoxRow getBoxByName(String boxName) {
+
+	public static BoxRow getBox(String boxName) {
 		for (BoxRow box : boxes) {
 			if (box.getName().equals(boxName))
 				return box;
 		}
-		return null;
+		return new BoxRow(boxName);
 	}
 
 	private String findSegment() {
@@ -76,7 +76,7 @@ public class BoxRow extends DbStaticTableRow {
 
 	@Override
 	public TimeStamp[] getLastResults() {
-		return new TimeStamp[] {lastDirectionResult, lastMeeting};
+		return new TimeStamp[] { lastDirectionResult, lastMeeting };
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class BoxRow extends DbStaticTableRow {
 		} else {
 			this.lastMeeting = result;
 		}
-		
+
 	}
 
 	public static BoxRow getBoxById(String boxId) {
@@ -104,8 +104,5 @@ public class BoxRow extends DbStaticTableRow {
 	public void setyPos(String yPos) {
 		this.yPos = yPos;
 	}
-	
-	
-	
 
 }

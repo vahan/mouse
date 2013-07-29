@@ -1,19 +1,18 @@
 package mouse.dbTableRows;
 
-
 import mouse.TimeStamp;
-
 
 /**
  * Models a row for the antenna_readings table
+ * 
  * @author vahan
- *
+ * 
  */
 public class AntennaReadingRow extends DbDynamicTableRow {
-	
+
 	private final TimeStamp timeStamp;
 	private final LogRow log;
-	
+
 	public AntennaReadingRow(TimeStamp timeStamp, TransponderRow transponder,
 			AntennaRow antena, LogRow log) {
 		super(transponder, antena);
@@ -44,8 +43,5 @@ public class AntennaReadingRow extends DbDynamicTableRow {
 	public DbStaticTableRow staticTableRow(int staticTableRowIndex) {
 		return staticTableRowIndex == 0 ? source : transponder;
 	}
-
-	
-	
 
 }

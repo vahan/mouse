@@ -1,9 +1,9 @@
 package mouse.postgresql;
 
 public class DbEntry {
-	
+
 	private final String name;
-	
+
 	private final ColumnTypes type;
 	/**
 	 * E.g. PRIMARY KEY, references -TABLE(FIELD)-, etc
@@ -28,8 +28,5 @@ public class DbEntry {
 	public String getNote() {
 		return note;
 	}
-	
-	
-	
 
 }

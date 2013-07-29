@@ -5,14 +5,15 @@ import mouse.dbTableRows.DbStaticTableRow;
 import mouse.dbTableRows.TransponderRow;
 
 public class ExtremeReading {
-	
+
 	private TimeStamp timeStamp;
-	
+
 	private TransponderRow transponder;
-	
+
 	private DbStaticTableRow source;
 
-	public ExtremeReading(TimeStamp timeStamp, TransponderRow transponder, DbStaticTableRow source) {
+	public ExtremeReading(TimeStamp timeStamp, TransponderRow transponder,
+			DbStaticTableRow source) {
 		super();
 		this.timeStamp = timeStamp;
 		this.transponder = transponder;
@@ -42,7 +43,5 @@ public class ExtremeReading {
 	public void setAntenna(DbStaticTableRow source) {
 		this.source = source;
 	}
-	
-	
 
 }

@@ -1,13 +1,13 @@
 package mouse.dbTableRows;
 
-
 /**
  * An abstract base class for all table row model classes.
+ * 
  * @author vahan
- *
+ * 
  */
 public abstract class DbTableRow {
-	
+
 	protected String id;
 
 	public String getId() {
@@ -16,6 +16,7 @@ public abstract class DbTableRow {
 
 	/**
 	 * The ID must be set after the according enty is inserted into the db table
+	 * 
 	 * @param id
 	 */
 	public void setId(String id) {
@@ -57,7 +58,5 @@ public abstract class DbTableRow {
 	public String toString() {
 		return this.getClass().getSimpleName() + " [id=" + id + "]";
 	}
-	
-	
 
 }

@@ -2,16 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/postgresql-9.2-1002.jdbc4.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/opencsv-2.3.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/commons-lang3-3.1-javadoc.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/joda-time-2.2.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/joda-time-2.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/joda-time-2.2-sources.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/jcommon-1.0.17.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/jfreechart-1.0.14.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/jfreechart-1.0.14-swt.jar"/>
-	<classpathentry kind="lib" path="/home/vahan/workspace/swtgraphics2d.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/jcommon-1.0.17.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/jfreechart-1.0.14.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/joda-time-2.2.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/opencsv-2.3.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/postgresql-9.2-1002.jdbc4.jar"/>
+	<classpathentry kind="lib" path="/home/vahan/workspace/mouse/lib/swtgraphics2d.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

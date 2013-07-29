@@ -6,37 +6,39 @@ import mouse.TimeStamp;
 
 /**
  * Models a row for the antennas table's
+ * 
  * @author vahan
- *
+ * 
  */
 public class AntennaRow extends DbStaticTableRow {
-	
+
 	private final String name;
 	private final String position;
 	private TimeStamp lastReading;
 	private final BoxRow box;
-	
+
 	private static ArrayList<AntennaRow> antennas = new ArrayList<AntennaRow>();
-	
-	public AntennaRow(String position, BoxRow box) {
+
+	private AntennaRow(String position, BoxRow box) {
 		super();
 		this.position = position;
 		this.box = box;
 		this.name = generateName();
-		
+
 		antennas.add(this);
 	}
-	
-	public static AntennaRow getAntenna(BoxRow box, String position) {
+
+	public static AntennaRow getAntennaRow(String position, BoxRow box) {
 		for (AntennaRow antenna : antennas) {
-			if (antenna.getBox() == box && antenna.getPosition().equals(position))
+			if (antenna.getBox() == box
+					&& antenna.getPosition().equals(position))
 				return antenna;
 		}
-		return null;
+		return new AntennaRow(position, box);
 	}
 
 	private String generateName() {
-		String name = box.getName() + "-" + position; 
+		String name = box.getName() + "-" + position;
 		return name;
 	}
 
@@ -59,7 +61,7 @@ public class AntennaRow extends DbStaticTableRow {
 	public BoxRow getBox() {
 		return box;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -92,13 +94,12 @@ public class AntennaRow extends DbStaticTableRow {
 
 	@Override
 	public TimeStamp[] getLastResults() {
-		return new TimeStamp[] {lastReading};
+		return new TimeStamp[] { lastReading };
 	}
 
 	@Override
 	public void setLastResult(TimeStamp result, int lastResultIndex) {
 		lastReading = result;
 	}
-	
 
 }

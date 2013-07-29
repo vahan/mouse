@@ -4,17 +4,18 @@ import mouse.TimeStamp;
 
 /**
  * Models a row for the scales table's model
+ * 
  * @author vahan
- *
+ * 
  */
 public class ScaleRow extends DbTableRow {
-	
+
 	private final String name;
 	private final String segment;
 	private final float xPoint;
 	private final float yPoint;
 	private final TimeStamp lastReading;
-	
+
 	public ScaleRow(String name, String segment, float xPoint, float yPoint,
 			TimeStamp lastReading) {
 		super();
@@ -44,7 +45,5 @@ public class ScaleRow extends DbTableRow {
 	public TimeStamp getLastReading() {
 		return lastReading;
 	}
-	
-	
 
 }

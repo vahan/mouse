@@ -1,11 +1,11 @@
 package dataProcessing;
 
 public class BoxData {
-	
+
 	private final String boxId;
-	
+
 	private final String xPos;
-	
+
 	private final String yPos;
 
 	public BoxData(String boxId, String xPos, String yPos) {
@@ -26,7 +26,5 @@ public class BoxData {
 	public String getyPos() {
 		return yPos;
 	}
-	
-	
 
 }

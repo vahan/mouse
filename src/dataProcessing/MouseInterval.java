@@ -9,9 +9,9 @@ import mouse.dbTableRows.TransponderRow;
 public class MouseInterval {
 
 	private final TransponderRow mouse;
-	
+
 	private final TimeStamp start;
-	
+
 	private final TimeStamp stop;
 
 	public MouseInterval(TransponderRow mouse, TimeStamp start, TimeStamp stop) {
@@ -32,8 +32,5 @@ public class MouseInterval {
 	public TimeStamp getStop() {
 		return stop;
 	}
-	
-	
-	
-	
+
 }
