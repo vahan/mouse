@@ -12,6 +12,8 @@ public class Settings {
 	
 	private final String dbName;
 	
+	private final String schema;
+	
 	private final String url;
 
 	private final int intervalsNumber;
@@ -29,7 +31,7 @@ public class Settings {
 	private final long minBoxTime;
 
 	public Settings(String username, String password, String hostName,
-			String port, String dbName, int intervalsNumber,
+			String port, String dbName, String schema, int intervalsNumber,
 			String csvDateFormat, String dbDateFormat, 
 			long maxTubeTime, long maxBoxTime, long minTubeTime, long minBoxTime) {
 		super();
@@ -38,6 +40,7 @@ public class Settings {
 		this.hostName = hostName;
 		this.port = port;
 		this.dbName = dbName;
+		this.schema = schema;
 		url = generateUrl(hostName, port, dbName);
 		this.intervalsNumber = intervalsNumber;
 		this.csvDateFormat = csvDateFormat;
@@ -66,6 +69,10 @@ public class Settings {
 
 	public String getDbName() {
 		return dbName;
+	}
+	
+	public String getSchema() {
+		return schema;
 	}
 	
 	public long getMaxTubeTime() {

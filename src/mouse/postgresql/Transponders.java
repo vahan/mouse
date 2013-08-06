@@ -54,7 +54,6 @@ public class Transponders extends DbStaticTable {
 				names[i] = "-"; // TODO handle empty 'rfid's
 			tableModels[i] = TransponderRow.getTransponderRow(names[i]);
 		}
-
 	}
 
 	@Override
@@ -81,8 +80,8 @@ public class Transponders extends DbStaticTable {
 		String lastAntennaId = columnValues.get("last_antenna_id");
 		if (StringUtils.isEmpty(lastAntennaId))
 			lastAntennaId = "-1";
-		// String lastBoxId = columnValues.get("last_box_id"); //done
-		// automatically
+		// String lastBoxId = columnValues.get("last_box_id");
+		// done automatically
 		String stayCountStr = columnValues.get("stay_count");
 		int stayCount = StringUtils.isEmpty(stayCountStr) ? 0 : Integer
 				.parseInt(stayCountStr);

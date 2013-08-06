@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import mouse.dataProcessing.DataProcessor;
 import mouse.dbTableRows.DbTableRow;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,27 +17,33 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class DbTable {
 
-	protected static String ON_DUPLICATE_IGNORE_SUFFIX = "_on_duplicate_ignore3";
-
 	/**
 	 * Name of the table
 	 */
 	protected final String tableName;
 	/**
+	 * schema.table
+	 */
+	protected final String schemaAndTable;
+	/**
 	 * Array of the rows to be stored
 	 */
 	protected DbTableRow[] tableModels;
+	/**
+	 * Name of the schema where the tables are located
+	 */
+	public static String SCHEMA = DataProcessor.getInstance().getSettings().getSchema();
 
 	protected final HashMap<String, DbEntry> columns = new HashMap<String, DbEntry>();
 
 	protected DbTable(String tableName) {
 		this.tableName = tableName;
-
+		this.schemaAndTable = SCHEMA + "." + tableName;
 		initColumns();
 	}
 
 	public String getTableName() {
-		return tableName;
+		return schemaAndTable;
 	}
 
 	public DbTableRow[] getTableModels() {
@@ -56,9 +63,7 @@ public abstract class DbTable {
 	}
 
 	public String dropTableQuery() {
-		// String query = "DROP RULE \"" + tableName +
-		// ON_DUPLICATE_IGNORE_SUFFIX + "\" ON \"" + tableName + "\";";
-		String query = "DROP TABLE IF EXISTS " + tableName + " CASCADE;";
+		String query = "DROP TABLE IF EXISTS " + schemaAndTable + " CASCADE;";
 		return query;
 	}
 
@@ -92,14 +97,13 @@ public abstract class DbTable {
 		for (int i = 0; i < values.length; ++i) {
 			valuesStr[i] = StringUtils.join(values[i], ", ");
 		}
-
-		String query = "INSERT INTO " + tableName + " (" + fieldsStr
+		String query = "INSERT INTO " + schemaAndTable + " (" + fieldsStr
 				+ ") VALUES (" + StringUtils.join(valuesStr, "), (") + ")";
 		return query;
 	}
 
 	protected String updateQuery(String[] fields, String[][] values) {
-		String query = "UPDATE " + tableName + " SET ";
+		String query = "UPDATE " + schemaAndTable + " SET ";
 
 		for (int i = 0; i < fields.length; ++i) {
 			query += fields[i] + " = CASE id";
@@ -120,21 +124,76 @@ public abstract class DbTable {
 	}
 
 	/**
-	 * Give the query to create the table
+	 * Give the Postgresql query to create the table
 	 * 
 	 * @return A 'CREATE TABLE' query
 	 */
 	protected String createTableQuery() {
-		String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
+		int version = DataProcessor.getInstance().getPsqlManager().getVersion();
+		if (version <= 90)
+			return createTableQueryVersion90();
+		else
+			return createTableQueryVersion91();
+	}
+	
+	/**
+	 * Give the Postgresql 9.1 or upper query to create the table
+	 * 
+	 * @return A 'CREATE TABLE IF NOT EXISTS' query
+	 */
+	protected String createTableQueryVersion91() {
+		String query = "CREATE TABLE IF NOT EXISTS " + schemaAndTable + " (";
+		query += createTableQueryDefinitions() + "); ";
+		return query;
+	}
+
+	/**
+	 * Postgresql 9.0 and older don't support CREATE TABLE IF NOT EXISTS
+	 * This function is a workaround. Source: http://stackoverflow.com/questions/1766046/postgresql-create-table-if-not-exists
+	 * 
+	 * @return
+	 */
+	protected String createTableQueryVersion90() {
+		String functionName = "create_" + tableName + "_table ()";
+		String definitions = createTableQueryDefinitions();
+		String query = createTableIfNotExistsFunctionQuery(functionName, definitions);
+		query += "SELECT " + functionName + "; ";
+		
+		return query;
+	}
+	
+	/**
+	 * Needed for Postgresql 9.0 and earlier versions
+	 * @param definitions
+	 * @return
+	 */
+	protected String createTableIfNotExistsFunctionQuery(String functionName, String definitions) {
+		String query = "CREATE OR REPLACE FUNCTION " + functionName + " "
+				+ "RETURNS void AS " + "$_$ " + "BEGIN "
+				+ "IF EXISTS ( " + "SELECT * FROM pg_catalog.pg_tables "
+				+ "WHERE schemaname = '" + SCHEMA + "' AND tablename = '"
+				+ tableName + "') THEN RAISE NOTICE 'Table "
+				+ schemaAndTable + " already exists.'; "
+				+ "ELSE CREATE TABLE " + schemaAndTable + " ("
+				+ definitions + "); END IF; END; $_$ LANGUAGE plpgsql; ";
+		return query;
+	}
+
+	/**
+	 * Generates a string of comma-separated definitions for CREATE TABLE query
+	 * @return
+	 */
+	protected String createTableQueryDefinitions() {
 		ArrayList<DbEntry> entries = new ArrayList<DbEntry>(columns.values());
 		String[] colNames = new String[columns.size()];
+		String query = "";
 		for (int i = 0; i < colNames.length; ++i) {
 			DbEntry col = entries.get(i);
-			query += col.getName() + " " + col.getType() + " " + col.getNote()
+			query += col.getName() + " " + col.getType()
+					+ (StringUtils.isEmpty(col.getNote()) ? "" : " " + col.getNote())
 					+ (i < colNames.length - 1 ? ", " : "");
 			colNames[i] = col.getName();
 		}
-		query += "); ";
 		return query;
 	}
 
@@ -148,8 +207,7 @@ public abstract class DbTable {
 	/**
 	 * Gives an array of the values to be used for inserting
 	 * 
-	 * @param model
-	 *            The model to use for getting the appropriate values
+	 * @param model The model to use for getting the appropriate values
 	 * @return array of the values to be used for inserting
 	 */
 	protected abstract String[] insertValues(DbTableRow model);

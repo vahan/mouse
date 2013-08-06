@@ -55,9 +55,9 @@ public abstract class DbStaticTable extends DbTable {
 
 		String query = "WITH new_values (" + fieldsStr + ") as (" + "values ("
 				+ StringUtils.join(valuesStr, "), (") + ")) " + "INSERT INTO "
-				+ tableName + " (" + fieldsStr + ") SELECT " + fieldsStr
+				+ schemaAndTable + " (" + fieldsStr + ") SELECT " + fieldsStr
 				+ " FROM new_values " + "WHERE NOT EXISTS (SELECT 1 FROM "
-				+ tableName + " t WHERE " + "t." + uniqueField()
+				+ schemaAndTable + " t WHERE " + "t." + uniqueField()
 				+ " = new_values." + uniqueField() + "); ";
 		return query;
 	}

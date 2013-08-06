@@ -99,7 +99,7 @@ public class Boxes extends DbStaticTable {
 
 	private String updateQueryByName(String[] fields, String[][] values,
 			String field, ColumnTypes type) {
-		String query = "UPDATE " + tableName + " SET ";
+		String query = "UPDATE " + schemaAndTable + " SET ";
 		String quote = type.requiresQuotes() ? "'" : "";
 		for (int i = 0; i < fields.length; ++i) {
 			query += fields[i] + " = CASE name";

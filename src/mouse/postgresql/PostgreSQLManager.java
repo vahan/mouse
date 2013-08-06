@@ -7,13 +7,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mouse.Settings;
 import mouse.TimeStamp;
+import mouse.dataProcessing.CSVColumn;
+import mouse.dataProcessing.DataProcessor;
 import mouse.dbTableRows.BoxRow;
 import mouse.dbTableRows.DbTableRow;
 
-import dataProcessing.CSVColumn;
-import dataProcessing.DataProcessor;
 
 /**
  * This class provides functionality to deal with the postgresql database
@@ -25,6 +27,7 @@ public class PostgreSQLManager {
 	// Connection data
 	private Connection conn = null;
 	private Settings settings;
+	private final int version;
 
 	// The static tables
 	private Logs logs = new Logs();
@@ -56,6 +59,7 @@ public class PostgreSQLManager {
 			boolean reset) {
 		this.settings = settings;
 		this.columns = columns;
+		this.version = detectPsqlVersion();
 
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -77,6 +81,11 @@ public class PostgreSQLManager {
 		tables.add(antennaReadings);
 		tables.add(meetingResults);
 
+	}
+
+	private int detectPsqlVersion() {
+		// TODO Auto-generated method stub
+		return 90;
 	}
 
 	public Connection getCon() {
@@ -126,9 +135,12 @@ public class PostgreSQLManager {
 	public Settings getSettings() {
 		return settings;
 	}
+	
+	public int getVersion() {
+		return version;
+	}
 
 	public boolean connect() {
-
 		try {
 			conn = DriverManager.getConnection(settings.getUrl(),
 					settings.getUsername(), settings.getPassword());
@@ -151,7 +163,6 @@ public class PostgreSQLManager {
 		if (conn == null) {
 			return false;
 		}
-
 		if (reset) {
 			// drop all tables
 			String[] dropQueries = new String[tables.size()];
@@ -165,9 +176,11 @@ public class PostgreSQLManager {
 		for (int i = 0; i < tables.size(); ++i) {
 			createQueries[i] = tables.get(i).createTableQuery();
 		}
-		if (!executePreparedStatements(createQueries))
+		String createQuery = StringUtils.join(createQueries, " ");
+		if (version > 90 && !executePreparedStatements(new String[] {createQuery}))
 			return false;
-
+		else if (version <= 90)
+			executeSelectQuery(createQuery, null); //TODO: check on success
 		return true;
 	}
 
@@ -242,9 +255,10 @@ public class PostgreSQLManager {
 	 * 
 	 * @param query
 	 *            The query to be executed
+	 * @param returnField TODO
 	 * @return The returned result after the query execution
 	 */
-	public String[] executeQuery(String query) {
+	public String[] executeQuery(String query, String returnField) {
 		conn = null;
 		Statement stmt = null;
 		ArrayList<String> results = new ArrayList<String>();
@@ -256,7 +270,7 @@ public class PostgreSQLManager {
 			stmt.execute(query, Statement.RETURN_GENERATED_KEYS);
 			ResultSet resultSet = stmt.getGeneratedKeys();
 			while (resultSet.next()) {
-				results.add(resultSet.getString("id")); // TODO Hard typed "id",
+				results.add(resultSet.getString(returnField)); // TODO Hard typed "id",
 														// assuming only ID is
 														// returned
 			}
@@ -330,7 +344,7 @@ public class PostgreSQLManager {
 	 * Wrapper to execute the given postrgeSql query
 	 * 
 	 * @param queries
-	 *            The query to be executed
+	 *            The query to be executed. If Null, empty array will be returned
 	 * @return The returned result after the query execution
 	 */
 	public String[] executeSelectQuery(String query, String field) {
@@ -343,8 +357,10 @@ public class PostgreSQLManager {
 					settings.getUsername(), settings.getPassword());
 			pst = conn.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
-			while (rs.next()) {
-				results.add(rs.getString(field));
+			if (field != null) {
+				while (rs.next()) {
+					results.add(rs.getString(field));
+				}
 			}
 		} catch (SQLException ex) {
 			Logger lgr = Logger.getLogger(PostgreSQLManager.class.getName());
@@ -378,13 +394,13 @@ public class PostgreSQLManager {
 		String query = "DELETE FROM " + logs.getTableName()
 				+ " WHERE imported_at='" + importedAt + "'";
 
-		return executeQuery(query).length > 0;
+		return executeQuery(query, "id").length > 0;
 	}
 
 	private boolean storeStaticTable(DbStaticTable staticTable) {
 		String insertQuery = staticTable.insertQuery(staticTable
 				.getTableModels());
-		String[] ids = executeQuery(insertQuery);
+		String[] ids = executeQuery(insertQuery, "id");
 		/*
 		 * for (int i = 0; i < ids.length; ++i) { if
 		 * (StringUtils.isEmpty(ids[i])) return false;

@@ -1,7 +1,7 @@
 package mouse.dbTableRows;
 
-import dataProcessing.Direction;
 import mouse.TimeStamp;
+import mouse.dataProcessing.Direction;
 
 /**
  * Models a row for the direction_results table

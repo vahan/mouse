@@ -2,7 +2,8 @@ package mouse;
 
 import java.lang.reflect.InvocationTargetException;
 
-import gui.MainWindow;
+import mouse.gui.MainWindow;
+
 
 
 /**

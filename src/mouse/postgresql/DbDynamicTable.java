@@ -2,9 +2,9 @@ package mouse.postgresql;
 
 import java.util.HashMap;
 
-import dataProcessing.ExtremeReading;
 
 import mouse.TimeStamp;
+import mouse.dataProcessing.ExtremeReading;
 import mouse.dbTableRows.AntennaRow;
 import mouse.dbTableRows.DbDynamicTableRow;
 import mouse.dbTableRows.DbStaticTableRow;
